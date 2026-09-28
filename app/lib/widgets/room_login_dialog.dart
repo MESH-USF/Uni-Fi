@@ -1,0 +1,492 @@
+import 'dart:async';
+import '../utils/platform_info.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
+import '../l10n/l10n.dart';
+import '../models/contact.dart';
+import '../l10n/contact_localization.dart';
+import '../services/storage_service.dart';
+import '../connector/meshcore_connector.dart';
+import '../connector/meshcore_protocol.dart';
+import '../theme/mesh_theme.dart';
+import '../widgets/mesh_ui.dart';
+import '../utils/app_logger.dart';
+import '../helpers/snack_bar_builder.dart';
+import '../helpers/utf8_length_limiter.dart';
+import 'routing_sheet.dart';
+
+class RoomLoginDialog extends StatefulWidget {
+  final Contact room;
+  final Function(String password, bool isAdmin) onLogin;
+
+  const RoomLoginDialog({super.key, required this.room, required this.onLogin});
+
+  @override
+  State<RoomLoginDialog> createState() => _RoomLoginDialogState();
+}
+
+class _RoomLoginDialogState extends State<RoomLoginDialog> {
+  final TextEditingController _passwordController = TextEditingController();
+  final StorageService _storage = StorageService();
+  bool _savePassword = false;
+  bool _isLoading = true;
+  bool _obscurePassword = true;
+  late MeshCoreConnector _connector;
+  int _currentAttempt = 0;
+  static const int _maxAttempts = 5;
+
+  @override
+  void initState() {
+    super.initState();
+    _connector = Provider.of<MeshCoreConnector>(context, listen: false);
+    _loadSavedPassword();
+  }
+
+  Future<void> _loadSavedPassword() async {
+    final savedPassword = await _storage.getRepeaterPassword(
+      widget.room.publicKeyHex,
+    );
+    if (savedPassword != null) {
+      setState(() {
+        _passwordController.text = savedPassword;
+        _savePassword = true;
+        _isLoading = false;
+      });
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  bool _isLoggingIn = false;
+
+  int _resolveRepeaterIndex = -1;
+
+  Contact _resolveRepeater(MeshCoreConnector connector) {
+    if (_resolveRepeaterIndex >= 0 &&
+        _resolveRepeaterIndex < connector.contacts.length &&
+        connector.contacts[_resolveRepeaterIndex].publicKeyHex ==
+            widget.room.publicKeyHex) {
+      return connector.contacts[_resolveRepeaterIndex];
+    }
+    _resolveRepeaterIndex = connector.contacts.indexWhere(
+      (c) => c.publicKeyHex == widget.room.publicKeyHex,
+    );
+    if (_resolveRepeaterIndex == -1) {
+      return widget.room;
+    }
+    return connector.contacts[_resolveRepeaterIndex];
+  }
+
+  Future<void> _handleLogin() async {
+    if (_isLoggingIn) return;
+
+    setState(() {
+      _isLoggingIn = true;
+      _currentAttempt = 0;
+    });
+
+    try {
+      final password = _passwordController.text;
+      final room = _resolveRepeater(_connector);
+      appLogger.info(
+        'Login started for ${room.name} (${room.publicKeyHex})',
+        tag: 'RoomLogin',
+      );
+      final selection = await _connector.preparePathForContactSend(room);
+      final loginFrame = buildSendLoginFrame(room.publicKey, password);
+      final pathLengthValue = selection.useFlood ? -1 : selection.hopCount;
+      final responseBytes = loginFrame.length > maxFrameSize
+          ? loginFrame.length
+          : maxFrameSize;
+      final timeoutMs = _connector.calculateTimeout(
+        pathLength: pathLengthValue,
+        messageBytes: responseBytes,
+      );
+      final timeoutSeconds = (timeoutMs / 1000).ceil();
+      final timeout = Duration(milliseconds: timeoutMs + 2000);
+      final selectionLabel = selection.useFlood
+          ? 'flood'
+          : '${selection.hopCount} hops';
+      appLogger.info('Login routing: $selectionLabel', tag: 'RoomLogin');
+      bool? loginResult;
+      bool isAdmin = false;
+      for (int attempt = 0; attempt < _maxAttempts; attempt++) {
+        if (!mounted) return;
+        setState(() {
+          _currentAttempt = attempt + 1;
+        });
+
+        appLogger.info(
+          'Sending login attempt ${attempt + 1}/$_maxAttempts',
+          tag: 'RoomLogin',
+        );
+        await _connector.sendFrame(loginFrame);
+
+        (loginResult, isAdmin) = await _awaitLoginResponse(timeout);
+        if (loginResult == true) {
+          appLogger.info('Login succeeded for ${room.name}', tag: 'RoomLogin');
+          break;
+        }
+        if (loginResult == false) {
+          appLogger.warn('Login failed for ${room.name}', tag: 'RoomLogin');
+          throw Exception('Wrong password or node is unreachable');
+        }
+        appLogger.warn(
+          'Login attempt ${attempt + 1} timed out after ${timeoutSeconds}s',
+          tag: 'RoomLogin',
+        );
+      }
+
+      if (loginResult == null) {
+        appLogger.warn('Login timed out for ${room.name}', tag: 'RoomLogin');
+      }
+
+      if (loginResult == true) {
+        _connector.recordRepeaterPathResult(room, selection, true, null);
+      } else {
+        _connector.recordRepeaterPathResult(room, selection, false, null);
+      }
+
+      if (loginResult != true) {
+        throw Exception('Wrong password or node is unreachable');
+      }
+
+      // If we got a response, login succeeded
+      // Save password if requested
+      if (_savePassword) {
+        await _storage.saveRepeaterPassword(widget.room.publicKeyHex, password);
+      } else {
+        // Remove saved password if user unchecked the box
+        await _storage.removeRepeaterPassword(widget.room.publicKeyHex);
+      }
+
+      if (mounted) {
+        Navigator.pop(context, password);
+        Future.microtask(() => widget.onLogin(password, isAdmin));
+      }
+    } catch (e) {
+      final room = _resolveRepeater(_connector);
+      appLogger.warn('Login error for ${room.name}: $e', tag: 'RoomLogin');
+      if (mounted) {
+        setState(() {
+          _isLoggingIn = false;
+        });
+        showDismissibleSnackBar(
+          context,
+          content: Text(context.l10n.login_failed(e.toString())),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        );
+      }
+    }
+  }
+
+  Future<(bool?, bool)> _awaitLoginResponse(Duration timeout) async {
+    final completer = Completer<bool?>();
+    Timer? timer;
+    StreamSubscription<Uint8List>? subscription;
+    final targetPrefix = widget.room.publicKey.sublist(0, 6);
+    bool isAdmin = false;
+
+    subscription = _connector.receivedFrames.listen((frame) {
+      if (frame.isEmpty) return;
+      final code = frame[0];
+      if (code != pushCodeLoginSuccess && code != pushCodeLoginFail) return;
+      // NOTE: a bug in the repeater firmware only ever sends 1 or 0 back, not the
+      // expected client permissions
+      isAdmin = (frame[1] == 1);
+      if (frame.length < 8) return;
+      final prefix = frame.sublist(2, 8);
+      if (!listEquals(prefix, targetPrefix)) return;
+
+      completer.complete(code == pushCodeLoginSuccess);
+      subscription?.cancel();
+      timer?.cancel();
+    });
+
+    timer = Timer(timeout, () {
+      if (!completer.isCompleted) {
+        completer.complete(null);
+        subscription?.cancel();
+      }
+    });
+
+    final result = await completer.future;
+    timer.cancel();
+    await subscription.cancel();
+    return (result, isAdmin);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final scheme = Theme.of(context).colorScheme;
+    final connector = context.watch<MeshCoreConnector>();
+    final repeater = _resolveRepeater(connector);
+    final isFloodMode = repeater.pathOverride == -1;
+    return AlertDialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+      titlePadding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      contentPadding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      title: Row(
+        children: [
+          AvatarCircle(
+            name: repeater.name,
+            size: 40,
+            color: MeshPalette.magenta,
+            icon: Icons.group,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.login_roomLogin,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  repeater.name,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal,
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+      content: _isLoading
+          ? const Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.0),
+                child: CircularProgressIndicator(),
+              ),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.login_roomDescription,
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    // Firmware stores at most 15 bytes (CommonCLI.h password[16]).
+                    inputFormatters: const [
+                      Utf8LengthLimitingTextInputFormatter(15),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: l10n.login_password,
+                      hintText: l10n.login_enterPassword,
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        tooltip: _obscurePassword
+                            ? l10n.login_showPassword
+                            : l10n.login_hidePassword,
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
+                      ),
+                    ),
+                    onSubmitted: (_) => _handleLogin(),
+                    autofocus:
+                        !PlatformInfo.isMobile &&
+                        _passwordController.text.isEmpty,
+                  ),
+                  const SizedBox(height: 12),
+                  CheckboxListTile(
+                    value: _savePassword,
+                    onChanged: (value) {
+                      setState(() {
+                        _savePassword = value ?? false;
+                      });
+                    },
+                    title: Text(
+                      l10n.login_savePassword,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    subtitle: Text(
+                      l10n.login_savePasswordSubtitle,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  ExpansionTile(
+                    title: Text(l10n.login_advanced),
+                    tilePadding: EdgeInsets.zero,
+                    childrenPadding: EdgeInsets.zero,
+                    expandedCrossAxisAlignment: CrossAxisAlignment.start,
+                    shape: const Border(),
+                    collapsedShape: const Border(),
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            l10n.login_routing,
+                            style: MeshTheme.accentLabel(
+                              color: scheme.onSurfaceVariant,
+                              fontSize: 11,
+                            ),
+                          ),
+                          const Spacer(),
+                          PopupMenuButton<String>(
+                            icon: Icon(isFloodMode ? Icons.waves : Icons.route),
+                            tooltip: l10n.login_routingMode,
+                            onSelected: (mode) async {
+                              if (mode == 'flood') {
+                                await connector.setPathOverride(
+                                  repeater,
+                                  pathLen: -1,
+                                );
+                              } else {
+                                await connector.setPathOverride(
+                                  repeater,
+                                  pathLen: null,
+                                );
+                              }
+                            },
+                            itemBuilder: (context) => [
+                              PopupMenuItem(
+                                value: 'auto',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.auto_mode,
+                                      size: 20,
+                                      color: !isFloodMode
+                                          ? scheme.primary
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.login_autoUseSavedPath,
+                                      style: TextStyle(
+                                        fontWeight: !isFloodMode
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value: 'flood',
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.waves,
+                                      size: 20,
+                                      color: isFloodMode
+                                          ? scheme.primary
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.login_forceFloodMode,
+                                      style: TextStyle(
+                                        fontWeight: isFloodMode
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        repeater.pathLabel(
+                          context.l10n,
+                          pathHashByteWidth: connector.pathHashByteWidth,
+                        ),
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: scheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: TextButton.icon(
+                          onPressed: () => ContactRoutingSheet.show(
+                            context,
+                            contact: repeater,
+                          ),
+                          icon: const Icon(Icons.timeline, size: 18),
+                          label: Text(l10n.login_managePaths),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.common_cancel),
+        ),
+        if (_isLoggingIn)
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: null,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: scheme.onPrimary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(l10n.login_attempt(_currentAttempt, _maxAttempts)),
+                ],
+              ),
+            ),
+          )
+        else
+          FilledButton.icon(
+            onPressed: _isLoading ? null : _handleLogin,
+            icon: const Icon(Icons.login, size: 18),
+            label: Text(l10n.login_login),
+          ),
+      ],
+    );
+  }
+}
