@@ -1,0 +1,160 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import '../models/contact.dart';
+import '../utils/app_logger.dart';
+import 'prefs_manager.dart';
+
+class ContactStore {
+  static const String _keyPrefix = 'contacts';
+
+  String publicKeyHex = '';
+  set setPublicKeyHex(String value) =>
+      publicKeyHex = value.length > 10 ? value.substring(0, 10) : '';
+
+  String get keyFor => '$_keyPrefix$publicKeyHex';
+
+  Future<List<Contact>> loadContacts() async {
+    if (publicKeyHex.isEmpty) {
+      appLogger.warn('Public key hex is not set. Cannot load contacts.');
+      return [];
+    }
+    final prefs = PrefsManager.instance;
+    String? jsonString = prefs.getString(keyFor);
+    if (jsonString == null || jsonString.isEmpty) {
+      // Attempt migration from legacy unscoped key on first load
+      final legacyJsonString = prefs.getString(_keyPrefix);
+      prefs.remove(_keyPrefix);
+      if (legacyJsonString != null && legacyJsonString.isNotEmpty) {
+        appLogger.info(
+          'Migrating contacts from legacy key $_keyPrefix to scoped key $keyFor',
+        );
+        await prefs.setString(keyFor, legacyJsonString);
+        jsonString = legacyJsonString;
+      }
+    }
+    if (jsonString == null || jsonString.isEmpty) {
+      jsonString = prefs.getString(keyFor);
+    }
+    if (jsonString == null || jsonString.isEmpty) {
+      return [];
+    }
+
+    final List<dynamic> jsonList;
+    try {
+      jsonList = jsonDecode(jsonString) as List<dynamic>;
+    } catch (e) {
+      appLogger.warn('Stored contacts are unreadable: $e');
+      return [];
+    }
+    final contacts = <Contact>[];
+    for (final entry in jsonList) {
+      try {
+        contacts.add(_fromJson(entry as Map<String, dynamic>));
+      } catch (e) {
+        appLogger.warn('Skipping malformed stored contact: $e');
+      }
+    }
+    return contacts;
+  }
+
+  Future<void> saveContacts(List<Contact> contacts) async {
+    if (publicKeyHex.isEmpty) {
+      appLogger.warn('Public key hex is not set. Cannot save contacts.');
+      return;
+    }
+    final prefs = PrefsManager.instance;
+    final jsonList = contacts.map(_toJson).toList();
+    await prefs.setString(keyFor, jsonEncode(jsonList));
+  }
+
+  Map<String, dynamic> _toJson(Contact contact) {
+    return {
+      'publicKey': base64Encode(contact.publicKey),
+      'name': contact.name,
+      'type': contact.type,
+      'flags': contact.flags,
+      'pathLength': contact.pathLength,
+      'path': base64Encode(contact.path),
+      'pathHashWidth': contact.pathHashWidth,
+      'pathOverride': contact.pathOverride,
+      'pathOverrideBytes': contact.pathOverrideBytes != null
+          ? base64Encode(contact.pathOverrideBytes!)
+          : null,
+      'latitude': contact.latitude,
+      'longitude': contact.longitude,
+      'lastSeen': contact.lastSeen.millisecondsSinceEpoch,
+      'lastModified': contact.lastModified?.millisecondsSinceEpoch,
+      'lastMessageAt': contact.lastMessageAt.millisecondsSinceEpoch,
+      'isActive': contact.isActive,
+      'rawPacket': contact.rawPacket != null
+          ? base64Encode(contact.rawPacket!)
+          : null,
+    };
+  }
+
+  Contact _fromJson(Map<String, dynamic> json) {
+    final lastSeenMs = json['lastSeen'] as int? ?? 0;
+    final lastMessageMs = json['lastMessageAt'] as int?;
+    final lastModifiedMs = json['lastModified'] as int?;
+
+    final rawPathLength = json['pathLength'] as int? ?? -1;
+    final rawPath = json['path'] != null
+        ? Uint8List.fromList(base64Decode(json['path'] as String))
+        : Uint8List(0);
+
+    int decodedPathLength = rawPathLength;
+    Uint8List decodedPath = rawPath;
+    int? decodedPathHashWidth = json['pathHashWidth'] as int?;
+
+    if (rawPathLength == 0xFF || rawPathLength < 0) {
+      decodedPathLength = -1;
+      decodedPath = Uint8List(0);
+    } else if (rawPathLength >= 64) {
+      final mode = (rawPathLength & 0xC0) >> 6;
+      final hopCount = rawPathLength & 0x3F;
+      final width = mode + 1;
+      final byteLen = hopCount * width;
+      decodedPathLength = hopCount;
+      decodedPathHashWidth = width;
+      if (byteLen <= rawPath.length) {
+        decodedPath = rawPath.sublist(0, byteLen);
+      } else {
+        decodedPath = Uint8List(0);
+      }
+    } else if (rawPathLength == 0) {
+      decodedPath = Uint8List(0);
+    }
+
+    return Contact(
+      publicKey: Uint8List.fromList(base64Decode(json['publicKey'] as String)),
+      name: json['name'] as String? ?? 'Unknown',
+      type: json['type'] as int? ?? 0,
+      flags: json['flags'] as int? ?? 0,
+      pathLength: decodedPathLength,
+      path: decodedPath,
+      pathHashWidth:
+          decodedPathHashWidth ??
+          Contact.inferPathHashWidth(decodedPathLength, decodedPath.length),
+      pathOverride: json['pathOverride'] as int?,
+      pathOverrideBytes: json['pathOverrideBytes'] != null
+          ? Uint8List.fromList(
+              base64Decode(json['pathOverrideBytes'] as String),
+            )
+          : null,
+      latitude: (json['latitude'] as num?)?.toDouble(),
+      longitude: (json['longitude'] as num?)?.toDouble(),
+      lastSeen: DateTime.fromMillisecondsSinceEpoch(lastSeenMs),
+      lastModified: lastModifiedMs == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(lastModifiedMs),
+      lastMessageAt: DateTime.fromMillisecondsSinceEpoch(
+        lastMessageMs ?? lastSeenMs,
+      ),
+      isActive: json['isActive'] as bool? ?? true,
+      rawPacket: json['rawPacket'] != null
+          ? Uint8List.fromList(base64Decode(json['rawPacket'] as String))
+          : null,
+    );
+  }
+}

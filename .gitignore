@@ -1,0 +1,7 @@
+firmware/examples/companion_radio/UniFiProvisioning.h
+firmware/.pio/
+app/.dart_tool/
+app/build/
+app/android/build/
+.git-data/
+.DS_Store

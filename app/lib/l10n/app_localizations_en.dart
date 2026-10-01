@@ -1,0 +1,5403 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'MeshCore Open';
+
+  @override
+  String get nav_contacts => 'Contacts';
+
+  @override
+  String get nav_channels => 'Channels';
+
+  @override
+  String get nav_map => 'Map';
+
+  @override
+  String get common_cancel => 'Cancel';
+
+  @override
+  String get common_ok => 'OK';
+
+  @override
+  String get common_connect => 'Connect';
+
+  @override
+  String get common_unknownDevice => 'Unknown Device';
+
+  @override
+  String get common_save => 'Save';
+
+  @override
+  String get common_delete => 'Delete';
+
+  @override
+  String get common_deleteAll => 'Delete All';
+
+  @override
+  String get common_close => 'Close';
+
+  @override
+  String get common_done => 'Done';
+
+  @override
+  String get common_edit => 'Edit';
+
+  @override
+  String get common_add => 'Add';
+
+  @override
+  String get common_settings => 'Settings';
+
+  @override
+  String get common_disconnect => 'Disconnect';
+
+  @override
+  String get common_connected => 'Connected';
+
+  @override
+  String get common_disconnected => 'Disconnected';
+
+  @override
+  String get common_create => 'Create';
+
+  @override
+  String get common_continue => 'Continue';
+
+  @override
+  String get common_share => 'Share';
+
+  @override
+  String get common_copy => 'Copy';
+
+  @override
+  String get common_retry => 'Retry';
+
+  @override
+  String get common_hide => 'Hide';
+
+  @override
+  String get common_remove => 'Remove';
+
+  @override
+  String get common_enable => 'Enable';
+
+  @override
+  String get common_disable => 'Disable';
+
+  @override
+  String get common_undo => 'Undo';
+
+  @override
+  String get messageStatus_sent => 'Sent';
+
+  @override
+  String get messageStatus_delivered =>
+      'Delivered. The contact confirmed they got it.';
+
+  @override
+  String get messageStatus_pending => 'Sending';
+
+  @override
+  String get messageStatus_failed => 'Failed to send';
+
+  @override
+  String get messageStatus_repeated => 'Heard repeated';
+
+  @override
+  String get messageStatus_failedChannel =>
+      'Your radio couldn\'t send this message.';
+
+  @override
+  String messageStatus_resending(int resends, int maxResends) {
+    return 'Not heard through enough repeaters yet. Resent $resends of $maxResends times.';
+  }
+
+  @override
+  String messageStatus_hopsNotReached(int hops, int required) {
+    return 'Sent, but only heard back through $hops of $required repeaters. It may still have gone further than your radio can hear.';
+  }
+
+  @override
+  String get messageStatus_sentChannel =>
+      'Sent. Channels don\'t confirm delivery, so this only means your radio sent it.';
+
+  @override
+  String get messageStatus_sentDirect =>
+      'Sent. Waiting for the contact to confirm.';
+
+  @override
+  String messageStatus_heardRepeatedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times',
+      one: 'once',
+    );
+    return 'Heard repeated $_temp0. Nearby repeaters passed it on.';
+  }
+
+  @override
+  String get urlImage_enable => 'Enable URL images';
+
+  @override
+  String get urlImage_possible => 'Possible URL image; enable it in Settings.';
+
+  @override
+  String get common_reboot => 'Reboot';
+
+  @override
+  String get common_loading => 'Loading...';
+
+  @override
+  String get common_notAvailable => '—';
+
+  @override
+  String common_voltageValue(String volts) {
+    return '$volts V';
+  }
+
+  @override
+  String common_percentValue(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get common_autoRefresh => 'Autorefresh';
+
+  @override
+  String get common_interval => 'Interval';
+
+  @override
+  String get scanner_title => 'MeshCore Open';
+
+  @override
+  String get connectionChoiceUsbLabel => 'USB';
+
+  @override
+  String get connectionChoiceBluetoothLabel => 'Bluetooth';
+
+  @override
+  String get connectionChoiceTcpLabel => 'TCP';
+
+  @override
+  String get tcpScreenTitle => 'Connect over TCP';
+
+  @override
+  String get tcpHostLabel => 'Endpoint';
+
+  @override
+  String get tcpHostHint => '192.168.40.10 / example.com';
+
+  @override
+  String get tcpPortLabel => 'Port';
+
+  @override
+  String get tcpPortHint => '5000';
+
+  @override
+  String get tcpStatus_notConnected => 'Enter endpoint and connect';
+
+  @override
+  String tcpStatus_connectingTo(String endpoint) {
+    return 'Connecting to $endpoint...';
+  }
+
+  @override
+  String get tcpErrorHostRequired => 'Host is required.';
+
+  @override
+  String get tcpErrorPortInvalid => 'Port must be between 1 and 65535.';
+
+  @override
+  String get tcpErrorUnsupported =>
+      'TCP transport is not supported on this platform.';
+
+  @override
+  String get tcpErrorTimedOut => 'TCP connection timed out.';
+
+  @override
+  String tcpConnectionFailed(String error) {
+    return 'TCP connection failed: $error';
+  }
+
+  @override
+  String get usbScreenTitle => 'Connect over USB';
+
+  @override
+  String get usbScreenSubtitle =>
+      'Choose a detected serial device and connect directly to your MeshCore node.';
+
+  @override
+  String get usbScreenStatus => 'Select a USB device';
+
+  @override
+  String get usbScreenNote =>
+      'USB serial is active on supported Android devices and desktop platforms.';
+
+  @override
+  String get usbScreenEmptyState =>
+      'No USB devices found. Plug one in and refresh.';
+
+  @override
+  String get usbErrorPermissionDenied => 'USB permission was denied.';
+
+  @override
+  String get usbErrorDeviceMissing =>
+      'The selected USB device is no longer available.';
+
+  @override
+  String get usbErrorInvalidPort => 'Select a valid USB device.';
+
+  @override
+  String get usbErrorBusy =>
+      'Another USB connection request is already in progress.';
+
+  @override
+  String get usbErrorNotConnected => 'No USB device is connected.';
+
+  @override
+  String get usbErrorOpenFailed => 'Failed to open the selected USB device.';
+
+  @override
+  String get usbErrorConnectFailed =>
+      'Failed to connect to the selected USB device.';
+
+  @override
+  String get usbErrorUnsupported =>
+      'USB serial is not supported on this platform.';
+
+  @override
+  String get usbErrorAlreadyActive => 'A USB connection is already active.';
+
+  @override
+  String get usbErrorNoDeviceSelected => 'No USB device was selected.';
+
+  @override
+  String get usbErrorPortClosed => 'The USB connection is not open.';
+
+  @override
+  String get usbErrorConnectTimedOut =>
+      'Connection timed out. Make sure the device has USB Companion firmware.';
+
+  @override
+  String get usbFallbackDeviceName => 'Web Serial Device';
+
+  @override
+  String get usbStatus_notConnected => 'Select a USB device';
+
+  @override
+  String get usbStatus_connecting => 'Connecting to USB device...';
+
+  @override
+  String get usbStatus_searching => 'Searching for USB devices...';
+
+  @override
+  String usbConnectionFailed(String error) {
+    return 'USB connection failed: $error';
+  }
+
+  @override
+  String get scanner_scanning => 'Scanning for devices...';
+
+  @override
+  String get scanner_connecting => 'Connecting...';
+
+  @override
+  String get scanner_disconnecting => 'Disconnecting...';
+
+  @override
+  String get scanner_notConnected => 'Not connected';
+
+  @override
+  String scanner_connectedTo(String deviceName) {
+    return 'Connected to $deviceName';
+  }
+
+  @override
+  String get scanner_searchingDevices => 'Searching for MeshCore devices...';
+
+  @override
+  String get scanner_tapToScan => 'Tap Scan to find MeshCore devices';
+
+  @override
+  String scanner_connectionFailed(String error) {
+    return 'Connection failed: $error';
+  }
+
+  @override
+  String get scanner_stop => 'Stop';
+
+  @override
+  String get scanner_scan => 'Scan';
+
+  @override
+  String get scanner_bluetoothOff => 'Bluetooth is off';
+
+  @override
+  String get scanner_bluetoothOffMessage =>
+      'Please turn on Bluetooth to scan for devices';
+
+  @override
+  String get scanner_chromeRequired => 'Chrome Browser Required';
+
+  @override
+  String get scanner_chromeRequiredMessage =>
+      'This web application requires Google Chrome or a Chromium-based browser for Bluetooth support.';
+
+  @override
+  String get scanner_enableBluetooth => 'Enable Bluetooth';
+
+  @override
+  String get scanner_bluetoothWebUnsupported =>
+      'Bluetooth isn\'t available in the browser. Connect over USB instead.';
+
+  @override
+  String get device_quickSwitch => 'Quick switch';
+
+  @override
+  String get device_meshcore => 'MeshCore';
+
+  @override
+  String get settings_title => 'Settings';
+
+  @override
+  String get settings_deviceInfo => 'Device Info';
+
+  @override
+  String get settings_appSettings => 'App Settings';
+
+  @override
+  String get settings_appSettingsSubtitle =>
+      'Notifications, messaging, and map preferences';
+
+  @override
+  String get settings_nodeSettings => 'Node Settings';
+
+  @override
+  String get settings_nodeName => 'Node Name';
+
+  @override
+  String get settings_nodeNameNotSet => 'Not set';
+
+  @override
+  String get settings_nodeNameHint => 'Enter node name';
+
+  @override
+  String get settings_nodeNameUpdated => 'Name updated';
+
+  @override
+  String get settings_radioSettings => 'Radio Settings';
+
+  @override
+  String get settings_radioSettingsSubtitle =>
+      'Frequency, power, spreading factor';
+
+  @override
+  String get settings_radioSettingsUpdated => 'Radio settings updated';
+
+  @override
+  String get settings_radioSettingsNotApplied =>
+      'The radio did not apply these settings';
+
+  @override
+  String get settings_regionSettings => 'Regions';
+
+  @override
+  String get settings_regionSettingsSubtitle =>
+      'Limit channel floods to an area';
+
+  @override
+  String get settings_regionEmptyExplanation =>
+      'Regions limit flood messages to repeaters in an area. Fetch them from nearby repeaters or add one by name.';
+
+  @override
+  String get settings_regionFetchFromRepeaters => 'Fetch from repeaters';
+
+  @override
+  String get settings_regionDefault => 'Default region';
+
+  @override
+  String get settings_regionDefaultSubtitle =>
+      'Used by channels without their own region';
+
+  @override
+  String get settings_regionDefaultNone => 'None';
+
+  @override
+  String get settings_regionManagement_screenTitle => 'Region Management';
+
+  @override
+  String get settings_regionNameHint => 'Enter region name';
+
+  @override
+  String get settings_regionAddRegion => 'Add region';
+
+  @override
+  String get settings_regionFetchRegions => 'Fetch regions from repeaters';
+
+  @override
+  String get settings_regionFetchRegionsFail => 'No regions were found';
+
+  @override
+  String get settings_regionFetchRegionsAlreadyExists =>
+      'This region has already been added';
+
+  @override
+  String get settings_regionName => 'Region Name';
+
+  @override
+  String get settings_regionDeleted => 'Region deleted';
+
+  @override
+  String get settings_deleteRegion => 'Delete Region';
+
+  @override
+  String settings_deleteRegionConfirm(String region) {
+    return 'Remove \"$region\" from region list?';
+  }
+
+  @override
+  String get settings_location => 'Location';
+
+  @override
+  String get settings_locationSubtitle => 'GPS coordinates';
+
+  @override
+  String get settings_locationUpdated => 'Location and GPS settings updated';
+
+  @override
+  String get settings_locationBothRequired =>
+      'Enter both latitude and longitude.';
+
+  @override
+  String get settings_locationInvalid => 'Invalid latitude or longitude.';
+
+  @override
+  String get settings_locationGPSEnable => 'GPS Enable';
+
+  @override
+  String get settings_locationGPSEnableSubtitle =>
+      'Enables GPS to automatically update location.';
+
+  @override
+  String get settings_locationIntervalSec => 'Interval for GPS (Seconds)';
+
+  @override
+  String get settings_locationIntervalInvalid =>
+      'Interval must be at least 60 seconds, and less than 86400 seconds.';
+
+  @override
+  String get settings_latitude => 'Latitude';
+
+  @override
+  String get settings_longitude => 'Longitude';
+
+  @override
+  String get settings_contactSettings => 'Contact Settings';
+
+  @override
+  String get settings_contactSettingsSubtitle =>
+      'Settings for how contacts are added.';
+
+  @override
+  String get settings_privacyMode => 'Privacy Mode';
+
+  @override
+  String get settings_privacyModeSubtitle =>
+      'Hide name/location in advertisements';
+
+  @override
+  String get settings_privacyModeToggle =>
+      'Toggle privacy mode to hide your name and location in advertisements.';
+
+  @override
+  String get settings_privacyModeEnabled => 'Privacy mode enabled';
+
+  @override
+  String get settings_privacyModeDisabled => 'Privacy mode disabled';
+
+  @override
+  String get settings_privacy => 'Privacy Settings';
+
+  @override
+  String get settings_privacySubtitle => 'Control what information is shared.';
+
+  @override
+  String get settings_privacySettingsDescription =>
+      'Choose what information your device shares with others.';
+
+  @override
+  String get settings_denyAll => 'Deny all';
+
+  @override
+  String get settings_allowByContact => 'Only contacts I allow';
+
+  @override
+  String get settings_allowAll => 'Allow all';
+
+  @override
+  String get settings_telemetryBaseMode => 'Who can request battery and status';
+
+  @override
+  String get settings_telemetryLocationMode => 'Who can request my location';
+
+  @override
+  String get settings_telemetryEnvironmentMode => 'Who can request sensor data';
+
+  @override
+  String get settings_telemetryPerContactHint =>
+      'To allow a contact, open their chat and choose Contact Settings from the menu.';
+
+  @override
+  String get settings_advertLocation => 'Advert Location';
+
+  @override
+  String get settings_advertLocationSubtitle => 'Include location in advert.';
+
+  @override
+  String get settings_autoZeroHopAdvertOnGpsUpdate =>
+      'Auto Zero-Hop Advert On GPS Update';
+
+  @override
+  String get settings_autoZeroHopAdvertOnGpsUpdateSubtitle =>
+      'App setting: when your GPS position changes, automatically advertise your new location to nearby nodes only (requires Advert Location).';
+
+  @override
+  String get settings_multiAck => 'Multi-ACKs';
+
+  @override
+  String get settings_multiAckSubtitle =>
+      'Send extra ACKs for better delivery; uses more airtime';
+
+  @override
+  String get settings_telemetryModeUpdated => 'Telemetry mode updated';
+
+  @override
+  String get settings_actions => 'Actions';
+
+  @override
+  String get settings_deleteAllPaths => 'Delete All Paths';
+
+  @override
+  String get settings_deleteAllPathsSubtitle =>
+      'Clear all path data from contacts.';
+
+  @override
+  String get settings_sendAdvertisement => 'Send Advertisement';
+
+  @override
+  String get settings_sendAdvertisementSubtitle => 'Broadcast presence now';
+
+  @override
+  String get settings_advertisementSent => 'Advertisement sent';
+
+  @override
+  String get settings_syncTime => 'Sync Time';
+
+  @override
+  String get settings_syncTimeSubtitle => 'Set device clock to phone time';
+
+  @override
+  String get settings_timeSynchronized => 'Time synchronized';
+
+  @override
+  String get settings_refreshContacts => 'Refresh Contacts';
+
+  @override
+  String get settings_refreshContactsSubtitle =>
+      'Reload contact list from device';
+
+  @override
+  String get settings_rebootDevice => 'Reboot Device';
+
+  @override
+  String get settings_rebootDeviceSubtitle => 'Restart the MeshCore device';
+
+  @override
+  String get settings_rebootDeviceConfirm =>
+      'Are you sure you want to reboot the device? You will be disconnected.';
+
+  @override
+  String get settings_debug => 'Debug';
+
+  @override
+  String get settings_companionDebugLog => 'Companion Debug Log';
+
+  @override
+  String get settings_companionDebugLogSubtitle =>
+      'BLE/TCP/USB commands, responses, and raw data';
+
+  @override
+  String get settings_appDebugLog => 'App Debug Log';
+
+  @override
+  String get settings_appDebugLogSubtitle => 'Application debug messages';
+
+  @override
+  String get settings_about => 'About';
+
+  @override
+  String settings_aboutVersion(String version) {
+    return 'MeshCore Open v$version';
+  }
+
+  @override
+  String get settings_aboutLegalese => '2026 MeshCore Open Source Project';
+
+  @override
+  String get settings_aboutDescription =>
+      'An open-source Flutter client for MeshCore LoRa mesh networking devices.';
+
+  @override
+  String get settings_aboutOpenMeteoAttribution =>
+      'LOS elevation data: Open-Meteo (CC BY 4.0)';
+
+  @override
+  String get settings_infoName => 'Name';
+
+  @override
+  String get settings_infoId => 'ID';
+
+  @override
+  String get settings_infoStatus => 'Status';
+
+  @override
+  String get settings_infoBattery => 'Battery';
+
+  @override
+  String get settings_infoPublicKey => 'Public Key';
+
+  @override
+  String get settings_publicKeyCopied => 'Public key copied';
+
+  @override
+  String get settings_infoContactsCount => 'Contacts Count';
+
+  @override
+  String get settings_infoChannelCount => 'Channel Count';
+
+  @override
+  String get settings_infoHardware => 'Hardware';
+
+  @override
+  String get settings_infoFirmware => 'Firmware';
+
+  @override
+  String get settings_presets => 'Presets';
+
+  @override
+  String get settings_presetCustom => 'Custom';
+
+  @override
+  String get settings_radioMatchWarning =>
+      'All nodes you talk to must use the same frequency, bandwidth, SF and CR.';
+
+  @override
+  String get settings_frequency => 'Frequency (MHz)';
+
+  @override
+  String get settings_frequencyHelper => '150.0 - 2500.0';
+
+  @override
+  String get settings_frequencyInvalid => 'Invalid frequency (150-2500 MHz)';
+
+  @override
+  String get settings_bandwidth => 'Bandwidth';
+
+  @override
+  String get settings_spreadingFactor => 'Spreading Factor';
+
+  @override
+  String get settings_codingRate => 'Coding Rate';
+
+  @override
+  String get settings_txPower => 'TX Power (dBm)';
+
+  @override
+  String settings_txPowerRangeHelper(int min, int max) {
+    return '$min to $max dBm';
+  }
+
+  @override
+  String get settings_txPowerInvalid => 'Invalid TX power';
+
+  @override
+  String get settings_clientRepeat => 'Off-Grid Repeat';
+
+  @override
+  String settings_clientRepeatFrequencyNote(String freq) {
+    return 'Frequency set to $freq MHz for off-grid repeat';
+  }
+
+  @override
+  String get settings_clientRepeatSubtitle =>
+      'Allow this device to repeat mesh packets for others';
+
+  @override
+  String get settings_clientRepeatFreqWarning =>
+      'Off-grid repeat requires 433, 869.495, or 918 MHz frequency';
+
+  @override
+  String settings_error(String message) {
+    return 'Error: $message';
+  }
+
+  @override
+  String get appSettings_title => 'App Settings';
+
+  @override
+  String get appSettings_appearance => 'Appearance';
+
+  @override
+  String get appSettings_theme => 'Theme';
+
+  @override
+  String get appSettings_themeSystem => 'System default';
+
+  @override
+  String get appSettings_themeLight => 'Light';
+
+  @override
+  String get appSettings_themeDark => 'Dark';
+
+  @override
+  String get appSettings_language => 'Language';
+
+  @override
+  String get appSettings_languageSystem => 'System default';
+
+  @override
+  String get appSettings_languageEn => 'English';
+
+  @override
+  String get appSettings_languageFr => 'Français';
+
+  @override
+  String get appSettings_languageEs => 'Español';
+
+  @override
+  String get appSettings_languageDe => 'Deutsch';
+
+  @override
+  String get appSettings_languagePl => 'Polski';
+
+  @override
+  String get appSettings_languageSl => 'Slovenščina';
+
+  @override
+  String get appSettings_languagePt => 'Português';
+
+  @override
+  String get appSettings_languageIt => 'Italiano';
+
+  @override
+  String get appSettings_languageZh => '中文';
+
+  @override
+  String get appSettings_languageSv => 'Svenska';
+
+  @override
+  String get appSettings_languageNl => 'Nederlands';
+
+  @override
+  String get appSettings_languageSk => 'Slovenčina';
+
+  @override
+  String get appSettings_languageBg => 'Български';
+
+  @override
+  String get appSettings_languageRu => 'Русский';
+
+  @override
+  String get appSettings_languageUk => 'Українська';
+
+  @override
+  String get repeater_pathHashModeOption0 => '1 byte';
+
+  @override
+  String get repeater_pathHashModeOption1 => '2 bytes';
+
+  @override
+  String get repeater_pathHashModeOption2 => '3 bytes';
+
+  @override
+  String get repeater_pathHashModeOption3 => '4 bytes';
+
+  @override
+  String get settings_pathHashModeHelper =>
+      'Size of each node ID recorded in the path of flood packets this radio sends: 1 byte (256 IDs, up to 64 hops), 2 bytes (65K IDs, up to 32 hops), 3 bytes (16M IDs, up to 21 hops). Larger IDs reduce collisions, but repeaters on firmware older than v1.14 drop packets with 2- or 3-byte IDs.';
+
+  @override
+  String settings_requiresFirmware(String version) {
+    return 'Requires firmware $version or newer';
+  }
+
+  @override
+  String get appSettings_channelMinHops =>
+      'Resend channel messages until they travel far enough';
+
+  @override
+  String get appSettings_channelMinHopsSubtitle =>
+      'If your message isn\'t heard coming back through enough repeaters, send it again. Uses more airtime.';
+
+  @override
+  String appSettings_channelMinHopsCount(int count) {
+    return 'Required hops: $count';
+  }
+
+  @override
+  String appSettings_channelMinHopsRetries(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count times',
+      one: '1 time',
+    );
+    return 'Resend up to $_temp0';
+  }
+
+  @override
+  String get appSettings_enableMessageTracing =>
+      'Show full repeater path in messages';
+
+  @override
+  String get appSettings_enableMessageTracingSubtitle =>
+      'Also show repeat counts and trip times. Long-press a message and choose Path for full details.';
+
+  @override
+  String get appSettings_notifications => 'Notifications';
+
+  @override
+  String get appSettings_enableNotifications => 'Enable Notifications';
+
+  @override
+  String get appSettings_enableNotificationsSubtitle =>
+      'Receive notifications for messages and adverts';
+
+  @override
+  String get appSettings_notificationPermissionDenied =>
+      'Notification permission denied';
+
+  @override
+  String get appSettings_notificationsEnabled => 'Notifications enabled';
+
+  @override
+  String get appSettings_notificationsDisabled => 'Notifications disabled';
+
+  @override
+  String get appSettings_messageNotifications => 'Message Notifications';
+
+  @override
+  String get appSettings_messageNotificationsSubtitle =>
+      'Show notification when receiving new messages';
+
+  @override
+  String get appSettings_batteryOptimization => 'Background Activity';
+
+  @override
+  String get appSettings_batteryOptimizationSubtitle =>
+      'Set MeshCore Open to \"Don\'t optimize\" in battery settings so messages keep arriving in the background';
+
+  @override
+  String get appSettings_channelMessageNotifications =>
+      'Channel Message Notifications';
+
+  @override
+  String get appSettings_channelMessageNotificationsSubtitle =>
+      'Show notification when receiving channel messages';
+
+  @override
+  String get appSettings_advertisementNotifications =>
+      'Advertisement Notifications';
+
+  @override
+  String get appSettings_advertisementNotificationsSubtitle =>
+      'Show notification when new nodes are discovered';
+
+  @override
+  String get appSettings_messaging => 'Messaging';
+
+  @override
+  String get appSettings_clearPathOnMaxRetry => 'Clear Path on Max Retry';
+
+  @override
+  String get appSettings_clearPathOnMaxRetrySubtitle =>
+      'Reset contact path after 5 failed send attempts';
+
+  @override
+  String get appSettings_pathsWillBeCleared =>
+      'Paths will be cleared after 5 failed retries';
+
+  @override
+  String get appSettings_pathsWillNotBeCleared =>
+      'Paths will not be auto-cleared';
+
+  @override
+  String get appSettings_autoRouteRotation => 'Auto Route Rotation';
+
+  @override
+  String get appSettings_autoRouteRotationSubtitle =>
+      'Cycle between best paths and flood mode';
+
+  @override
+  String get appSettings_autoRouteRotationEnabled =>
+      'Auto route rotation enabled';
+
+  @override
+  String get appSettings_autoRouteRotationDisabled =>
+      'Auto route rotation disabled';
+
+  @override
+  String get appSettings_maxRouteWeight => 'Max Route Weight';
+
+  @override
+  String get appSettings_maxRouteWeightSubtitle =>
+      'Maximum weight a path can accumulate from successful deliveries';
+
+  @override
+  String get appSettings_initialRouteWeight => 'Initial Route Weight';
+
+  @override
+  String get appSettings_initialRouteWeightSubtitle =>
+      'Starting weight for newly discovered paths';
+
+  @override
+  String get appSettings_routeWeightSuccessIncrement =>
+      'Success Weight Increment';
+
+  @override
+  String get appSettings_routeWeightSuccessIncrementSubtitle =>
+      'Weight added to a path after successful delivery';
+
+  @override
+  String get appSettings_routeWeightFailureDecrement =>
+      'Failure Weight Decrement';
+
+  @override
+  String get appSettings_routeWeightFailureDecrementSubtitle =>
+      'Weight removed from a path after failed delivery';
+
+  @override
+  String get appSettings_maxMessageRetries => 'Max Message Retries';
+
+  @override
+  String get appSettings_maxMessageRetriesSubtitle =>
+      'Number of retry attempts before marking a message as failed';
+
+  @override
+  String get appSettings_battery => 'Battery';
+
+  @override
+  String get appSettings_batteryChemistry => 'Battery Chemistry';
+
+  @override
+  String appSettings_batteryChemistryPerDevice(String deviceName) {
+    return 'Set per device ($deviceName)';
+  }
+
+  @override
+  String get appSettings_batteryChemistryConnectFirst =>
+      'Connect to a device to choose';
+
+  @override
+  String get appSettings_batteryNmc => '18650 NMC (3.0-4.2V)';
+
+  @override
+  String get appSettings_batteryLifepo4 => 'LiFePO4 (2.6-3.65V)';
+
+  @override
+  String get appSettings_batteryLipo => 'LiPo (3.0-4.2V)';
+
+  @override
+  String get appSettings_batteryLipoHv => 'LiPo HV (3.0-4.35V)';
+
+  @override
+  String get appSettings_mapDisplay => 'Map Display';
+
+  @override
+  String get appSettings_showRepeaters => 'Show Repeaters';
+
+  @override
+  String get appSettings_showRepeatersSubtitle =>
+      'Display repeater nodes on the map';
+
+  @override
+  String get appSettings_showChatNodes => 'Show Chat Nodes';
+
+  @override
+  String get appSettings_showChatNodesSubtitle =>
+      'Display chat nodes on the map';
+
+  @override
+  String get appSettings_showOtherNodes => 'Show Other Nodes';
+
+  @override
+  String get appSettings_showOtherNodesSubtitle =>
+      'Display other node types on the map';
+
+  @override
+  String get appSettings_timeFilter => 'Time Filter';
+
+  @override
+  String get appSettings_timeFilterShowAll => 'Show all nodes';
+
+  @override
+  String appSettings_timeFilterShowLast(int hours) {
+    return 'Show nodes from last $hours hours';
+  }
+
+  @override
+  String get appSettings_mapTimeFilter => 'Map Time Filter';
+
+  @override
+  String get appSettings_showNodesDiscoveredWithin =>
+      'Show nodes discovered within:';
+
+  @override
+  String get appSettings_allTime => 'All time';
+
+  @override
+  String get appSettings_lastHour => 'Last hour';
+
+  @override
+  String get appSettings_last6Hours => 'Last 6 hours';
+
+  @override
+  String get appSettings_last24Hours => 'Last 24 hours';
+
+  @override
+  String get appSettings_lastWeek => 'Last week';
+
+  @override
+  String get appSettings_rasterTileSource => 'Raster Tile Source';
+
+  @override
+  String get appSettings_stadiaEndpoint => 'Stadia Endpoint';
+
+  @override
+  String get appSettings_stadiaApiKey => 'Stadia API Key';
+
+  @override
+  String get appSettings_stadiaApiKeyRequired =>
+      'Required for Stadia Maps usage';
+
+  @override
+  String appSettings_stadiaApiKeyConfigured(String maskedKey) {
+    return 'Configured: $maskedKey';
+  }
+
+  @override
+  String get appSettings_stadiaApiKeyDialogDescription =>
+      'Enter your Stadia Maps API key. This app uses it for raster tile requests.';
+
+  @override
+  String get appSettings_offlineMapCache => 'Offline Map Cache';
+
+  @override
+  String get appSettings_unitsTitle => 'Units';
+
+  @override
+  String get appSettings_unitsMetric => 'Metric (m / km)';
+
+  @override
+  String get appSettings_unitsImperial => 'Imperial (ft / mi)';
+
+  @override
+  String get appSettings_noAreaSelected => 'No area selected';
+
+  @override
+  String appSettings_areaSelectedZoom(int minZoom, int maxZoom) {
+    return 'Area selected (zoom $minZoom-$maxZoom)';
+  }
+
+  @override
+  String get appSettings_debugCard => 'Debug';
+
+  @override
+  String get appSettings_appDebugLogging => 'App Debug Logging';
+
+  @override
+  String get appSettings_appDebugLoggingSubtitle =>
+      'Log app debug messages for troubleshooting';
+
+  @override
+  String get appSettings_appDebugLoggingEnabled => 'App debug logging enabled';
+
+  @override
+  String get appSettings_appDebugLoggingDisabled =>
+      'App debug logging disabled';
+
+  @override
+  String get contacts_title => 'Contacts';
+
+  @override
+  String get contacts_noContacts => 'No contacts yet';
+
+  @override
+  String get contacts_contactsWillAppear =>
+      'Contacts will appear when devices advertise';
+
+  @override
+  String get contacts_unread => 'Unread';
+
+  @override
+  String get contacts_searchContactsNoNumber => 'Search Contacts...';
+
+  @override
+  String contacts_searchContacts(int number, String str) {
+    return 'Search $number$str Contacts...';
+  }
+
+  @override
+  String contacts_searchFavorites(int number, String str) {
+    return 'Search $number$str Favorites...';
+  }
+
+  @override
+  String contacts_searchUsers(int number, String str) {
+    return 'Search $number$str Users...';
+  }
+
+  @override
+  String contacts_searchRepeaters(int number, String str) {
+    return 'Search $number$str Repeaters...';
+  }
+
+  @override
+  String contacts_searchRoomServers(int number, String str) {
+    return 'Search $number$str Room servers...';
+  }
+
+  @override
+  String get contacts_noUnreadContacts => 'No unread contacts';
+
+  @override
+  String get contacts_noContactsFound => 'No contacts or groups found';
+
+  @override
+  String get contacts_storageFull =>
+      'Contact storage on the node is full. New nodes cannot be added until contacts are removed.';
+
+  @override
+  String get contacts_deleteContact => 'Delete Contact';
+
+  @override
+  String contacts_removeConfirm(String contactName) {
+    return 'Remove $contactName from contacts?';
+  }
+
+  @override
+  String get contacts_removeFromContacts => 'Remove from contacts';
+
+  @override
+  String contacts_removeFromContactsConfirm(String contactName) {
+    return '$contactName will move to Discovered contacts. Chat history will be deleted.';
+  }
+
+  @override
+  String get contacts_keepChatHistory => 'Keep chat history';
+
+  @override
+  String get contacts_remove => 'Remove';
+
+  @override
+  String contacts_discoveredNearby(int count) {
+    return 'Discovered nearby ($count)';
+  }
+
+  @override
+  String get contacts_noContactsDiscoveredHint =>
+      'Nodes your radio hears but hasn\'t added yet are listed in Discovered contacts';
+
+  @override
+  String get contacts_manageRepeater => 'Manage Repeater';
+
+  @override
+  String get contacts_manageRoom => 'Manage Room Server';
+
+  @override
+  String get contacts_roomLogin => 'Room Server Login';
+
+  @override
+  String get contacts_openChat => 'Open Chat';
+
+  @override
+  String get contacts_editGroup => 'Edit Group';
+
+  @override
+  String get contacts_deleteGroup => 'Delete Group';
+
+  @override
+  String contacts_deleteGroupConfirm(String groupName) {
+    return 'Remove \"$groupName\"?';
+  }
+
+  @override
+  String get contacts_newGroup => 'New Group';
+
+  @override
+  String get contacts_moreOptions => 'More options';
+
+  @override
+  String get contacts_searchOpen => 'Search contacts';
+
+  @override
+  String get contacts_searchClose => 'Close search';
+
+  @override
+  String get contacts_groupName => 'Group name';
+
+  @override
+  String get contacts_groupNameRequired => 'Group name is required';
+
+  @override
+  String get contacts_groupNameReserved => 'This group name is reserved';
+
+  @override
+  String contacts_groupAlreadyExists(String name) {
+    return 'Group \"$name\" already exists';
+  }
+
+  @override
+  String get contacts_filterContacts => 'Filter contacts...';
+
+  @override
+  String get contacts_noContactsMatchFilter => 'No contacts match your filter';
+
+  @override
+  String get contacts_noMembers => 'No members';
+
+  @override
+  String get contacts_lastSeenNow => 'recently';
+
+  @override
+  String contacts_lastSeenMinsAgo(int minutes) {
+    return '~ $minutes min.';
+  }
+
+  @override
+  String get contacts_lastSeenHourAgo => '~ 1 hour';
+
+  @override
+  String contacts_lastSeenHoursAgo(int hours) {
+    return '~ $hours hours';
+  }
+
+  @override
+  String get contacts_lastSeenDayAgo => '~ 1 day';
+
+  @override
+  String contacts_lastSeenDaysAgo(int days) {
+    return '~ $days days';
+  }
+
+  @override
+  String get contact_info => 'Contact Info';
+
+  @override
+  String get contact_settings => 'Contact Settings';
+
+  @override
+  String get contact_telemetry => 'Telemetry';
+
+  @override
+  String get contact_lastSeen => 'Last seen';
+
+  @override
+  String get contact_clearChat => 'Clear Chat';
+
+  @override
+  String get contact_teleBase => 'Telemetry Base';
+
+  @override
+  String get contact_teleBaseSubtitle =>
+      'Allow sharing battery level and basic telemetry';
+
+  @override
+  String get contact_teleLoc => 'Telemetry Location';
+
+  @override
+  String get contact_teleLocSubtitle => 'Allow sharing location data';
+
+  @override
+  String get contact_teleEnv => 'Telemetry Environment';
+
+  @override
+  String get contact_teleEnvSubtitle => 'Allow sharing environment sensor data';
+
+  @override
+  String get channels_title => 'Channels';
+
+  @override
+  String get channels_noChannelsConfigured => 'No channels configured';
+
+  @override
+  String get channels_addPublicChannel => 'Add Public Channel';
+
+  @override
+  String get channels_searchChannels => 'Search channels...';
+
+  @override
+  String get channels_noChannelsFound => 'No channels found';
+
+  @override
+  String channels_channelIndex(int index) {
+    return 'Channel $index';
+  }
+
+  @override
+  String get channels_public => 'Public';
+
+  @override
+  String channels_via(String path) {
+    return 'via $path';
+  }
+
+  @override
+  String get channels_private => 'Private';
+
+  @override
+  String get channels_hashtag => 'Hashtag';
+
+  @override
+  String get channels_addSectionJoin => 'Join existing';
+
+  @override
+  String get channels_addSectionCreate => 'Create new';
+
+  @override
+  String get channels_dragToReorder => 'Drag to reorder';
+
+  @override
+  String get channels_editChannel => 'Edit channel';
+
+  @override
+  String get channels_muteChannel => 'Mute channel';
+
+  @override
+  String get channels_unmuteChannel => 'Unmute channel';
+
+  @override
+  String get channels_deleteChannel => 'Delete channel';
+
+  @override
+  String channels_deleteChannelConfirm(String name) {
+    return 'Delete \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String channels_channelDeleteFailed(String name) {
+    return 'Failed to delete channel \"$name\"';
+  }
+
+  @override
+  String channels_channelDeleted(String name) {
+    return 'Channel \"$name\" deleted';
+  }
+
+  @override
+  String get channels_addChannel => 'Add Channel';
+
+  @override
+  String get channels_channelIndexLabel => 'Channel Index';
+
+  @override
+  String get channels_channelName => 'Channel Name';
+
+  @override
+  String get channels_usePublicChannel => 'Use Public Channel';
+
+  @override
+  String get channels_standardPublicPsk => 'Standard public PSK';
+
+  @override
+  String get channels_pskHex => 'PSK (Hex)';
+
+  @override
+  String get channels_generateRandomPsk => 'Generate random PSK';
+
+  @override
+  String get channels_enterChannelName => 'Please enter a channel name';
+
+  @override
+  String get channels_pskMustBe32Hex => 'PSK must be 32 hex characters';
+
+  @override
+  String channels_channelAdded(String name) {
+    return 'Channel \"$name\" added';
+  }
+
+  @override
+  String channels_editChannelTitle(int index) {
+    return 'Edit Channel $index';
+  }
+
+  @override
+  String get channels_smazCompression => 'SMAZ compression';
+
+  @override
+  String get channels_cyr2latCompression => 'Cyr2Lat compression';
+
+  @override
+  String get channels_cyr2latCompressionDscr =>
+      'Replaces some Cyrillic characters with Latin characters when sending.';
+
+  @override
+  String get channels_cyr2latSettingsHeading => 'Cyr2Lat Setup';
+
+  @override
+  String get channels_cyr2latSettingsSubheading => 'List of replacements';
+
+  @override
+  String get channels_cyr2latSettingsDscr =>
+      'Edit the JSON configuration of character replacement';
+
+  @override
+  String get channels_cyr2latSettingsDialogHint => 'JSON replacement map';
+
+  @override
+  String channels_cyr2latSettingsDialogWrongJSON(Object error) {
+    return 'Invalid JSON: $error';
+  }
+
+  @override
+  String channels_channelUpdated(String name) {
+    return 'Channel \"$name\" updated';
+  }
+
+  @override
+  String get settings_cyr2latProfileAdd => 'Add Cyr2Lat Profile';
+
+  @override
+  String get settings_cyr2latProfileName => 'Profile Name';
+
+  @override
+  String get settings_cyr2latProfileNameEmpty => 'Profile name cannot be empty';
+
+  @override
+  String get settings_cyr2latProfileAdded => 'Profile added successfully';
+
+  @override
+  String get settings_cyr2latProfileUpdated => 'Profile updated successfully';
+
+  @override
+  String get settings_cyr2latProfileEdit => 'Edit Cyr2Lat Profile';
+
+  @override
+  String get settings_cyr2latProfileDelete => 'Delete Cyr2Lat Profile';
+
+  @override
+  String get settings_cyr2latProfileDeleted => 'Profile deleted successfully';
+
+  @override
+  String settings_cyr2latProfileDeleteDscr(String name) {
+    return 'Are you sure you want to delete the profile \"$name\"?';
+  }
+
+  @override
+  String get channels_publicChannelAdded => 'Public channel added';
+
+  @override
+  String get channels_noFreeSlots => 'All channel slots are in use';
+
+  @override
+  String get channels_sortBy => 'Sort by';
+
+  @override
+  String get channels_sortManual => 'Manual';
+
+  @override
+  String get channels_sortAZ => 'A-Z';
+
+  @override
+  String get channels_sortLatestMessages => 'Latest messages';
+
+  @override
+  String get channels_sortUnread => 'Unread';
+
+  @override
+  String get channels_createPrivateChannel => 'Create a Private Channel';
+
+  @override
+  String get channels_createPrivateChannelDesc => 'Secured with a secret key.';
+
+  @override
+  String get channels_joinPrivateChannel => 'Join a Private Channel';
+
+  @override
+  String get channels_joinPrivateChannelDesc => 'Manually enter a secret key.';
+
+  @override
+  String get channels_joinPublicChannel => 'Join the Public Channel';
+
+  @override
+  String get channels_joinPublicChannelDesc => 'Anyone can join this channel.';
+
+  @override
+  String get channels_joinHashtagChannel => 'Join a Hashtag Channel';
+
+  @override
+  String get channels_joinHashtagChannelDesc =>
+      'Anyone can join hashtag channels.';
+
+  @override
+  String get channels_scanQrCode => 'Scan a QR Code';
+
+  @override
+  String get channels_scanQrCodeComingSoon => 'Coming soon';
+
+  @override
+  String get channels_enterHashtag => 'Enter hashtag';
+
+  @override
+  String get channels_hashtagHint => 'e.g. #team';
+
+  @override
+  String channels_regionSetTo(String region) {
+    return 'Region: $region';
+  }
+
+  @override
+  String get channels_regionNotSet => 'Region: none';
+
+  @override
+  String get channels_regionSelect_Title => 'Select a region';
+
+  @override
+  String get channels_clearRegion => 'Clear region';
+
+  @override
+  String get channels_regionDefaultSuffix => '(default)';
+
+  @override
+  String get channels_regionSelectExplanation =>
+      'Flood messages on this channel will only be forwarded by repeaters in the selected region.';
+
+  @override
+  String get channels_regionEmpty => 'No regions yet.';
+
+  @override
+  String get channels_manageRegions => 'Manage regions';
+
+  @override
+  String get chat_noMessages => 'No messages yet';
+
+  @override
+  String get chat_sendMessage => 'Send message';
+
+  @override
+  String chat_sendMessageTo(String contactName) {
+    return 'Send a message to $contactName';
+  }
+
+  @override
+  String get chat_sendMessageToStart => 'Send a message to get started';
+
+  @override
+  String get chat_originalMessageNotFound => 'Original message not found';
+
+  @override
+  String chat_replyingTo(String name) {
+    return 'Replying to $name';
+  }
+
+  @override
+  String chat_replyTo(String name) {
+    return 'Reply to $name';
+  }
+
+  @override
+  String get chat_location => 'Location';
+
+  @override
+  String get chat_typeMessage => 'Type a message...';
+
+  @override
+  String chat_messageTooLong(int maxBytes) {
+    return 'Message too long (max $maxBytes bytes).';
+  }
+
+  @override
+  String get chat_messageCopied => 'Message copied';
+
+  @override
+  String get chat_messageDeleted => 'Message deleted';
+
+  @override
+  String get chat_retryingMessage => 'Retrying message';
+
+  @override
+  String chat_retryCount(int current, int max) {
+    return 'Retry $current/$max';
+  }
+
+  @override
+  String get chat_selectSendAction => 'Select send action';
+
+  @override
+  String get chat_sendGif => 'Send GIF';
+
+  @override
+  String get chat_removeGif => 'Remove GIF';
+
+  @override
+  String get chat_cancelReply => 'Cancel reply';
+
+  @override
+  String get chat_sendImageLora => 'Send low-res image over radio';
+
+  @override
+  String get chat_imagePickFailed => 'Couldn\'t open that image';
+
+  @override
+  String get chat_receivedGif => 'Received a GIF';
+
+  @override
+  String get chat_reply => 'Reply';
+
+  @override
+  String get chat_addReaction => 'Add Reaction';
+
+  @override
+  String get chat_me => 'Me';
+
+  @override
+  String get reaction_report => 'Emoji Reactions';
+
+  @override
+  String get emojiCategorySmileys => 'Smileys';
+
+  @override
+  String get emojiCategoryGestures => 'Gestures';
+
+  @override
+  String get emojiCategoryHearts => 'Hearts';
+
+  @override
+  String get emojiCategoryObjects => 'Objects';
+
+  @override
+  String get gifPicker_title => 'Choose a GIF';
+
+  @override
+  String get gifPicker_searchHint => 'Search GIFs...';
+
+  @override
+  String get gifPicker_poweredBy => 'Powered by GIPHY';
+
+  @override
+  String get gifPicker_noGifsFound => 'No GIFs found';
+
+  @override
+  String get gifPicker_failedLoad => 'Failed to load GIFs';
+
+  @override
+  String get gifPicker_failedSearch => 'Failed to search GIFs';
+
+  @override
+  String get gifPicker_noInternet => 'No internet connection';
+
+  @override
+  String get debugLog_appTitle => 'App Debug Log';
+
+  @override
+  String get debugLog_bleTitle => 'BLE Debug Log';
+
+  @override
+  String get debugLog_copyLog => 'Copy log';
+
+  @override
+  String get debugLog_clearLog => 'Clear log';
+
+  @override
+  String get debugLog_copied => 'Debug log copied';
+
+  @override
+  String get debugLog_bleCopied => 'BLE log copied';
+
+  @override
+  String get debugLog_noEntries => 'No debug logs yet';
+
+  @override
+  String get debugLog_enableInSettings =>
+      'Enable app debug logging in settings';
+
+  @override
+  String get debugLog_frames => 'Frames';
+
+  @override
+  String get debugLog_rawLogRx => 'Raw Log-RX';
+
+  @override
+  String get debugLog_noBleActivity => 'No BLE activity yet';
+
+  @override
+  String debugFrame_length(int count) {
+    return 'Frame Length: $count bytes';
+  }
+
+  @override
+  String debugFrame_command(String value) {
+    return 'Command: 0x$value';
+  }
+
+  @override
+  String get debugFrame_textMessageHeader => 'Text Message Frame:';
+
+  @override
+  String debugFrame_destinationPubKey(String pubKey) {
+    return '- Destination PubKey: $pubKey';
+  }
+
+  @override
+  String debugFrame_timestamp(int timestamp) {
+    return '- Timestamp: $timestamp';
+  }
+
+  @override
+  String debugFrame_flags(String value) {
+    return '- Flags: 0x$value';
+  }
+
+  @override
+  String debugFrame_textType(int type, String label) {
+    return '- Text Type: $type ($label)';
+  }
+
+  @override
+  String get debugFrame_textTypeCli => 'CLI';
+
+  @override
+  String get debugFrame_textTypePlain => 'Plain';
+
+  @override
+  String debugFrame_text(String text) {
+    return '- Text: \"$text\"';
+  }
+
+  @override
+  String get debugFrame_hexDump => 'Hex Dump:';
+
+  @override
+  String chat_hopsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'hops',
+      one: 'hop',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String get chat_removePath => 'Remove path';
+
+  @override
+  String get chat_noPathHistoryYet =>
+      'No path history yet.\nSend a message to discover paths.';
+
+  @override
+  String get chat_pathCleared =>
+      'Path cleared. Next message will rediscover route.';
+
+  @override
+  String get chat_fullPath => 'Full Path';
+
+  @override
+  String get routing_title => 'Routing';
+
+  @override
+  String get routing_modeAuto => 'Auto';
+
+  @override
+  String get routing_modeFlood => 'Flood';
+
+  @override
+  String get routing_modeManual => 'Manual';
+
+  @override
+  String get routing_modeAutoHint =>
+      'Picks the best known path automatically, flooding when none is known.';
+
+  @override
+  String get routing_modeFloodHint =>
+      'Broadcasts through every repeater. Most reliable, but uses more airtime.';
+
+  @override
+  String get routing_modeManualHint =>
+      'Always sends along the exact path you set.';
+
+  @override
+  String get routing_currentRoute => 'Current route';
+
+  @override
+  String get routing_directNoHops => 'Direct — no repeater hops';
+
+  @override
+  String get routing_noPathYet =>
+      'No path yet. The next message floods until a route is discovered.';
+
+  @override
+  String get routing_floodBroadcast => 'Broadcast through every repeater';
+
+  @override
+  String get routing_editPath => 'Edit path';
+
+  @override
+  String get routing_forgetPath => 'Forget path';
+
+  @override
+  String get routing_knownPaths => 'Known paths';
+
+  @override
+  String get routing_knownPathsHint => 'Tap a path to switch to it.';
+
+  @override
+  String get routing_inUse => 'In use';
+
+  @override
+  String get routing_qualityStrong => 'Strong first hop';
+
+  @override
+  String get routing_qualityGood => 'Good first hop';
+
+  @override
+  String get routing_qualityFair => 'Fair first hop';
+
+  @override
+  String get routing_qualityWorked => 'Has delivered';
+
+  @override
+  String get routing_qualityFlood => 'Heard via flood';
+
+  @override
+  String get routing_qualityUntested => 'Untested';
+
+  @override
+  String routing_lastWorked(String when) {
+    return 'worked $when';
+  }
+
+  @override
+  String get routing_neverWorked => 'never confirmed';
+
+  @override
+  String routing_deliveryCounts(int successes, int failures) {
+    return '$successes delivered, $failures failed';
+  }
+
+  @override
+  String get routing_floodDelivery => 'Flood delivery';
+
+  @override
+  String get pathEditor_title => 'Build Path';
+
+  @override
+  String pathEditor_hopCounter(int count) {
+    return '$count of 64 hops';
+  }
+
+  @override
+  String get pathEditor_noHops =>
+      'No hops yet. Tap repeaters below to add them in order, or save with no hops to send direct.';
+
+  @override
+  String get pathEditor_addHops => 'Add hops in order';
+
+  @override
+  String get pathEditor_searchRepeaters => 'Search repeaters';
+
+  @override
+  String get pathEditor_advancedHex => 'Advanced: raw hex path';
+
+  @override
+  String get pathEditor_hexLabel => 'Hex prefixes';
+
+  @override
+  String get pathEditor_hexHelper =>
+      'Two hex characters per hop, separated by commas';
+
+  @override
+  String pathEditor_invalidTokens(String tokens) {
+    return 'Invalid: $tokens';
+  }
+
+  @override
+  String get pathEditor_tooManyHops => 'Maximum 64 hops';
+
+  @override
+  String get pathEditor_usePath => 'Use this path';
+
+  @override
+  String get pathEditor_removeHop => 'Remove hop';
+
+  @override
+  String get pathEditor_unknownHop => 'Unknown repeater';
+
+  @override
+  String get chat_pathSavedLocally => 'Saved locally. Connect to sync.';
+
+  @override
+  String get chat_pathDeviceConfirmed => 'Device confirmed.';
+
+  @override
+  String get chat_pathDeviceNotConfirmed => 'Device not confirmed yet.';
+
+  @override
+  String get chat_type => 'Type';
+
+  @override
+  String get chat_path => 'Path';
+
+  @override
+  String get chat_viewPathOnMap => 'View path on map';
+
+  @override
+  String get chat_publicKey => 'Public Key';
+
+  @override
+  String get chat_compressOutgoingMessages => 'Compress outgoing messages';
+
+  @override
+  String get chat_floodForced => 'Flood (forced)';
+
+  @override
+  String get chat_directForced => 'Direct (forced)';
+
+  @override
+  String chat_hopsForced(int count) {
+    return '$count hops (forced)';
+  }
+
+  @override
+  String get chat_floodAuto => 'Flood (auto)';
+
+  @override
+  String get chat_direct => 'Direct';
+
+  @override
+  String get chat_poiShared => 'POI Shared';
+
+  @override
+  String chat_unread(int count) {
+    return 'Unread: $count';
+  }
+
+  @override
+  String get chat_markAsUnread => 'Mark as Unread';
+
+  @override
+  String get chat_newMessages => 'New messages';
+
+  @override
+  String get chat_today => 'Today';
+
+  @override
+  String get chat_yesterday => 'Yesterday';
+
+  @override
+  String get chat_openLink => 'Open Link?';
+
+  @override
+  String get chat_openLinkConfirmation =>
+      'Do you want to open this link in your browser?';
+
+  @override
+  String get chat_open => 'Open';
+
+  @override
+  String chat_couldNotOpenLink(String url) {
+    return 'Could not open link: $url';
+  }
+
+  @override
+  String get chat_invalidLink => 'Invalid link format';
+
+  @override
+  String get map_title => 'Node Map';
+
+  @override
+  String get map_searchHint => 'Search node name or ID';
+
+  @override
+  String get map_activity => 'Activity';
+
+  @override
+  String get map_online => 'Online';
+
+  @override
+  String get map_recent => 'Recent';
+
+  @override
+  String get map_stale => 'Stale';
+
+  @override
+  String get map_visible => 'Visible';
+
+  @override
+  String get map_hidden => 'Hidden';
+
+  @override
+  String get map_centerOnNode => 'Center on node';
+
+  @override
+  String get map_centerOnMe => 'Center on my location';
+
+  @override
+  String get map_details => 'Details';
+
+  @override
+  String get map_noGps => 'No GPS';
+
+  @override
+  String get map_noResults => 'No matching nodes';
+
+  @override
+  String get map_lineOfSight => 'Line of Sight';
+
+  @override
+  String get map_losScreenTitle => 'Line of Sight';
+
+  @override
+  String get map_noNodesWithLocation => 'No nodes with location data';
+
+  @override
+  String get map_noNodesLocationHint =>
+      'No nodes with a recent location. Widen the time filter, or set your own location in Settings.';
+
+  @override
+  String get map_nodesNeedGps =>
+      'Nodes need to share their GPS coordinates\nto appear on the map';
+
+  @override
+  String map_nodesCount(int count) {
+    return 'Nodes: $count';
+  }
+
+  @override
+  String map_pinsCount(int count) {
+    return 'Pins: $count';
+  }
+
+  @override
+  String get map_chat => 'Chat';
+
+  @override
+  String get map_repeater => 'Repeater';
+
+  @override
+  String get map_room => 'Room';
+
+  @override
+  String get map_sensor => 'Sensor';
+
+  @override
+  String get map_pinDm => 'Pin (DM)';
+
+  @override
+  String get map_pinPrivate => 'Pin (Private)';
+
+  @override
+  String get map_pinPublic => 'Pin (Public)';
+
+  @override
+  String get map_lastSeen => 'Last Seen';
+
+  @override
+  String get map_disconnectConfirm =>
+      'Are you sure you want to disconnect from this device?';
+
+  @override
+  String get map_from => 'From';
+
+  @override
+  String get map_source => 'Source';
+
+  @override
+  String get map_flags => 'Flags';
+
+  @override
+  String get map_type => 'Type';
+
+  @override
+  String get map_path => 'Path';
+
+  @override
+  String get map_location => 'Location';
+
+  @override
+  String get map_estLocation => 'Est. Location';
+
+  @override
+  String get map_publicKey => 'Public Key';
+
+  @override
+  String get map_publicKeyPrefixHint => 'e.g. ab12';
+
+  @override
+  String get map_shareMarkerHere => 'Share marker here';
+
+  @override
+  String get map_setAsMyLocation => 'Set as my location';
+
+  @override
+  String get map_pinLabel => 'Pin label';
+
+  @override
+  String get map_label => 'Label';
+
+  @override
+  String get map_pointOfInterest => 'Point of interest';
+
+  @override
+  String get map_sendToContact => 'Send to contact';
+
+  @override
+  String get map_sendToChannel => 'Send to channel';
+
+  @override
+  String get map_noChannelsAvailable => 'No channels available';
+
+  @override
+  String get map_publicLocationShare => 'Public location share';
+
+  @override
+  String map_publicLocationShareConfirm(String channelLabel) {
+    return 'You are about to share a location in $channelLabel. This channel is public and anyone with the PSK can see it.';
+  }
+
+  @override
+  String get map_connectToShareMarkers =>
+      'Connect to a device to share markers';
+
+  @override
+  String get map_filterNodes => 'Filter Nodes';
+
+  @override
+  String get map_nodeTypes => 'Node Types';
+
+  @override
+  String get map_chatNodes => 'Chat Nodes';
+
+  @override
+  String get map_repeaters => 'Repeaters';
+
+  @override
+  String get map_otherNodes => 'Other Nodes';
+
+  @override
+  String get map_showOverlaps => 'Repeater Key Overlaps';
+
+  @override
+  String get map_keyPrefix => 'Key Prefix';
+
+  @override
+  String get map_filterByKeyPrefix => 'Filter by key prefix';
+
+  @override
+  String get map_publicKeyPrefix => 'Public key prefix';
+
+  @override
+  String get map_markers => 'Markers';
+
+  @override
+  String get map_showSharedMarkers => 'Show shared markers';
+
+  @override
+  String get map_showGuessedLocations => 'Show guessed node locations';
+
+  @override
+  String get map_clusterNodes => 'Group nearby nodes';
+
+  @override
+  String get map_groupChip => 'Group';
+
+  @override
+  String get map_clusterNodesSubtitle =>
+      'When zoomed out, show nearby nodes as one numbered circle';
+
+  @override
+  String get map_showDiscoveryContacts => 'Show Discovery Contacts';
+
+  @override
+  String get map_guessedLocation => 'Guessed location';
+
+  @override
+  String get map_lastSeenTime => 'Last Seen Time';
+
+  @override
+  String get map_sharedPin => 'Shared pin';
+
+  @override
+  String get map_sharedAt => 'Shared';
+
+  @override
+  String get map_joinRoom => 'Join Room';
+
+  @override
+  String get map_manageRepeater => 'Manage Repeater';
+
+  @override
+  String get map_manageServer => 'Manage Server';
+
+  @override
+  String get map_tapToAdd => 'Tap on nodes to add them to the path.';
+
+  @override
+  String get map_runTrace => 'Run path trace';
+
+  @override
+  String get map_runTraceWithReturnPath => 'Return back on the same path.';
+
+  @override
+  String get map_removeLast => 'Remove Last';
+
+  @override
+  String get map_pathTraceCancelled => 'Path trace cancelled.';
+
+  @override
+  String get mapCache_title => 'Offline Map Cache';
+
+  @override
+  String get mapCache_selectAreaFirst => 'Select an area to cache first';
+
+  @override
+  String get mapCache_noTilesToDownload => 'No tiles to download for this area';
+
+  @override
+  String get mapCache_downloadTilesTitle => 'Download tiles';
+
+  @override
+  String mapCache_downloadTilesPrompt(int count) {
+    return 'Download $count tiles for offline use?';
+  }
+
+  @override
+  String get mapCache_downloadAction => 'Download';
+
+  @override
+  String mapCache_cachedTiles(int count) {
+    return 'Cached $count tiles';
+  }
+
+  @override
+  String mapCache_cachedTilesWithFailed(int downloaded, int failed) {
+    return 'Cached $downloaded tiles ($failed failed)';
+  }
+
+  @override
+  String get mapCache_clearOfflineCacheTitle => 'Clear offline cache';
+
+  @override
+  String get mapCache_clearOfflineCachePrompt => 'Remove all cached map tiles?';
+
+  @override
+  String get mapCache_offlineCacheCleared => 'Offline cache cleared';
+
+  @override
+  String get mapCache_noAreaSelected => 'No area selected';
+
+  @override
+  String get mapCache_cacheArea => 'Cache Area';
+
+  @override
+  String get mapCache_useCurrentView => 'Use Current View';
+
+  @override
+  String get mapCache_zoomRange => 'Zoom Range';
+
+  @override
+  String mapCache_estimatedTiles(int count) {
+    return 'Estimated tiles: $count';
+  }
+
+  @override
+  String mapCache_downloadedTiles(int completed, int total) {
+    return 'Downloaded $completed / $total';
+  }
+
+  @override
+  String get mapCache_downloadTilesButton => 'Download Tiles';
+
+  @override
+  String get mapCache_clearCacheButton => 'Clear Cache';
+
+  @override
+  String mapCache_failedDownloads(int count) {
+    return 'Failed downloads: $count';
+  }
+
+  @override
+  String get mapCache_cachedTilesLabel => 'Cached tiles';
+
+  @override
+  String get mapCache_cachedTileSummaryLabel => 'Cached tile summary';
+
+  @override
+  String mapCache_bulkDownloadDisabledForSource(String source) {
+    return 'Offline bulk downloads are disabled for $source.';
+  }
+
+  @override
+  String mapCache_bulkDownloadDisabledInConfig(String source) {
+    return 'Offline bulk downloads are disabled for $source in this app configuration.';
+  }
+
+  @override
+  String mapCache_summarySource(String source) {
+    return 'Source: $source';
+  }
+
+  @override
+  String mapCache_summaryCachedTilesForSource(int count) {
+    return 'Cached tiles for source: $count';
+  }
+
+  @override
+  String mapCache_summaryCachedInSelection(int count) {
+    return 'Cached in selected area/zoom: $count';
+  }
+
+  @override
+  String mapCache_summaryApproxCacheSize(String size) {
+    return 'Approx cache size: $size';
+  }
+
+  @override
+  String mapCache_boundsLabel(
+    String north,
+    String south,
+    String east,
+    String west,
+  ) {
+    return 'N $north, S $south, E $east, W $west';
+  }
+
+  @override
+  String get time_justNow => 'Just now';
+
+  @override
+  String time_minutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String time_hoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String time_daysAgo(int days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get time_hour => 'hour';
+
+  @override
+  String get time_hours => 'hours';
+
+  @override
+  String get time_day => 'day';
+
+  @override
+  String get time_days => 'days';
+
+  @override
+  String get time_week => 'week';
+
+  @override
+  String get time_weeks => 'weeks';
+
+  @override
+  String get time_month => 'month';
+
+  @override
+  String get time_months => 'months';
+
+  @override
+  String get time_minutes => 'minutes';
+
+  @override
+  String get time_allTime => 'All Time';
+
+  @override
+  String get dialog_disconnect => 'Disconnect';
+
+  @override
+  String get dialog_disconnectConfirm =>
+      'Are you sure you want to disconnect from this device?';
+
+  @override
+  String get login_repeaterLogin => 'Repeater Login';
+
+  @override
+  String get login_roomLogin => 'Room Server Login';
+
+  @override
+  String get login_password => 'Password';
+
+  @override
+  String get login_enterPassword => 'Enter password';
+
+  @override
+  String get login_showPassword => 'Show password';
+
+  @override
+  String get login_hidePassword => 'Hide password';
+
+  @override
+  String get login_savePassword => 'Save password';
+
+  @override
+  String get login_savePasswordSubtitle =>
+      'Password will be stored securely on this device';
+
+  @override
+  String get login_repeaterDescription =>
+      'The admin password unlocks settings and the CLI. A guest password (or blank) shows status only.';
+
+  @override
+  String get login_roomDescription =>
+      'Enter the room password for guest or admin access.';
+
+  @override
+  String get login_advanced => 'Advanced';
+
+  @override
+  String get login_routing => 'Routing';
+
+  @override
+  String get login_routingMode => 'Routing mode';
+
+  @override
+  String get login_autoUseSavedPath => 'Auto (use saved path)';
+
+  @override
+  String get login_forceFloodMode => 'Force Flood Mode';
+
+  @override
+  String get login_managePaths => 'Manage Paths';
+
+  @override
+  String get login_login => 'Login';
+
+  @override
+  String login_attempt(int current, int max) {
+    return 'Attempt $current/$max';
+  }
+
+  @override
+  String login_failed(String error) {
+    return 'Login failed: $error';
+  }
+
+  @override
+  String get login_failedMessage =>
+      'Login failed. Either the password is incorrect or the repeater is unreachable.';
+
+  @override
+  String get common_reload => 'Reload';
+
+  @override
+  String get common_clear => 'Clear';
+
+  @override
+  String get common_clearSearch => 'Clear search';
+
+  @override
+  String get path_currentPathLabel => 'Current path';
+
+  @override
+  String get path_noRepeatersFound => 'No repeaters or room servers found.';
+
+  @override
+  String get repeater_management => 'Repeater Management';
+
+  @override
+  String get room_management => 'Room Server Management';
+
+  @override
+  String get repeater_guest => 'Repeater Information';
+
+  @override
+  String get room_guest => 'Room Server Information';
+
+  @override
+  String get repeater_managementTools => 'Management Tools';
+
+  @override
+  String get repeater_guestTools => 'Guest Tools';
+
+  @override
+  String get repeater_roleAdmin => 'ADMIN';
+
+  @override
+  String get repeater_roleGuest => 'GUEST';
+
+  @override
+  String get repeater_status => 'Status';
+
+  @override
+  String get repeater_statusSubtitle =>
+      'View repeater status, stats, and neighbors';
+
+  @override
+  String get repeater_telemetry => 'Telemetry';
+
+  @override
+  String get repeater_telemetrySubtitle =>
+      'View telemetry of sensors and system stats';
+
+  @override
+  String get repeater_cli => 'CLI';
+
+  @override
+  String get repeater_cliSubtitle => 'Send commands to the repeater';
+
+  @override
+  String get repeater_neighbors => 'Neighbors';
+
+  @override
+  String get repeater_neighborsSubtitle => 'View zero hop neighbors.';
+
+  @override
+  String get repeater_settings => 'Settings';
+
+  @override
+  String get repeater_settingsSubtitle => 'Configure repeater parameters';
+
+  @override
+  String get repeater_clockSyncAfterLogin => 'Clock sync after login';
+
+  @override
+  String get repeater_clockSyncAfterLoginSubtitle =>
+      'Automatically send \"clock sync\" after a successful login';
+
+  @override
+  String get repeater_statusTitle => 'Repeater Status';
+
+  @override
+  String get repeater_routingMode => 'Routing mode';
+
+  @override
+  String get repeater_refresh => 'Refresh';
+
+  @override
+  String get repeater_statusRequestTimeout => 'Status request timed out.';
+
+  @override
+  String repeater_errorLoadingStatus(String error) {
+    return 'Error loading status: $error';
+  }
+
+  @override
+  String get repeater_systemInformation => 'System Information';
+
+  @override
+  String get repeater_battery => 'Battery';
+
+  @override
+  String get repeater_clockAtLogin => 'Clock (at login)';
+
+  @override
+  String get repeater_uptime => 'Uptime';
+
+  @override
+  String get repeater_queueLength => 'Queue Length';
+
+  @override
+  String get repeater_debugFlags => 'Debug Flags';
+
+  @override
+  String get repeater_radioStatistics => 'Radio Statistics';
+
+  @override
+  String get repeater_lastRssi => 'Last RSSI';
+
+  @override
+  String get repeater_lastSnr => 'Last SNR';
+
+  @override
+  String get repeater_noiseFloor => 'Noise Floor';
+
+  @override
+  String get repeater_txAirtime => 'TX Airtime';
+
+  @override
+  String get repeater_rxAirtime => 'RX Airtime';
+
+  @override
+  String get repeater_chanUtil => 'Channel Utilization';
+
+  @override
+  String get repeater_packetStatistics => 'Packet Statistics';
+
+  @override
+  String get repeater_sent => 'Sent';
+
+  @override
+  String get repeater_received => 'Received';
+
+  @override
+  String get repeater_duplicates => 'Duplicates';
+
+  @override
+  String repeater_daysHoursMinsSecs(
+    int days,
+    int hours,
+    int minutes,
+    int seconds,
+  ) {
+    return '$days days ${hours}h ${minutes}m ${seconds}s';
+  }
+
+  @override
+  String repeater_packetTxTotal(int total, String flood, String direct) {
+    return 'Total: $total, Flood: $flood, Direct: $direct';
+  }
+
+  @override
+  String repeater_packetRxTotal(int total, String flood, String direct) {
+    return 'Total: $total, Flood: $flood, Direct: $direct';
+  }
+
+  @override
+  String repeater_duplicatesFloodDirect(String flood, String direct) {
+    return 'Flood: $flood, Direct: $direct';
+  }
+
+  @override
+  String repeater_duplicatesTotal(int total) {
+    return 'Total: $total';
+  }
+
+  @override
+  String get repeater_settingsTitle => 'Repeater Settings';
+
+  @override
+  String get repeater_basicSettings => 'Basic Settings';
+
+  @override
+  String get repeater_repeaterName => 'Repeater Name';
+
+  @override
+  String get repeater_repeaterNameHelper => 'Display name for this repeater';
+
+  @override
+  String get repeater_adminPassword => 'Admin Password';
+
+  @override
+  String get repeater_adminPasswordHelper => 'Full access password';
+
+  @override
+  String get repeater_guestPassword => 'Guest Password';
+
+  @override
+  String get repeater_guestPasswordHelper => 'Read-only access password';
+
+  @override
+  String get repeater_radioSettings => 'Radio Settings';
+
+  @override
+  String get repeater_frequencyMhz => 'Frequency (MHz)';
+
+  @override
+  String get repeater_frequencyHelper => '300-2500 MHz';
+
+  @override
+  String get repeater_txPower => 'TX Power';
+
+  @override
+  String get repeater_txPowerHelper => '1-30 dBm';
+
+  @override
+  String get repeater_bandwidth => 'Bandwidth';
+
+  @override
+  String get repeater_spreadingFactor => 'Spreading Factor';
+
+  @override
+  String get repeater_codingRate => 'Coding Rate';
+
+  @override
+  String get repeater_locationSettings => 'Location Settings';
+
+  @override
+  String get repeater_latitude => 'Latitude';
+
+  @override
+  String get repeater_latitudeHelper => 'Decimal degrees (e.g., 37.7749)';
+
+  @override
+  String get repeater_longitude => 'Longitude';
+
+  @override
+  String get repeater_longitudeHelper => 'Decimal degrees (e.g., -122.4194)';
+
+  @override
+  String get repeater_features => 'Features';
+
+  @override
+  String get repeater_packetForwarding => 'Packet Forwarding';
+
+  @override
+  String get repeater_packetForwardingSubtitle =>
+      'Enable repeater to forward packets';
+
+  @override
+  String get repeater_guestAccess => 'Guest Access';
+
+  @override
+  String get repeater_guestAccessSubtitle => 'Allow read-only guest access';
+
+  @override
+  String get repeater_privacyMode => 'Privacy Mode';
+
+  @override
+  String get repeater_privacyModeSubtitle =>
+      'Hide name/location in advertisements';
+
+  @override
+  String get repeater_advertisementSettings => 'Advertisement Settings';
+
+  @override
+  String get repeater_localAdvertInterval => 'Local Advertisement Interval';
+
+  @override
+  String repeater_localAdvertIntervalMinutes(int minutes) {
+    return '$minutes minutes';
+  }
+
+  @override
+  String get repeater_floodAdvertInterval => 'Flood Advertisement Interval';
+
+  @override
+  String repeater_floodAdvertIntervalHours(int hours) {
+    return '$hours hours';
+  }
+
+  @override
+  String get repeater_encryptedAdvertInterval =>
+      'Encrypted Advertisement Interval';
+
+  @override
+  String get repeater_dangerZone => 'Danger Zone';
+
+  @override
+  String get repeater_rebootRepeater => 'Reboot Repeater';
+
+  @override
+  String get repeater_rebootRepeaterSubtitle => 'Restart the repeater device';
+
+  @override
+  String get repeater_rebootRepeaterConfirm =>
+      'Are you sure you want to reboot this repeater?';
+
+  @override
+  String get repeater_regenerateIdentityKey => 'Regenerate Identity Key';
+
+  @override
+  String get repeater_regenerateIdentityKeySubtitle =>
+      'Generate new public/private key pair';
+
+  @override
+  String get repeater_regenerateIdentityKeyConfirm =>
+      'This will generate a new identity for the repeater. Continue?';
+
+  @override
+  String get repeater_eraseFileSystem => 'Erase File System';
+
+  @override
+  String get repeater_eraseFileSystemSubtitle =>
+      'Format the repeater file system';
+
+  @override
+  String get repeater_eraseFileSystemConfirm =>
+      'WARNING: This will erase all data on the repeater. This cannot be undone!';
+
+  @override
+  String get repeater_eraseSerialOnly =>
+      'Erase is only available over serial console.';
+
+  @override
+  String repeater_commandSent(String command) {
+    return 'Command sent: $command';
+  }
+
+  @override
+  String repeater_errorSendingCommand(String error) {
+    return 'Error sending command: $error';
+  }
+
+  @override
+  String get repeater_confirm => 'Confirm';
+
+  @override
+  String get repeater_settingsSaved => 'Settings saved successfully';
+
+  @override
+  String get repeater_rxGain => 'Boosted RX gain';
+
+  @override
+  String get repeater_rxGainHelper =>
+      'Higher sensitivity, more current draw (SX1262/SX1268 only)';
+
+  @override
+  String get repeater_refreshRxGain => 'Refresh boosted RX gain';
+
+  @override
+  String get repeater_multiAcks => 'Multi-ACKs';
+
+  @override
+  String get repeater_multiAcksSubtitle =>
+      'Acknowledge messages over multiple paths for better delivery';
+
+  @override
+  String get repeater_refreshMultiAcks => 'Refresh multi-ACKs';
+
+  @override
+  String get repeater_networkHealth => 'Network health';
+
+  @override
+  String get repeater_loopDetect => 'Loop detection';
+
+  @override
+  String get repeater_loopDetectHelper =>
+      'Drop flood packets that look like routing loops';
+
+  @override
+  String get repeater_loopDetectOff => 'Off';
+
+  @override
+  String get repeater_loopDetectMinimal => 'Minimal';
+
+  @override
+  String get repeater_loopDetectModerate => 'Moderate';
+
+  @override
+  String get repeater_loopDetectStrict => 'Strict';
+
+  @override
+  String get repeater_dutyCycle => 'Duty cycle';
+
+  @override
+  String get repeater_dutyCycleHelper => 'Maximum percentage of airtime';
+
+  @override
+  String repeater_dutyCyclePercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String get repeater_ownerInfo => 'Operator info';
+
+  @override
+  String get repeater_ownerInfoHelper => 'Public metadata for this repeater';
+
+  @override
+  String get repeater_refreshOwnerInfo => 'Refresh operator info';
+
+  @override
+  String get repeater_floodMax => 'Flood max hops';
+
+  @override
+  String get repeater_floodMaxHelper =>
+      'Maximum hops a flood packet may travel (0-64)';
+
+  @override
+  String get repeater_advancedSettings => 'Advanced';
+
+  @override
+  String get repeater_advancedSettingsSubtitle =>
+      'Tuning knobs for experienced operators';
+
+  @override
+  String get repeater_pathHashMode => 'Node ID size in paths';
+
+  @override
+  String get repeater_pathHashModeHelper =>
+      'Size of this repeater\'s ID in the paths of adverts it sends: 1 byte (256 IDs, up to 64 hops), 2 bytes (65K IDs, up to 32 hops), 3 bytes (16M IDs, up to 21 hops). Does not affect forwarding; v1.14+ repeaters forward all sizes, but older firmware drops packets with 2- or 3-byte IDs.';
+
+  @override
+  String get repeater_keySettings => 'Change Identity Keys';
+
+  @override
+  String get repeater_keySettingsSubtitle =>
+      'Change the public/private keypair';
+
+  @override
+  String get repeater_prvKey => 'Private key';
+
+  @override
+  String get repeater_prvKeyHelper =>
+      'A new private key for the repeater, a 128-character hex string.';
+
+  @override
+  String get repeater_generatePrvKey => 'Generate a random keypair';
+
+  @override
+  String get repeater_stopGeneratingPrvKey => 'Interrupt search for keypair';
+
+  @override
+  String get repeater_pubKey => 'Public key';
+
+  @override
+  String get repeater_pubKeyHelper =>
+      'This is the public key that goes with the generated private key. You can\'t set this directly.';
+
+  @override
+  String get repeater_pubKeyPrefix => 'Desired prefix';
+
+  @override
+  String repeater_pubKeyPrefixHelper(int tries) {
+    return 'Find a public key that starts with these hex digits. Expected tries needed: $tries.';
+  }
+
+  @override
+  String get repeater_txDelay => 'Flood TX delay';
+
+  @override
+  String get repeater_txDelayHelper =>
+      'Retransmit spacing for flood traffic, as a multiplier of the packet\'s airtime (0-2, default 0.5). Higher = fewer collisions but slower delivery.';
+
+  @override
+  String get repeater_directTxDelay => 'Direct TX delay';
+
+  @override
+  String get repeater_directTxDelayHelper =>
+      'Retransmit spacing for direct (non-flood) traffic, as a multiplier of the packet\'s airtime (0-2, default 0.3).';
+
+  @override
+  String get repeater_intThresh => 'Interference threshold';
+
+  @override
+  String get repeater_intThreshHelper =>
+      'Threshold passed to the radio\'s noise-floor calibration so it rejects interference above this level. 0 disables — only raise if you see RX errors in a noisy band.';
+
+  @override
+  String get repeater_agcResetInterval => 'AGC reset interval';
+
+  @override
+  String get repeater_agcResetIntervalHelper =>
+      'How often to reset the radio\'s automatic gain control to recover from a stuck gain state. Seconds, snapped down to a multiple of 4. 0 disables periodic resets.';
+
+  @override
+  String get repeater_actionsTitle => 'Actions';
+
+  @override
+  String get repeater_sendAdvert => 'Send flood advert';
+
+  @override
+  String get repeater_sendAdvertSubtitle =>
+      'Broadcast a flood advert through the network';
+
+  @override
+  String get repeater_sendAdvertZeroHop => 'Send zero-hop advert';
+
+  @override
+  String get repeater_sendAdvertZeroHopSubtitle =>
+      'Broadcast a one-hop advert (no relays)';
+
+  @override
+  String get repeater_clockSync => 'Sync clock now';
+
+  @override
+  String get repeater_clockSyncSubtitle =>
+      'Push your phone\'s time to the repeater';
+
+  @override
+  String repeater_actionSucceeded(String action) {
+    return '$action succeeded';
+  }
+
+  @override
+  String repeater_actionFailed(String action, String error) {
+    return '$action failed: $error';
+  }
+
+  @override
+  String get repeater_settingsSavedRebootNeeded =>
+      'Settings saved — reboot the repeater to apply';
+
+  @override
+  String repeater_settingsPartialFailure(String failures) {
+    return 'Some settings failed: $failures';
+  }
+
+  @override
+  String repeater_errorSavingSettings(String error) {
+    return 'Error saving settings: $error';
+  }
+
+  @override
+  String get repeater_refreshBasicSettings => 'Refresh Basic Settings';
+
+  @override
+  String get repeater_refreshRadioSettings => 'Refresh Radio Settings';
+
+  @override
+  String get repeater_refreshTxPower => 'Refresh TX power';
+
+  @override
+  String get repeater_refreshPacketForwarding => 'Refresh Packet Forwarding';
+
+  @override
+  String get repeater_refreshGuestAccess => 'Refresh Guest Access';
+
+  @override
+  String get repeater_refreshPrivacyMode => 'Refresh Privacy Mode';
+
+  @override
+  String get repeater_refreshAll => 'Refresh all';
+
+  @override
+  String get repeater_settingsNotLoaded =>
+      'Settings haven\'t been loaded from this repeater yet.';
+
+  @override
+  String get repeater_settingsLoadIncomplete =>
+      'Some settings could not be loaded. Use the refresh buttons to retry.';
+
+  @override
+  String repeater_refreshed(String label) {
+    return '$label refreshed';
+  }
+
+  @override
+  String repeater_errorRefreshing(String label) {
+    return 'Error refreshing $label';
+  }
+
+  @override
+  String get repeater_cliTitle => 'Repeater CLI';
+
+  @override
+  String get repeater_debugNextCommand => 'Debug Next Command';
+
+  @override
+  String get repeater_commandHelp => 'Command Help';
+
+  @override
+  String get repeater_clearHistory => 'Clear History';
+
+  @override
+  String get repeater_noCommandsSent => 'No commands sent yet';
+
+  @override
+  String get repeater_typeCommandOrUseQuick =>
+      'Type a command below or use quick commands';
+
+  @override
+  String get repeater_enterCommandHint => 'Enter command...';
+
+  @override
+  String get repeater_previousCommand => 'Previous command';
+
+  @override
+  String get repeater_nextCommand => 'Next command';
+
+  @override
+  String get repeater_enterCommandFirst => 'Enter a command first';
+
+  @override
+  String get repeater_cliCommandFrameTitle => 'CLI Command Frame';
+
+  @override
+  String repeater_cliCommandError(String error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get repeater_cliQuickGetName => 'Get Name';
+
+  @override
+  String get repeater_cliQuickGetRadio => 'Get Radio';
+
+  @override
+  String get repeater_cliQuickGetTx => 'Get TX';
+
+  @override
+  String get repeater_cliQuickNeighbors => 'Neighbors';
+
+  @override
+  String get repeater_cliQuickVersion => 'Version';
+
+  @override
+  String get repeater_cliQuickAdvertise => 'Advertise';
+
+  @override
+  String get repeater_cliQuickClock => 'Clock';
+
+  @override
+  String get repeater_cliQuickClockSync => 'Clock Sync';
+
+  @override
+  String get repeater_cliQuickDiscovery => 'Discover Neighbors';
+
+  @override
+  String get repeater_cliHelpAdvert => 'Sends an advertisement packet';
+
+  @override
+  String get repeater_cliHelpReboot =>
+      'Reboots the device. (note, you\'ll prob get \'Timeout\' which is normal)';
+
+  @override
+  String get repeater_cliHelpClock =>
+      'Displays current time per device\'s clock.';
+
+  @override
+  String get repeater_cliHelpPassword =>
+      'Sets a new admin password for the device.';
+
+  @override
+  String get repeater_cliHelpVersion =>
+      'Shows the device version and firmware build date.';
+
+  @override
+  String get repeater_cliHelpClearStats =>
+      'Resets various stats counters to zero.';
+
+  @override
+  String get repeater_cliHelpSetAf => 'Sets the air-time-factor.';
+
+  @override
+  String get repeater_cliHelpSetTx =>
+      'Sets LoRa transmit power in dBm. (reboot to apply)';
+
+  @override
+  String get repeater_cliHelpSetRepeat =>
+      'Enables or disables the repeater role for this node.';
+
+  @override
+  String get repeater_cliHelpSetAllowReadOnly =>
+      '(Room server) If \'on\', then login in blank password will be allowed, but cannot Post to room. (just read only)';
+
+  @override
+  String get repeater_cliHelpSetFloodMax =>
+      'Sets the maximum number of hops of inbound flood packet (if >= max, packet is not forwarded)';
+
+  @override
+  String get repeater_cliHelpSetIntThresh =>
+      'Sets the Interference Threshold (in DB). Default is 14. Set to 0 to disable channel interference detection.';
+
+  @override
+  String get repeater_cliHelpSetAgcResetInterval =>
+      'Sets the interval to reset the Auto Gain Controller. Set to 0 to disable.';
+
+  @override
+  String get repeater_cliHelpSetMultiAcks =>
+      'Enables or disables the \'double ACKs\' feature.';
+
+  @override
+  String get repeater_cliHelpSetAdvertInterval =>
+      'Sets the timer interval in minutes to send a local (zero-hop) advertisement packet. Set to 0 to disable.';
+
+  @override
+  String get repeater_cliHelpSetFloodAdvertInterval =>
+      'Sets the timer interval in hours to send a flood advertisement packet. Set to 0 to disable.';
+
+  @override
+  String get repeater_cliHelpSetGuestPassword =>
+      'Sets/updates the guest password. (for repeaters, guest logins can send the \"Get Stats\" request)';
+
+  @override
+  String get repeater_cliHelpSetName => 'Sets the advertisement name.';
+
+  @override
+  String get repeater_cliHelpSetLat =>
+      'Sets the advertisement map latitude. (decimal degrees)';
+
+  @override
+  String get repeater_cliHelpSetLon =>
+      'Sets the advertisement map longitude. (decimal degrees)';
+
+  @override
+  String get repeater_cliHelpSetRadio =>
+      'Sets completely new radio params, and saves to preferences. Requires a \"reboot\" command to apply.';
+
+  @override
+  String get repeater_cliHelpSetRxDelay =>
+      'Sets (experimental) base (must be > 1 for effect) for applying slight delay to received packets, based on signal strength/score. Set to 0 to disable.';
+
+  @override
+  String get repeater_cliHelpSetTxDelay =>
+      'Sets a factor multiplied with time-on-air for a flood-mode packet and with a randomized slot system, to delay its forwarding. (to decrease likelihood of collisions)';
+
+  @override
+  String get repeater_cliHelpSetDirectTxDelay =>
+      'Same as txdelay, but for applying a random delay to the forwarding of direct-mode packets.';
+
+  @override
+  String get repeater_cliHelpSetBridgeEnabled => 'Enable/Disable bridge.';
+
+  @override
+  String get repeater_cliHelpSetBridgeDelay =>
+      'Set delay before retransmitting packets.';
+
+  @override
+  String get repeater_cliHelpSetBridgeSource =>
+      'Choose wether the bridge will retransmit received packets or transmitted packets.';
+
+  @override
+  String get repeater_cliHelpSetBridgeBaud =>
+      'Set serial link baudrate for rs232 bridges.';
+
+  @override
+  String get repeater_cliHelpSetBridgeSecret =>
+      'Set bridge secret for espnow bridges.';
+
+  @override
+  String get repeater_cliHelpSetAdcMultiplier =>
+      'Sets custom factor to adjust reported battery voltage (only supported on select boards).';
+
+  @override
+  String get repeater_cliHelpTempRadio =>
+      'Sets temporary radio params for the given number of minutes, reverting to original radio params afterward. (does NOT save to preferences).';
+
+  @override
+  String get repeater_cliHelpSetPerm =>
+      'Modifies the ACL. Removes matching entry (by pubkey prefix) if \"permissions\" is zero. Adds new entry if pubkey-hex is full length and is not currently in ACL. Updates entry by matching pubkey prefix. Permission bits vary per firmware role, but low 2 bits are: 0 (Guest), 1 (Read only), 2 (Read write), 3 (Admin)';
+
+  @override
+  String get repeater_cliHelpGetBridgeType =>
+      'Gets bridge type none, rs232, espnow';
+
+  @override
+  String get repeater_cliHelpLogStart =>
+      'Starts packet logging to file system.';
+
+  @override
+  String get repeater_cliHelpLogStop => 'Stops packet logging to file system.';
+
+  @override
+  String get repeater_cliHelpLogErase =>
+      'Erases the packet logs from file system.';
+
+  @override
+  String get repeater_cliHelpNeighbors =>
+      'Shows a list of other repeater nodes heard via zero-hop adverts. Each line is id-prefix-hex:timestamp:snr-times-4';
+
+  @override
+  String get repeater_cliHelpNeighborRemove =>
+      'Removes first matching entry (by pubkey prefix (hex)), from neighbors list.';
+
+  @override
+  String get repeater_cliHelpRegion =>
+      '(serial only) Lists all defined regions and current flood permissions.';
+
+  @override
+  String get repeater_cliHelpRegionLoad =>
+      'NOTE: this is a special multi-command invocation. Each subsequent command is a region name (indented with spaces to indicate parent hierarchy, with one space at minimum). Terminated by sending a blank line/command.';
+
+  @override
+  String get repeater_cliHelpRegionGet =>
+      'Searches for region with given name prefix (or \"*\" for the global scope). Replies with \"-> region-name (parent-name) \'F\'\"';
+
+  @override
+  String get repeater_cliHelpRegionPut =>
+      'Adds or updates a region definition with given name.';
+
+  @override
+  String get repeater_cliHelpRegionRemove =>
+      'Removes a region definition with given name. (must match exactly, and have no child regions)';
+
+  @override
+  String get repeater_cliHelpRegionAllowf =>
+      'Sets the \'F\'lood permission for the given region. (\'*\' for the global/legacy scope)';
+
+  @override
+  String get repeater_cliHelpRegionDenyf =>
+      'Removes the \'F\'lood permission for the given region. (NOTE: at this stage NOT advised to use this on the global/legacy scope!!)';
+
+  @override
+  String get repeater_cliHelpRegionHome =>
+      'Replies with the current \'home\' region. (Note applied anywhere yet, reserved for future)';
+
+  @override
+  String get repeater_cliHelpRegionHomeSet => 'Sets the \'home\' region.';
+
+  @override
+  String get repeater_cliHelpRegionSave =>
+      'Persists the region list/map to storage.';
+
+  @override
+  String get repeater_cliHelpGps =>
+      'Gives status of gps. When gps is off, it replies only off, if on it replies with on, status, fix, sat count';
+
+  @override
+  String get repeater_cliHelpGpsOnOff => 'Toggles gps power state.';
+
+  @override
+  String get repeater_cliHelpGpsSync => 'Syncs node time with gps clock.';
+
+  @override
+  String get repeater_cliHelpGpsSetLoc =>
+      'Sets node\'s position to gps coordinates and save preferences.';
+
+  @override
+  String get repeater_cliHelpGpsAdvert =>
+      'Gives location advert configuration of the node:\n- none: don\'t include location in adverts\n- share: share gps location (from SensorManager)\n- prefs: advert the location stored in preferences';
+
+  @override
+  String get repeater_cliHelpGpsAdvertSet =>
+      'Sets location advert configuration.';
+
+  @override
+  String get repeater_commandsListTitle => 'Commands List';
+
+  @override
+  String get repeater_commandsListNote =>
+      'NOTE: for the various \"set ...\" commands, there is also a \"get ...\" command.';
+
+  @override
+  String get repeater_frequencyRangeHelper => '150-2500 MHz';
+
+  @override
+  String get repeater_frequencyInvalid => 'Invalid frequency (150-2500 MHz)';
+
+  @override
+  String get repeater_txPowerRangeHelper => '-9 to 30 dBm';
+
+  @override
+  String get repeater_recvErrors => 'Receive Errors';
+
+  @override
+  String get room_postsStored => 'Posts';
+
+  @override
+  String get room_postsPushed => 'Posts Pushed';
+
+  @override
+  String get repeater_cliRegionLoadActive =>
+      'Region load mode: send one region name per line, indented with spaces under its parent (add F after the name to allow flood). Lines get no reply. Send an empty line to finish, then \"region save\" to keep the result.';
+
+  @override
+  String get repeater_cliRegionLoadHint => 'Region line, or empty to finish';
+
+  @override
+  String get repeater_cliRegionLoadEnd => '(end of region load)';
+
+  @override
+  String get repeater_cliHelpRegionDef =>
+      'Defines a chain of regions in one command: each name is added under the previous one; \"name,parent\" adds the name, then continues under the given parent. Replies with the region list.';
+
+  @override
+  String get repeater_cliHelpSetFloodMaxUnscoped =>
+      'Sets the maximum hop count for forwarding flood packets that have no region scope (0-64).';
+
+  @override
+  String get repeater_cliHelpSetFloodMaxAdvert =>
+      'Sets the maximum hop count for forwarding flood adverts (0-64).';
+
+  @override
+  String get repeater_cliHelpGetFloodMaxUnscoped =>
+      'Shows the maximum hop count for unscoped flood packets.';
+
+  @override
+  String get repeater_cliHelpGetFloodMaxAdvert =>
+      'Shows the maximum hop count for flood adverts.';
+
+  @override
+  String get repeater_cliHelpSetRadioFemRxGain =>
+      'Toggles the LoRa front-end module\'s RX gain (LNA). Boards without one reply \"Error: unsupported\".';
+
+  @override
+  String get repeater_cliHelpSetRadioFemTxGain =>
+      'Toggles the LoRa front-end module\'s TX gain (PA). Boards without one reply \"Error: unsupported\".';
+
+  @override
+  String get repeater_cliHelpGetRadioFemRxGain =>
+      'Shows whether the LoRa front-end module\'s RX gain is on.';
+
+  @override
+  String get repeater_cliHelpGetRadioFemTxGain =>
+      'Shows whether the LoRa front-end module\'s TX gain is on.';
+
+  @override
+  String get repeater_bridgeNote =>
+      'Only available on firmware built with a bridge (RS232 or ESP-NOW).';
+
+  @override
+  String get repeater_general => 'General';
+
+  @override
+  String get repeater_settingsCategory => 'Settings';
+
+  @override
+  String get repeater_bridge => 'Bridge';
+
+  @override
+  String get repeater_logging => 'Logging';
+
+  @override
+  String get repeater_neighborsRepeaterOnly => 'Neighbors (Repeater only)';
+
+  @override
+  String get repeater_regionManagementRepeaterOnly =>
+      'Region Management (Repeater only)';
+
+  @override
+  String get repeater_regionNote =>
+      'Region commands have been introduced to manage region definitions and permissions.';
+
+  @override
+  String get repeater_gpsManagement => 'GPS Management';
+
+  @override
+  String get repeater_gpsNote =>
+      'gps command has been introduced to manage location related topics.';
+
+  @override
+  String get repeater_getCategory => 'Get Values';
+
+  @override
+  String get repeater_powerMgmt => 'Power Management';
+
+  @override
+  String get repeater_sensors => 'Sensors';
+
+  @override
+  String get repeater_cliHelpPowerOff =>
+      'Powers the device off. (no response expected)';
+
+  @override
+  String get repeater_cliHelpClkReboot =>
+      'Resets the clock to a known epoch and reboots the device.';
+
+  @override
+  String get repeater_cliHelpAdvertZeroHop =>
+      'Sends a zero-hop advertisement (immediate neighbors only).';
+
+  @override
+  String get repeater_cliHelpStartOta =>
+      'Starts an over-the-air firmware update on supported boards.';
+
+  @override
+  String get repeater_cliHelpTime =>
+      'Sets the device clock to the given Unix epoch seconds. Clock cannot move backwards.';
+
+  @override
+  String get repeater_cliHelpBoard =>
+      'Shows the board manufacturer / hardware identifier.';
+
+  @override
+  String get repeater_cliHelpDiscoverNeighbors =>
+      'Sends a node-discovery request to nearby neighbors. (Repeater only)';
+
+  @override
+  String get repeater_cliHelpPowersaving =>
+      'Shows whether powersaving mode is on or off.';
+
+  @override
+  String get repeater_cliHelpPowersavingOnOff =>
+      'Enables or disables powersaving mode (where supported).';
+
+  @override
+  String get repeater_cliHelpErase =>
+      '(Serial only) Formats the device file system. Wipes all settings and contacts.';
+
+  @override
+  String get repeater_cliHelpSetDutyCycle =>
+      'Sets the maximum allowed transmit duty cycle as a percentage (1-100). Internally adjusts the airtime factor.';
+
+  @override
+  String get repeater_cliHelpSetPrvKey =>
+      'Replaces the device identity private key. Reboot required to apply. Generates a new public key.';
+
+  @override
+  String get repeater_cliHelpSetRadioRxGain =>
+      '(SX126x only) Toggles boosted RX gain for improved sensitivity at higher current draw.';
+
+  @override
+  String get repeater_cliHelpSetOwnerInfo =>
+      'Sets the owner contact info string included in adverts. Use \'|\' for newlines.';
+
+  @override
+  String get repeater_cliHelpSetPathHashMode =>
+      'Sets the node ID size used in this repeater\'s adverts: 0 = 1 byte (up to 64 hops), 1 = 2 bytes (up to 32 hops), 2 = 3 bytes (up to 21 hops). 3 is reserved. Does not affect which sizes are forwarded. Requires firmware v1.14+.';
+
+  @override
+  String get repeater_cliHelpSetLoopDetect =>
+      'Sets the routing loop-detection sensitivity: off, minimal, moderate, or strict.';
+
+  @override
+  String get repeater_cliHelpSetFreq =>
+      '(Serial only) Quickly sets just the frequency. Reboot required. Prefer \"set radio\" for full radio params.';
+
+  @override
+  String get repeater_cliHelpSetBridgeChannel =>
+      '(ESPNow bridge only) Sets the WiFi channel (1-14) used by the bridge.';
+
+  @override
+  String get repeater_cliHelpGetName => 'Shows the configured node name.';
+
+  @override
+  String get repeater_cliHelpGetRole =>
+      'Shows the firmware role (Repeater, Room Server, etc.).';
+
+  @override
+  String get repeater_cliHelpGetPublicKey => 'Shows the device public key.';
+
+  @override
+  String get repeater_cliHelpGetPrvKey =>
+      '(Serial only) Shows the device private key. Treat as a secret.';
+
+  @override
+  String get repeater_cliHelpGetRepeat =>
+      'Shows whether packet forwarding (repeater role) is on or off.';
+
+  @override
+  String get repeater_cliHelpGetTx => 'Shows the current TX power in dBm.';
+
+  @override
+  String get repeater_cliHelpGetFreq =>
+      'Shows the configured radio frequency in MHz.';
+
+  @override
+  String get repeater_cliHelpGetRadio =>
+      'Shows full radio params: freq, bandwidth, spreading factor, coding rate.';
+
+  @override
+  String get repeater_cliHelpGetRadioRxGain =>
+      '(SX126x only) Shows the RX boosted gain state.';
+
+  @override
+  String get repeater_cliHelpGetAf => 'Shows the current airtime factor.';
+
+  @override
+  String get repeater_cliHelpGetDutyCycle =>
+      'Shows the current allowed duty cycle as a percentage.';
+
+  @override
+  String get repeater_cliHelpGetIntThresh =>
+      'Shows the channel interference threshold in dB.';
+
+  @override
+  String get repeater_cliHelpGetAgcResetInterval =>
+      'Shows the AGC reset interval in seconds.';
+
+  @override
+  String get repeater_cliHelpGetMultiAcks =>
+      'Shows whether double-ACK mode is on (1) or off (0).';
+
+  @override
+  String get repeater_cliHelpGetAllowReadOnly =>
+      'Shows whether guest read-only access is allowed.';
+
+  @override
+  String get repeater_cliHelpGetAdvertInterval =>
+      'Shows the local advertisement interval in minutes.';
+
+  @override
+  String get repeater_cliHelpGetFloodAdvertInterval =>
+      'Shows the flood advertisement interval in hours.';
+
+  @override
+  String get repeater_cliHelpGetGuestPassword =>
+      'Shows the configured guest password.';
+
+  @override
+  String get repeater_cliHelpGetLat => 'Shows the configured latitude.';
+
+  @override
+  String get repeater_cliHelpGetLon => 'Shows the configured longitude.';
+
+  @override
+  String get repeater_cliHelpGetRxDelay => 'Shows the rxdelay base value.';
+
+  @override
+  String get repeater_cliHelpGetTxDelay =>
+      'Shows the flood-mode txdelay factor.';
+
+  @override
+  String get repeater_cliHelpGetDirectTxDelay =>
+      'Shows the direct-mode txdelay factor.';
+
+  @override
+  String get repeater_cliHelpGetFloodMax =>
+      'Shows the maximum flood hop count.';
+
+  @override
+  String get repeater_cliHelpGetOwnerInfo =>
+      'Shows the owner contact info string.';
+
+  @override
+  String get repeater_cliHelpGetPathHashMode =>
+      'Shows the node ID size mode used in adverts (0 = 1 byte, 1 = 2 bytes, 2 = 3 bytes).';
+
+  @override
+  String get repeater_cliHelpGetLoopDetect =>
+      'Shows the loop-detection sensitivity.';
+
+  @override
+  String get repeater_cliHelpGetAcl =>
+      '(Serial only) Lists the access-control entries on a repeater.';
+
+  @override
+  String get repeater_cliHelpGetBridgeEnabled =>
+      'Shows whether the bridge is enabled.';
+
+  @override
+  String get repeater_cliHelpGetBridgeDelay => 'Shows the bridge delay in ms.';
+
+  @override
+  String get repeater_cliHelpGetBridgeSource =>
+      'Shows whether the bridge logs RX or TX packets.';
+
+  @override
+  String get repeater_cliHelpGetBridgeBaud =>
+      '(RS232 bridge only) Shows the bridge baud rate.';
+
+  @override
+  String get repeater_cliHelpGetBridgeChannel =>
+      '(ESPNow bridge only) Shows the bridge WiFi channel.';
+
+  @override
+  String get repeater_cliHelpGetBridgeSecret =>
+      '(ESPNow bridge only) Shows the bridge shared secret.';
+
+  @override
+  String get repeater_cliHelpGetBootloaderVer =>
+      '(NRF52 only) Shows the bootloader version.';
+
+  @override
+  String get repeater_cliHelpGetAdcMultiplier =>
+      'Shows the ADC multiplier (battery-voltage scaling).';
+
+  @override
+  String get repeater_cliHelpGetPwrMgtSupport =>
+      'Reports whether the board has power-management support.';
+
+  @override
+  String get repeater_cliHelpGetPwrMgtSource =>
+      'Shows the current power source: external or battery.';
+
+  @override
+  String get repeater_cliHelpGetPwrMgtBootReason =>
+      'Shows the most recent reset and shutdown reasons.';
+
+  @override
+  String get repeater_cliHelpGetPwrMgtBootMv =>
+      'Shows the boot-time battery voltage in mV.';
+
+  @override
+  String get repeater_cliHelpSensorGet =>
+      'Reads a custom sensor setting by key.';
+
+  @override
+  String get repeater_cliHelpSensorSet => 'Writes a custom sensor setting.';
+
+  @override
+  String get repeater_cliHelpSensorList =>
+      'Lists all custom sensor settings, paginated from optional start index.';
+
+  @override
+  String get repeater_cliHelpRegionDefault =>
+      'Shows the current default region scope.';
+
+  @override
+  String get repeater_cliHelpRegionDefaultSet =>
+      'Sets the default region scope. Use \"<null>\" to clear.';
+
+  @override
+  String get repeater_cliHelpRegionListAllowed =>
+      'Lists regions that allow flood traffic.';
+
+  @override
+  String get repeater_cliHelpRegionListDenied =>
+      'Lists regions that deny flood traffic.';
+
+  @override
+  String get repeater_cliHelpStatsPackets =>
+      '(Serial only) Shows packet-level statistics.';
+
+  @override
+  String get repeater_cliHelpStatsRadio =>
+      '(Serial only) Shows radio statistics.';
+
+  @override
+  String get repeater_cliHelpStatsCore =>
+      '(Serial only) Shows core firmware statistics.';
+
+  @override
+  String get telemetry_receivedData => 'Received Telemetry Data';
+
+  @override
+  String get telemetry_requestTimeout => 'Telemetry request timed out.';
+
+  @override
+  String telemetry_errorLoading(String error) {
+    return 'Error loading telemetry: $error';
+  }
+
+  @override
+  String get telemetry_noData => 'No telemetry data available.';
+
+  @override
+  String telemetry_channelTitle(int channel) {
+    return 'Channel $channel';
+  }
+
+  @override
+  String get telemetry_batteryLabel => 'Battery';
+
+  @override
+  String get telemetry_voltageLabel => 'Voltage';
+
+  @override
+  String get telemetry_mcuTemperatureLabel => 'MCU Temperature';
+
+  @override
+  String get telemetry_temperatureLabel => 'Temperature';
+
+  @override
+  String get telemetry_currentLabel => 'Current';
+
+  @override
+  String telemetry_batteryValue(int percent, String volts) {
+    return '$percent% / ${volts}V';
+  }
+
+  @override
+  String telemetry_voltageValue(String volts) {
+    return '${volts}V';
+  }
+
+  @override
+  String telemetry_currentValue(String amps) {
+    return '${amps}A';
+  }
+
+  @override
+  String telemetry_temperatureValue(String celsius, String fahrenheit) {
+    return '$celsius°C / $fahrenheit°F';
+  }
+
+  @override
+  String get telemetry_digitalInputLabel => 'Digital Input';
+
+  @override
+  String get telemetry_digitalOutputLabel => 'Digital Output';
+
+  @override
+  String get telemetry_analogInputLabel => 'Analog Input';
+
+  @override
+  String get telemetry_analogOutputLabel => 'Analog Output';
+
+  @override
+  String get telemetry_genericLabel => 'Generic Sensor';
+
+  @override
+  String get telemetry_luminosityLabel => 'Luminosity';
+
+  @override
+  String get telemetry_presenceLabel => 'Presence';
+
+  @override
+  String get telemetry_humidityLabel => 'Humidity';
+
+  @override
+  String get telemetry_accelerometerLabel => 'Accelerometer';
+
+  @override
+  String get telemetry_pressureLabel => 'Pressure';
+
+  @override
+  String get telemetry_altitudeLabel => 'Altitude';
+
+  @override
+  String get telemetry_frequencyLabel => 'Frequency';
+
+  @override
+  String get telemetry_percentageLabel => 'Percentage';
+
+  @override
+  String get telemetry_concentrationLabel => 'Concentration';
+
+  @override
+  String get telemetry_powerLabel => 'Power';
+
+  @override
+  String get telemetry_distanceLabel => 'Distance';
+
+  @override
+  String get telemetry_energyLabel => 'Energy';
+
+  @override
+  String get telemetry_directionLabel => 'Direction';
+
+  @override
+  String get telemetry_timeLabel => 'Time';
+
+  @override
+  String get telemetry_gyrometerLabel => 'Gyrometer';
+
+  @override
+  String get telemetry_colourLabel => 'Colour';
+
+  @override
+  String get telemetry_gpsLabel => 'GPS';
+
+  @override
+  String get telemetry_switchLabel => 'Switch';
+
+  @override
+  String get telemetry_polylineLabel => 'Polyline';
+
+  @override
+  String telemetry_altitudeValue(String meters) {
+    return '$meters m';
+  }
+
+  @override
+  String telemetry_frequencyValue(String hertz) {
+    return '$hertz Hz';
+  }
+
+  @override
+  String telemetry_pressureValue(String hpa) {
+    return '$hpa hPa';
+  }
+
+  @override
+  String telemetry_luminosityValue(String lux) {
+    return '$lux lx';
+  }
+
+  @override
+  String telemetry_powerValue(String watts) {
+    return '$watts W';
+  }
+
+  @override
+  String telemetry_distanceValue(String meters) {
+    return '$meters m';
+  }
+
+  @override
+  String telemetry_energyValue(String kilowattHours) {
+    return '$kilowattHours kWh';
+  }
+
+  @override
+  String telemetry_directionValue(String degrees) {
+    return '$degrees°';
+  }
+
+  @override
+  String telemetry_concentrationValue(String ppm) {
+    return '$ppm ppm';
+  }
+
+  @override
+  String telemetry_percentageValue(String percent) {
+    return '$percent%';
+  }
+
+  @override
+  String telemetry_analogValue(String value) {
+    return '$value';
+  }
+
+  @override
+  String get telemetry_autoFetchQuantity => 'Requests quantity';
+
+  @override
+  String get telemetry_error => 'Unable to retrieve data';
+
+  @override
+  String get neighbors_receivedData => 'Received Neighbors Data';
+
+  @override
+  String get neighbors_requestTimedOut => 'Neighbors request timed out.';
+
+  @override
+  String neighbors_errorLoading(String error) {
+    return 'Error loading neighbors: $error';
+  }
+
+  @override
+  String get neighbors_repeatersNeighbors => 'Repeaters Neighbors';
+
+  @override
+  String get neighbors_noData => 'No neighbors data available.';
+
+  @override
+  String neighbors_unknownContact(String pubkey) {
+    return 'Unknown $pubkey';
+  }
+
+  @override
+  String neighbors_heardAgo(String time) {
+    return 'Heard: $time ago';
+  }
+
+  @override
+  String get channelPath_title => 'Packet Path';
+
+  @override
+  String get channelPath_viewMap => 'View map';
+
+  @override
+  String get channelPath_otherObservedPaths => 'Other Observed Paths';
+
+  @override
+  String get channelPath_repeaterHops => 'Repeater Hops';
+
+  @override
+  String get channelPath_noHopDetails =>
+      'Hop details are not provided for this packet.';
+
+  @override
+  String get channelPath_messageDetails => 'Message Details';
+
+  @override
+  String get channelPath_senderLabel => 'Sender';
+
+  @override
+  String get channelPath_timeLabel => 'Time';
+
+  @override
+  String get channelPath_repeatsLabel => 'Repeats';
+
+  @override
+  String channelPath_pathLabel(int index) {
+    return 'Path $index';
+  }
+
+  @override
+  String get channelPath_observedLabel => 'Observed';
+
+  @override
+  String channelPath_observedPathTitle(int index, String hops) {
+    return 'Observed path $index • $hops';
+  }
+
+  @override
+  String get channelPath_noLocationData => 'No location data';
+
+  @override
+  String channelPath_timeWithDate(int day, int month, String time) {
+    return '$day/$month $time';
+  }
+
+  @override
+  String channelPath_timeOnly(String time) {
+    return '$time';
+  }
+
+  @override
+  String get channelPath_unknownPath => 'Unknown';
+
+  @override
+  String get channelPath_floodPath => 'Flood';
+
+  @override
+  String get channelPath_directPath => 'Direct';
+
+  @override
+  String channelPath_observedZeroOf(int total) {
+    return '0 of $total hops';
+  }
+
+  @override
+  String channelPath_observedSomeOf(int observed, int total) {
+    return '$observed of $total hops';
+  }
+
+  @override
+  String get channelPath_mapTitle => 'Path Map';
+
+  @override
+  String get channelPath_noRepeaterLocations =>
+      'No repeater locations available for this path.';
+
+  @override
+  String channelPath_primaryPath(int index) {
+    return 'Path $index (Primary)';
+  }
+
+  @override
+  String get channelPath_pathLabelTitle => 'Path';
+
+  @override
+  String get channelPath_observedPathHeader => 'Observed Path';
+
+  @override
+  String channelPath_selectedPathLabel(String label, String prefixes) {
+    return '$label • $prefixes';
+  }
+
+  @override
+  String get channelPath_noHopDetailsAvailable =>
+      'No hop details available for this packet.';
+
+  @override
+  String get channelPath_unknownRepeater => 'Unknown Repeater';
+
+  @override
+  String get community_title => 'Community';
+
+  @override
+  String get community_create => 'Create Community';
+
+  @override
+  String get community_createDesc =>
+      'Create a new community and share via QR code.';
+
+  @override
+  String get community_join => 'Join';
+
+  @override
+  String get community_joinTitle => 'Join Community';
+
+  @override
+  String community_joinConfirmation(String name) {
+    return 'Do you want to join the community \"$name\"?';
+  }
+
+  @override
+  String get community_scanQr => 'Scan Community QR';
+
+  @override
+  String get community_scanInstructions =>
+      'Point the camera at a community QR code';
+
+  @override
+  String get community_showQr => 'Show QR Code';
+
+  @override
+  String get community_publicChannel => 'Community Public';
+
+  @override
+  String get community_hashtagChannel => 'Community Hashtag';
+
+  @override
+  String get community_name => 'Community Name';
+
+  @override
+  String get community_enterName => 'Enter community name';
+
+  @override
+  String community_created(String name) {
+    return 'Community \"$name\" created';
+  }
+
+  @override
+  String community_joined(String name) {
+    return 'Joined community \"$name\"';
+  }
+
+  @override
+  String get community_qrTitle => 'Share Community';
+
+  @override
+  String community_qrInstructions(String name) {
+    return 'Scan this QR code to join \"$name\"';
+  }
+
+  @override
+  String get community_hashtagPrivacyHint =>
+      'Community hashtag channels are only joinable by members of the community';
+
+  @override
+  String get community_invalidQrCode => 'Invalid community QR code';
+
+  @override
+  String get community_alreadyMember => 'Already a Member';
+
+  @override
+  String community_alreadyMemberMessage(String name) {
+    return 'You are already a member of \"$name\".';
+  }
+
+  @override
+  String get community_addPublicChannel => 'Add Community Public Channel';
+
+  @override
+  String get community_addPublicChannelHint =>
+      'Automatically add the public channel for this community';
+
+  @override
+  String get community_noCommunities => 'No communities joined yet';
+
+  @override
+  String get community_scanOrCreate =>
+      'Scan a QR code or create a community to get started';
+
+  @override
+  String get community_manageCommunities => 'Manage Communities';
+
+  @override
+  String get community_delete => 'Leave Community';
+
+  @override
+  String community_deleteConfirm(String name) {
+    return 'Leave \"$name\"?';
+  }
+
+  @override
+  String community_deleteChannelsWarning(int count) {
+    return 'This will also delete $count channel(s) and their messages.';
+  }
+
+  @override
+  String community_deleted(String name) {
+    return 'Left community \"$name\"';
+  }
+
+  @override
+  String get community_regenerateSecret => 'Regenerate Secret';
+
+  @override
+  String community_regenerateSecretConfirm(String name) {
+    return 'Regenerate the secret key for \"$name\"? All members will need to scan the new QR code to continue communicating.';
+  }
+
+  @override
+  String get community_regenerate => 'Regenerate';
+
+  @override
+  String community_secretRegenerated(String name) {
+    return 'Secret regenerated for \"$name\"';
+  }
+
+  @override
+  String get community_updateSecret => 'Update Secret';
+
+  @override
+  String community_secretUpdated(String name) {
+    return 'Secret updated for \"$name\"';
+  }
+
+  @override
+  String community_scanToUpdateSecret(String name) {
+    return 'Scan the new QR code to update the secret for \"$name\"';
+  }
+
+  @override
+  String get community_addHashtagChannel => 'Add Community Hashtag';
+
+  @override
+  String get community_addHashtagChannelDesc =>
+      'Add a hashtag channel for this community';
+
+  @override
+  String get community_selectCommunity => 'Select Community';
+
+  @override
+  String get community_regularHashtag => 'Regular Hashtag';
+
+  @override
+  String get community_regularHashtagDesc => 'Public hashtag (anyone can join)';
+
+  @override
+  String get community_communityHashtag => 'Community Hashtag';
+
+  @override
+  String get community_communityHashtagDesc => 'Private to community members';
+
+  @override
+  String community_forCommunity(String name) {
+    return 'For $name';
+  }
+
+  @override
+  String get listFilter_tooltip => 'Filter and sort';
+
+  @override
+  String get listFilter_sortBy => 'Sort by';
+
+  @override
+  String get listFilter_latestMessages => 'Latest messages';
+
+  @override
+  String get listFilter_heardRecently => 'Heard recently';
+
+  @override
+  String get listFilter_az => 'A-Z';
+
+  @override
+  String get listFilter_filters => 'Filters';
+
+  @override
+  String get listFilter_all => 'All';
+
+  @override
+  String get listFilter_favorites => 'Favorites';
+
+  @override
+  String get listFilter_addToFavorites => 'Add to favorites';
+
+  @override
+  String get listFilter_removeFromFavorites => 'Remove from favorites';
+
+  @override
+  String get listFilter_users => 'Users';
+
+  @override
+  String get listFilter_repeaters => 'Repeaters';
+
+  @override
+  String get listFilter_roomServers => 'Room servers';
+
+  @override
+  String get listFilter_unreadOnly => 'Unread only';
+
+  @override
+  String get listFilter_newGroup => 'New group';
+
+  @override
+  String get pathTrace_you => 'You';
+
+  @override
+  String get pathTrace_failed => 'Path trace failed.';
+
+  @override
+  String get pathTrace_notAvailable => 'Path trace not available.';
+
+  @override
+  String get pathTrace_refreshTooltip => 'Refresh Path Trace.';
+
+  @override
+  String get pathTrace_someHopsNoLocation =>
+      'One or more of the hops is missing a location!';
+
+  @override
+  String get pathTrace_clearTooltip => 'Clear path.';
+
+  @override
+  String get losSelectStartEnd => 'Select start and end nodes for LOS.';
+
+  @override
+  String losRunFailed(String error) {
+    return 'Line-of-sight check failed: $error';
+  }
+
+  @override
+  String get losClearAllPoints => 'Clear all points';
+
+  @override
+  String get losRunToViewElevationProfile =>
+      'Run LOS to view elevation profile';
+
+  @override
+  String get losMenuTitle => 'LOS Menu';
+
+  @override
+  String get losMenuSubtitle => 'Tap nodes or long-press map for custom points';
+
+  @override
+  String get losShowDisplayNodes => 'Show display nodes';
+
+  @override
+  String get losCustomPoints => 'Custom points';
+
+  @override
+  String losCustomPointLabel(int index) {
+    return 'Custom $index';
+  }
+
+  @override
+  String get losPointA => 'Point A';
+
+  @override
+  String get losPointB => 'Point B';
+
+  @override
+  String losAntennaA(String value, String unit) {
+    return 'Antenna A: $value $unit';
+  }
+
+  @override
+  String losAntennaB(String value, String unit) {
+    return 'Antenna B: $value $unit';
+  }
+
+  @override
+  String get losRun => 'Run LOS';
+
+  @override
+  String get losNoElevationData => 'No elevation data';
+
+  @override
+  String losProfileClear(
+    String distance,
+    String distanceUnit,
+    String clearance,
+    String heightUnit,
+  ) {
+    return '$distance $distanceUnit, clear LOS, min clearance $clearance $heightUnit';
+  }
+
+  @override
+  String losProfileBlocked(
+    String distance,
+    String distanceUnit,
+    String obstruction,
+    String heightUnit,
+  ) {
+    return '$distance $distanceUnit, blocked by $obstruction $heightUnit';
+  }
+
+  @override
+  String get losStatusChecking => 'LOS: checking...';
+
+  @override
+  String get losStatusNoData => 'LOS: no data';
+
+  @override
+  String losStatusSummary(int clear, int total, int blocked, int unknown) {
+    return 'LOS: $clear/$total clear, $blocked blocked, $unknown unknown';
+  }
+
+  @override
+  String get losErrorElevationUnavailable =>
+      'Elevation data unavailable for one or more samples.';
+
+  @override
+  String get losErrorInvalidInput =>
+      'Invalid points/elevation data for LOS calculation.';
+
+  @override
+  String get losRenameCustomPoint => 'Rename custom point';
+
+  @override
+  String get losPointName => 'Point name';
+
+  @override
+  String get losShowPanelTooltip => 'Show LOS panel';
+
+  @override
+  String get losHidePanelTooltip => 'Hide LOS panel';
+
+  @override
+  String get losElevationAttribution =>
+      'Elevation data: Open-Meteo (CC BY 4.0)';
+
+  @override
+  String get losLegendRadioHorizon => 'Radio horizon';
+
+  @override
+  String get losLegendLosBeam => 'LOS beam';
+
+  @override
+  String get losLegendTerrain => 'Terrain';
+
+  @override
+  String get losBlockedSpotsTitle => 'Blocked spots';
+
+  @override
+  String get losBlockedSpotsHint =>
+      'Tap a blocked spot to highlight it on the map.';
+
+  @override
+  String losBlockedSpotChip(
+    String distance,
+    String distanceUnit,
+    String obstruction,
+    String heightUnit,
+  ) {
+    return '$distance $distanceUnit • $obstruction $heightUnit';
+  }
+
+  @override
+  String get losSelectedObstructionTitle => 'Selected obstruction';
+
+  @override
+  String losSelectedObstructionDetails(
+    String obstruction,
+    String heightUnit,
+    String distanceFromA,
+    String distanceUnit,
+    String distanceFromB,
+  ) {
+    return 'Blocked by $obstruction $heightUnit, $distanceFromA from A and $distanceFromB from B ($distanceUnit).';
+  }
+
+  @override
+  String get losFrequencyLabel => 'Frequency';
+
+  @override
+  String get losFrequencyInfoTooltip => 'View calculation details';
+
+  @override
+  String get losFrequencyDialogTitle => 'Radio horizon calculation';
+
+  @override
+  String losFrequencyDialogDescription(
+    double baselineK,
+    double baselineFreq,
+    double frequencyMHz,
+    double kFactor,
+  ) {
+    return 'Starting from k=$baselineK at $baselineFreq MHz, the calculation adjusts the k-factor for the current $frequencyMHz MHz band, which defines the curved radio horizon cap.';
+  }
+
+  @override
+  String get contacts_pathTrace => 'Path Trace';
+
+  @override
+  String get contacts_ping => 'Ping';
+
+  @override
+  String get contacts_repeaterPathTrace => 'Path trace to repeater';
+
+  @override
+  String get contacts_repeaterPing => 'Ping repeater';
+
+  @override
+  String get contacts_roomPathTrace => 'Path trace to room server';
+
+  @override
+  String get contacts_roomPing => 'Ping room server';
+
+  @override
+  String get contacts_chatTraceRoute => 'Path trace route';
+
+  @override
+  String contacts_pathTraceTo(String name) {
+    return 'Trace route to $name';
+  }
+
+  @override
+  String get contacts_clipboardEmpty => 'Clipboard is empty.';
+
+  @override
+  String get contacts_invalidAdvertFormat => 'Invalid contact data';
+
+  @override
+  String get contacts_contactImported => 'Contact has been imported.';
+
+  @override
+  String get contacts_contactImportFailed => 'Failed to import contact.';
+
+  @override
+  String get contacts_zeroHopAdvert => 'Zero Hop Advert';
+
+  @override
+  String get contacts_floodAdvert => 'Flood Advert';
+
+  @override
+  String get contacts_copyAdvertToClipboard => 'Copy Advert to Clipboard';
+
+  @override
+  String get contacts_addContactFromClipboard => 'Add Contact from Clipboard';
+
+  @override
+  String get contacts_scanQrCode => 'Scan QR Code';
+
+  @override
+  String get contacts_scanQrInstructions =>
+      'Point the camera at a MeshCore contact QR code';
+
+  @override
+  String get contacts_qrFromGallery => 'Scan QR from Gallery';
+
+  @override
+  String get contacts_noQrCodeFound =>
+      'No QR code found in the selected image.';
+
+  @override
+  String get contacts_qrGalleryFailed => 'Could not open the gallery.';
+
+  @override
+  String get contacts_ShareContact => 'Copy contact to Clipboard';
+
+  @override
+  String get contacts_ShareContactZeroHop => 'Share contact by advert';
+
+  @override
+  String get contacts_zeroHopContactAdvertSent => 'Sent contact by advert.';
+
+  @override
+  String get contacts_zeroHopContactAdvertFailed => 'Failed to send contact.';
+
+  @override
+  String get contacts_contactAdvertCopied => 'Advert copied to Clipboard.';
+
+  @override
+  String get contacts_contactAdvertCopyFailed =>
+      'Copying advert to Clipboard failed.';
+
+  @override
+  String get notification_activityTitle => 'MeshCore Activity';
+
+  @override
+  String notification_messagesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'messages',
+      one: 'message',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String notification_channelMessagesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'channel messages',
+      one: 'channel message',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String notification_newNodesCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'new nodes',
+      one: 'new node',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String notification_newTypeDiscovered(String contactType) {
+    return 'New $contactType discovered';
+  }
+
+  @override
+  String get notification_receivedNewMessage => 'Received new message';
+
+  @override
+  String get notification_actionReply => 'Reply';
+
+  @override
+  String get notification_actionMarkRead => 'Mark as read';
+
+  @override
+  String get notification_actionMuteChannel => 'Mute channel';
+
+  @override
+  String get notification_replyHint => 'Message';
+
+  @override
+  String get notification_you => 'You';
+
+  @override
+  String get notification_replyFailedTitle => 'Reply not sent';
+
+  @override
+  String get notification_replyNotConnected =>
+      'Not connected to a radio. Reconnect in MeshCore Open and send your reply again.';
+
+  @override
+  String get notification_replyTooLong =>
+      'Your reply is too long to send from a notification. Send it from MeshCore Open instead.';
+
+  @override
+  String get notification_replyUnavailable =>
+      'This conversation is no longer on the connected radio.';
+
+  @override
+  String get notification_replySendFailed =>
+      'Your reply may not have been sent. Check in MeshCore Open and try again.';
+
+  @override
+  String get notification_replyAppNotRunning =>
+      'MeshCore Open isn\'t running. Open it and send your reply again.';
+
+  @override
+  String get settings_gpxExportRepeaters =>
+      'Export repeaters / room server to GPX';
+
+  @override
+  String get settings_gpxExportRepeatersSubtitle =>
+      'Exports repeaters / roomserver with a location to GPX file.';
+
+  @override
+  String get settings_gpxExportContacts => 'Export companions to GPX';
+
+  @override
+  String get settings_gpxExportContactsSubtitle =>
+      'Exports companions with a location to GPX file.';
+
+  @override
+  String get settings_gpxExportAll => 'Export all contacts to GPX';
+
+  @override
+  String get settings_gpxExportAllSubtitle =>
+      'Exports all contacts with a location to GPX file.';
+
+  @override
+  String get settings_gpxExportSuccess => 'Successfully exported GPX file.';
+
+  @override
+  String get settings_gpxExportNoContacts => 'No contacts to export.';
+
+  @override
+  String get settings_gpxExportNotAvailable =>
+      'Not supported on your device/OS';
+
+  @override
+  String get settings_gpxExportError => 'There was an error when exporting.';
+
+  @override
+  String get settings_gpxExportRepeatersRoom =>
+      'Repeater & room server locations';
+
+  @override
+  String get settings_gpxExportChat => 'Companion locations';
+
+  @override
+  String get settings_gpxExportAllContacts => 'All contacts locations';
+
+  @override
+  String get settings_gpxExportShareText =>
+      'Map data exported from meshcore-open';
+
+  @override
+  String get settings_gpxExportShareSubject =>
+      'meshcore-open GPX map data export';
+
+  @override
+  String get snrIndicator_nearByRepeaters => 'Nearby Repeaters';
+
+  @override
+  String get snrIndicator_lastSeen => 'Last seen';
+
+  @override
+  String get snrIndicator_nearByRepeatersDescription =>
+      'Repeaters your radio heard directly, most recently heard first.';
+
+  @override
+  String get contactsSettings_title => 'Contacts settings';
+
+  @override
+  String get contactsSettings_autoAddTitle => 'Automatic Discovery';
+
+  @override
+  String get contactsSettings_otherTitle => 'Other contact related settings';
+
+  @override
+  String get contactsSettings_autoAddUsersTitle => 'Auto-add users';
+
+  @override
+  String get contactsSettings_autoAddUsersSubtitle =>
+      'Allow the companion to automatically add discovered users.';
+
+  @override
+  String get contactsSettings_autoAddRepeatersTitle => 'Auto-add repeaters';
+
+  @override
+  String get contactsSettings_autoAddRepeatersSubtitle =>
+      'Allow the companion to automatically add discovered repeaters.';
+
+  @override
+  String get contactsSettings_autoAddRoomServersTitle =>
+      'Auto-add room servers';
+
+  @override
+  String get contactsSettings_autoAddRoomServersSubtitle =>
+      'Allow the companion to automatically add discovered room servers.';
+
+  @override
+  String get contactsSettings_autoAddSensorsTitle => 'Auto-add sensors';
+
+  @override
+  String get contactsSettings_autoAddSensorsSubtitle =>
+      'Allow the companion to automatically add discovered sensors.';
+
+  @override
+  String get contactsSettings_overwriteOldestTitle => 'Overwrite Oldest';
+
+  @override
+  String get contactsSettings_overwriteOldestSubtitle =>
+      'When the contact list is full, the oldest non-favorited contact will be replaced.';
+
+  @override
+  String get discoveredContacts_Title => 'Discovered Contacts';
+
+  @override
+  String get discoveredContacts_noMatching => 'No matching contacts';
+
+  @override
+  String get discoveredContacts_searchHint => 'Search discovered contacts';
+
+  @override
+  String get discoveredContacts_contactAdded => 'Contact added';
+
+  @override
+  String get discoveredContacts_addContact => 'Add Contact';
+
+  @override
+  String get discoveredContacts_copyContact => 'Copy Contact to clipboard';
+
+  @override
+  String get discoveredContacts_deleteContact => 'Delete Discovered Contact';
+
+  @override
+  String get discoveredContacts_deleteContactAll =>
+      'Delete All Discovered Contacts';
+
+  @override
+  String get discoveredContacts_deleteContactAllContent =>
+      'Are you sure you want to delete all discovered contacts?';
+
+  @override
+  String get chat_sendCooldown => 'Please wait a moment before sending again.';
+
+  @override
+  String get appSettings_jumpToOldestUnread => 'Jump to oldest unread';
+
+  @override
+  String get appSettings_jumpToOldestUnreadSubtitle =>
+      'When opening a chat with unread messages, scroll to the first unread instead of the latest.';
+
+  @override
+  String get appSettings_languageHu => 'Hungarian';
+
+  @override
+  String get appSettings_languageJa => 'Japanese';
+
+  @override
+  String get appSettings_languageKo => 'Korean';
+
+  @override
+  String get radioStats_tooltip => 'Radio & mesh stats';
+
+  @override
+  String get radioStats_screenTitle => 'Radio stats';
+
+  @override
+  String get radioStats_sectionSignal => 'Signal';
+
+  @override
+  String get radioStats_sectionAirtime => 'Airtime';
+
+  @override
+  String get radioStats_notConnected =>
+      'Connect to a device to view radio statistics.';
+
+  @override
+  String get radioStats_firmwareTooOld =>
+      'Radio statistics require companion firmware v8 or newer.';
+
+  @override
+  String get radioStats_waiting => 'Waiting for data…';
+
+  @override
+  String radioStats_noiseFloor(int noiseDbm) {
+    return 'Noise floor: $noiseDbm dBm';
+  }
+
+  @override
+  String radioStats_lastRssi(int rssiDbm) {
+    return 'Last RSSI: $rssiDbm dBm';
+  }
+
+  @override
+  String radioStats_lastSnr(String snr) {
+    return 'Last SNR: $snr dB';
+  }
+
+  @override
+  String radioStats_txAir(int seconds) {
+    return 'TX airtime (total): $seconds s';
+  }
+
+  @override
+  String radioStats_rxAir(int seconds) {
+    return 'RX airtime (total): $seconds s';
+  }
+
+  @override
+  String get radioStats_chartCaption =>
+      'Noise floor (dBm) over recent samples.';
+
+  @override
+  String radioStats_stripNoise(int noiseDbm) {
+    return 'Noise floor: $noiseDbm dBm';
+  }
+
+  @override
+  String get radioStats_stripWaiting => 'Fetching radio stats…';
+
+  @override
+  String get radioStats_settingsTile => 'Radio stats';
+
+  @override
+  String get radioStats_settingsSubtitle =>
+      'Noise floor, RSSI, SNR, and airtime';
+
+  @override
+  String get translation_title => 'Translation';
+
+  @override
+  String get imageMessages_enableTitle => 'Enable image messages';
+
+  @override
+  String get imageMessages_enableSubtitle =>
+      'Send images over the mesh. Requires a one-time image model download.';
+
+  @override
+  String get imageMessages_modelSectionTitle => 'Image model';
+
+  @override
+  String get imageMessages_downloadModel => 'Download';
+
+  @override
+  String get imageMessages_cancelDownload => 'Cancel';
+
+  @override
+  String get imageMessages_removeModel => 'Remove model';
+
+  @override
+  String get imageMessages_modelReady => 'Ready';
+
+  @override
+  String get imageMessages_modelNotPublished =>
+      'Not published yet — this build cannot download it.';
+
+  @override
+  String get imageMessages_downloadFailed =>
+      'The image model could not be downloaded.';
+
+  @override
+  String get imageMessages_autoProcessTitle => 'Process images automatically';
+
+  @override
+  String get imageMessages_autoProcessSubtitle =>
+      'Reconstruct every image as soon as it arrives. Uses about 2 GB of memory for a second each time; leave off to reconstruct with a tap instead.';
+
+  @override
+  String get translation_enableTitle => 'Enable translation';
+
+  @override
+  String get translation_enableSubtitle =>
+      'Translate incoming messages and allow pre-send translation.';
+
+  @override
+  String get translation_composerTitle => 'Translate before sending';
+
+  @override
+  String get translation_composerSubtitle =>
+      'Controls the default state of the composer translation icon.';
+
+  @override
+  String get translation_autoIncomingTitle =>
+      'Auto-translate incoming messages';
+
+  @override
+  String get translation_autoIncomingSubtitle =>
+      'Translates Messages for notification and for chat or channel automatically.';
+
+  @override
+  String get translation_translateMessage => 'Translate message';
+
+  @override
+  String get translation_targetLanguage => 'Target language';
+
+  @override
+  String get translation_useAppLanguage => 'Use app language';
+
+  @override
+  String get translation_downloadedModelLabel => 'Downloaded model';
+
+  @override
+  String get translation_presetModelLabel => 'Preset Hugging Face model';
+
+  @override
+  String get translation_manualUrlLabel => 'Manual model URL';
+
+  @override
+  String get translation_downloadModel => 'Download model';
+
+  @override
+  String get translation_downloading => 'Downloading...';
+
+  @override
+  String get translation_working => 'Working...';
+
+  @override
+  String get translation_stop => 'Stop';
+
+  @override
+  String get translation_mergingChunks =>
+      'Merging downloaded chunks into final file...';
+
+  @override
+  String get translation_downloadedModels => 'Downloaded models';
+
+  @override
+  String get translation_deleteModel => 'Delete model';
+
+  @override
+  String get translation_modelDownloaded => 'Translation model downloaded.';
+
+  @override
+  String get translation_downloadStopped => 'Download stopped.';
+
+  @override
+  String translation_downloadFailed(String error) {
+    return 'Download failed: $error';
+  }
+
+  @override
+  String get translation_enterUrlFirst => 'Enter a model URL first.';
+
+  @override
+  String get scanner_linuxPairingShowPin => 'Show PIN';
+
+  @override
+  String get scanner_linuxPairingHidePin => 'Hide PIN';
+
+  @override
+  String get scanner_linuxPairingPinTitle => 'Bluetooth Pairing PIN';
+
+  @override
+  String scanner_linuxPairingPinPrompt(String deviceName) {
+    return 'Enter PIN for $deviceName (leave blank if none).';
+  }
+
+  @override
+  String get translation_messageTranslation => 'Message translation';
+
+  @override
+  String get translation_translateBeforeSending => 'Translate before sending';
+
+  @override
+  String get translation_composerEnabledHint =>
+      'Messages will be translated before send.';
+
+  @override
+  String get translation_composerDisabledHint =>
+      'Send messages in the original typed language.';
+
+  @override
+  String translation_translateTo(String language) {
+    return 'Translate to $language';
+  }
+
+  @override
+  String get translation_translationOptions => 'Translation options';
+
+  @override
+  String get translation_systemLanguage => 'System language';
+
+  @override
+  String get background_serviceTitle => 'MeshCore running';
+
+  @override
+  String get background_serviceText => 'Keeping BLE connected';
+
+  @override
+  String appSettings_translationModelDeleted(String name) {
+    return 'Deleted $name';
+  }
+
+  @override
+  String appSettings_translationModelDeleteFailed(String error) {
+    return 'Failed to delete: $error';
+  }
+
+  @override
+  String channels_channelUpdateFailed(String error) {
+    return 'Failed to update channel: $error';
+  }
+
+  @override
+  String get contact_typeChat => 'Chat';
+
+  @override
+  String get contact_typeRepeater => 'Repeater';
+
+  @override
+  String get contact_typeRoom => 'Room';
+
+  @override
+  String get contact_typeSensor => 'Sensor';
+
+  @override
+  String get contact_typeUnknown => 'Unknown';
+
+  @override
+  String get map_zoomIn => 'Zoom in';
+
+  @override
+  String get map_zoomOut => 'Zoom out';
+
+  @override
+  String get map_centerMap => 'Center map';
+
+  @override
+  String get chrome_bluetoothRequiresChromium =>
+      'Web Bluetooth requires a Chromium browser';
+
+  @override
+  String channels_communityShortId(String id) {
+    return 'ID: $id...';
+  }
+
+  @override
+  String get pathTrace_legendGpsConfirmed => 'GPS confirmed';
+
+  @override
+  String get pathTrace_legendInferred => 'Inferred position';
+
+  @override
+  String get pathMap_viewSingle => 'Single';
+
+  @override
+  String get pathMap_viewCombined => 'Combined';
+
+  @override
+  String get pathMap_play => 'Play';
+
+  @override
+  String get pathMap_pause => 'Pause';
+
+  @override
+  String get pathMap_replay => 'Replay';
+
+  @override
+  String get pathMap_stepBack => 'Previous hop';
+
+  @override
+  String get pathMap_stepForward => 'Next hop';
+
+  @override
+  String get pathMap_animationOn => 'Show packet animation';
+
+  @override
+  String get pathMap_animationOff => 'Hide packet animation';
+
+  @override
+  String pathMap_hopOf(int current, int total) {
+    return 'Hop $current of $total';
+  }
+
+  @override
+  String pathMap_observedPaths(int count) {
+    return 'Observed paths: $count';
+  }
+
+  @override
+  String get pathMap_primary => 'Primary';
+
+  @override
+  String pathMap_alternate(int index) {
+    return 'Alt $index';
+  }
+
+  @override
+  String pathMap_hopCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hops',
+      one: '1 hop',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String pathMap_gpsCount(int confirmed, int total) {
+    return '$confirmed/$total GPS';
+  }
+
+  @override
+  String get pathMap_legendShared => 'Shared segment';
+
+  @override
+  String get pathMap_legendEstimated => 'Estimated segment';
+
+  @override
+  String pathMap_sharedNodeCount(int count) {
+    return 'Used by $count paths';
+  }
+
+  @override
+  String pathMap_partialAnimation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hops have no location — the shown path is partial',
+      one: '1 hop has no location — the shown path is partial',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get pathMap_showAllPaths => 'Show all';
+
+  @override
+  String get pathMap_hidePath => 'Hide path';
+
+  @override
+  String get pathMap_showPath => 'Show path';
+
+  @override
+  String get pathMap_collapsePanel => 'Collapse panel';
+
+  @override
+  String get pathMap_expandPanel => 'Expand panel';
+
+  @override
+  String get pathMap_noLocation => 'No location';
+
+  @override
+  String get pathMap_followPacket => 'Lock view to packet';
+
+  @override
+  String get pathMap_unfollowPacket => 'Unlock view from packet';
+
+  @override
+  String get imageSend_title => 'Send image';
+
+  @override
+  String get imageSend_cropNote =>
+      'Resized to 512 × 512 · aspect ratio not preserved';
+
+  @override
+  String imageSend_lossyNote(int bytes) {
+    return 'Compressed to about $bytes bytes. The receiver\'s model reconstructs it, so details will differ.';
+  }
+
+  @override
+  String get imageSend_viewOriginal => 'Original';
+
+  @override
+  String get imageSend_viewReconstruction => 'What recipients see';
+
+  @override
+  String get imageSend_reconstructionUnavailable =>
+      'This device can\'t preview the reconstruction.';
+
+  @override
+  String get imageSend_modelNotDownloaded =>
+      'The image model isn\'t downloaded yet. Download it in Settings to send images.';
+
+  @override
+  String get imageSend_originalSize => 'Original';
+
+  @override
+  String get imageSend_onAirSize => 'On air';
+
+  @override
+  String get imageSend_quality => 'Quality';
+
+  @override
+  String get imageSend_qualityStandard => 'Standard';
+
+  @override
+  String get imageSend_qualityHigh => 'High';
+
+  @override
+  String get imageSend_packetsLabel => 'Packets';
+
+  @override
+  String get imageSend_airtimeLabel => 'Time on air';
+
+  @override
+  String get imageSend_sizeLabel => 'Payload';
+
+  @override
+  String imageSend_packetsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'packets',
+      one: 'packet',
+    );
+    return '$count $_temp0';
+  }
+
+  @override
+  String imageSend_range(String min, String max) {
+    return '$min–$max';
+  }
+
+  @override
+  String get imageSend_unknownValue => '—';
+
+  @override
+  String get imageSend_radioUnknownTitle => 'Radio settings unknown';
+
+  @override
+  String get imageSend_radioUnknownBody =>
+      'Connect to a device so the time on air can be calculated.';
+
+  @override
+  String get imageSend_longSendTitle => 'Long transmission';
+
+  @override
+  String imageSend_longSendBody(String duration) {
+    return 'This will hold the channel for about $duration.';
+  }
+
+  @override
+  String get imageSend_floodNote =>
+      'Flood routing: every repeater in range retransmits each packet, so the channel stays busy longer than this.';
+
+  @override
+  String get imageSend_parityTitle => 'Add recovery packet';
+
+  @override
+  String get imageSend_paritySubtitle =>
+      'One extra packet. Group messages are not acknowledged, so this lets the receiver rebuild the image if a single packet is lost.';
+
+  @override
+  String get imageSend_send => 'Send';
+
+  @override
+  String get imageSend_cancel => 'Cancel';
+
+  @override
+  String get imageSend_encodeFailed => 'This image could not be encoded.';
+
+  @override
+  String get imageSend_codecDownloading =>
+      'The image model is still downloading.';
+
+  @override
+  String get imageSend_codecUnavailable =>
+      'Image sending is not available on this device.';
+
+  @override
+  String get imageSend_codecDisabled =>
+      'Image messages are turned off in settings.';
+
+  @override
+  String get imageSend_deviceUnsupported =>
+      'This radio cannot send image packets. Connect a device running companion firmware 13 or newer.';
+
+  @override
+  String get imageSend_directMessagesUnsupported =>
+      'Images travel as group data, so they can only be sent to a channel — not in a direct message.';
+
+  @override
+  String get imageSend_tooLarge =>
+      'That image encoded to more packets than the mesh format allows.';
+
+  @override
+  String imageSend_sentConfirmation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'packets',
+      one: 'packet',
+    );
+    return 'Image sent as $count $_temp0.';
+  }
+
+  @override
+  String imageSend_sendFailed(String error) {
+    return 'The image could not be sent: $error';
+  }
+
+  @override
+  String imageSend_sendingProgress(int sent, int total) {
+    return 'Sending image — packet $sent of $total';
+  }
+
+  @override
+  String receivedImage_senderPrefix(String prefix) {
+    return 'Node $prefix';
+  }
+
+  @override
+  String receivedImage_incoming(int received, int total) {
+    return '$received of $total packets';
+  }
+
+  @override
+  String get receivedImage_queued => 'Waiting to decode';
+
+  @override
+  String get receivedImage_tapToDecode => 'Tap to decode';
+
+  @override
+  String get receivedImage_decoding => 'Reconstructing… about 1 s';
+
+  @override
+  String receivedImage_incomplete(int received, int total) {
+    return 'Image incomplete — $received of $total packets arrived';
+  }
+
+  @override
+  String get receivedImage_corrupt => 'Image could not be reconstructed';
+
+  @override
+  String get receivedImage_decoderMissing =>
+      'Image received — image decoding is off';
+
+  @override
+  String get receivedImage_evicted => 'Image no longer stored';
+
+  @override
+  String get receivedImage_retry => 'Try again';
+
+  @override
+  String get receivedImage_decodeAgain => 'Decode again';
+
+  @override
+  String get receivedImage_openSettings => 'Set up';
+
+  @override
+  String get receivedImage_tapToProcess => 'Tap to process';
+
+  @override
+  String get receivedImage_save => 'Save image';
+
+  @override
+  String receivedImage_shareCaption(int bytes) {
+    return 'AI-reconstructed from $bytes bytes; fine detail is generated, not transmitted.';
+  }
+
+  @override
+  String get receivedImage_packetInfo => 'Packet info';
+
+  @override
+  String get receivedImage_parityRecovered =>
+      'One packet was rebuilt from the recovery packet.';
+
+  @override
+  String receivedImage_decodeTime(int ms) {
+    return 'Reconstructed in $ms ms';
+  }
+
+  @override
+  String get receivedImage_saveFailed => 'Couldn\'t save the image';
+
+  @override
+  String receivedImage_awaiting(int bytes, int packets) {
+    String _temp0 = intl.Intl.pluralLogic(
+      packets,
+      locale: localeName,
+      other: 'packets',
+      one: 'packet',
+    );
+    return '$bytes bytes · $packets $_temp0';
+  }
+
+  @override
+  String imageSend_secondsValue(String seconds) {
+    return '$seconds s';
+  }
+
+  @override
+  String imageSend_minutesSecondsValue(String minutes, String seconds) {
+    return '$minutes m $seconds s';
+  }
+
+  @override
+  String chat_longMessageRetryNote(int count) {
+    return 'Over 158 bytes: sent at most $count times';
+  }
+}
