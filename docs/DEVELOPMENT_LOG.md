@@ -4,6 +4,15 @@ This append-only log records meaningful implementation work, verification, and
 known gaps. Architecture choices belong in `docs/decisions/`; release-facing
 changes should also appear in the eventual changelog.
 
+## 2026-10-01 — Repository synchronization
+
+- Fetched the existing `MESH-USF/Uni-Fi` repository history over the
+  authenticated HTTPS remote.
+- Integrated its initial README and MIT license history without rewriting the
+  remote branch; the README retains the complete Uni-Fi implementation notes.
+- Kept `main` untouched and prepared the integrated history on
+  `feat/unifi-initial-import` for review.
+
 ## 2026-09-28 — Initial Uni-Fi product slice
 
 ### Repository and scope
