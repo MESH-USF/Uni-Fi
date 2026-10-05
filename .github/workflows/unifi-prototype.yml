@@ -28,5 +28,7 @@ jobs:
       - run: pio test -d firmware -e native
       # No deployment keys or provisioned binaries are published by CI.
       - run: pio run -d firmware -e Heltec_v3_unifi_companion_ble_us
+        env:
+          PLATFORMIO_BUILD_DIR: /tmp/unifi-unprovisioned-build
       - run: python3 scripts/provision-unifi.py
       - run: pio run -d firmware -e Heltec_v3_unifi_companion_ble_us -t mergebin
