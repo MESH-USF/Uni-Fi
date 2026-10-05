@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Uni-Fi · MeshUSF</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./"><span class="brand-mark" aria-hidden="true">U</span><span>Uni-Fi <small>by MeshUSF</small></span></a><span class="badge">HARDWARE PROTOTYPE</span></header>
+  <main>
+    <section class="intro"><p class="eyebrow">A connection when it counts</p><h1>Your mesh. Within reach.</h1><p>Connect a Heltec V3 to send short messages and confirm that another device received your call for help.</p></section>
+    <section class="panel connect-panel" aria-labelledby="connection-title">
+      <div class="section-heading"><h2 id="connection-title">Device connection</h2><span id="connection-state" class="status"><i></i>Disconnected</span></div>
+      <p id="support" class="muted">Chrome or Edge desktop · HTTPS or localhost · Bluetooth pairing PIN appears on the device.</p>
+      <div class="connection-actions"><button id="connect-ble" class="primary">Connect Bluetooth</button><button id="connect-usb">Connect USB <span class="button-note">test path</span></button><button id="disconnect" disabled>Disconnect</button></div>
+      <p id="notice" class="notice" role="status" aria-live="polite">Connect a provisioned Uni-Fi device to begin. No messages are sent until you choose an action.</p>
+      <div id="device-details" hidden>
+        <div class="device-grid"><div><span class="label">Device identity</span><strong id="device-name"></strong><code id="node-id"></code></div><div><span class="label">Locked radio profile</span><strong id="radio"></strong><span id="firmware-version" class="muted"></span></div><div><span class="label">Network</span><strong>Uni-Fi · encrypted group</strong><span class="muted">Network key stays on the device</span></div></div>
+        <form id="name-form" class="name-form"><label for="name-input">Device name</label><input id="name-input" autocomplete="off" placeholder="Your name or call sign" maxlength="31" required><button id="save-name" data-device disabled>Save on device</button></form>
+        <p id="device-status" class="hint"></p><p id="pending-distress" class="hint" hidden></p><button id="respond-device" data-device hidden disabled>Respond to device's pending distress</button>
+      </div>
+    </section>
+    <div class="workspace">
+      <section class="panel quick-panel" aria-labelledby="quick-title"><div class="section-heading"><h2 id="quick-title">Quick messages</h2><span class="muted">One action to send</span></div><p class="muted">These travel over the Uni-Fi radio network. GPS and location sharing are planned for a later build.</p><div class="quick-grid"><button class="quick sos" data-event="sos" data-device disabled><span class="quick-symbol" aria-hidden="true">!</span><strong>Send SOS</strong><small>Immediate assistance</small></button><button class="quick" data-event="medical" data-device disabled><span class="quick-symbol" aria-hidden="true">+</span><strong>Medical help</strong><small>Request assistance</small></button><button class="quick" data-event="pickup" data-device disabled><span class="quick-symbol" aria-hidden="true">↗</span><strong>Need pickup</strong><small>Ask for collection</small></button><button class="quick" data-event="safe" data-device disabled><span class="quick-symbol" aria-hidden="true">✓</span><strong>I am safe</strong><small>Share an update</small></button><button class="quick" data-event="enroute" data-device disabled><span class="quick-symbol" aria-hidden="true">→</span><strong>On my way</strong><small>Share your response</small></button></div><p class="hint">“Queued on device” confirms local acceptance. Only a received response from another node confirms remote receipt.</p></section>
+      <section class="panel" aria-labelledby="incident-title"><div class="section-heading"><h2 id="incident-title">Calls for help</h2><span id="incident-count" class="count">0</span></div><div id="incidents" class="card-list"><p class="empty">SOS, medical, and pickup messages appear here. Received calls include a response button.</p></div></section>
+      <section class="panel" aria-labelledby="roster-title"><div class="section-heading"><h2 id="roster-title">Network presence</h2><span id="roster-count" class="count">0</span></div><p class="muted">Devices heard through the provisioned encrypted channel. Browser memory clears on reload; records expire four hours after local receipt.</p><p class="hint">A shared network key grants group access. Names and node IDs are self-reported, not individually verified.</p><div id="roster" class="card-list"><p class="empty">Waiting to hear another Uni-Fi node.</p></div></section>
+      <section class="panel" aria-labelledby="messages-title"><div class="section-heading"><h2 id="messages-title">Network messages</h2><span class="muted">Encrypted channel 0</span></div><form id="message-form"><label for="message-input" class="sr-only">Message</label><textarea id="message-input" rows="2" placeholder="Write a short message…" data-device disabled></textarea><div class="message-controls"><span id="message-budget" class="muted">Connect to see available message space</span><button class="primary" data-device disabled>Send message</button></div></form><div id="messages" class="card-list"><p class="empty">Incoming messages will appear here.</p></div></section>
+    </div>
+    <details class="panel diagnostics"><summary>Connection diagnostics <span class="muted">Hardware test log</span></summary><pre id="log" aria-live="off">Ready. No simulated devices or messages.</pre><button id="clear-log">Clear log</button></details>
+    <footer>Uni-Fi · mesh network developed by MeshUSF <span>Prototype · GPS &amp; map support planned</span></footer>
+  </main>
+</body>
+</html>
