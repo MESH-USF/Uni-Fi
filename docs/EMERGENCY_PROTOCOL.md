@@ -2,20 +2,24 @@
 
 Uni-Fi state is carried in normal MeshCore group text on the encrypted `Uni-Fi` channel. The readable prefix provides a useful fallback while a compact final block provides structured state.
 
+These examples are the current GPS-free format after firmware prepends the
+saved name. For the complete layering, radio encryption, companion command
+layouts and sequence diagrams, see the [technical walkthrough](TECHNICAL_WALKTHROUGH.md).
+
 ```text
-SOS - immediate assistance needed [mc:v1;type=sos;id=AABBCCDDEEFF12345678;node=AABBCCDDEEFF;lat=28.063000;lon=-82.413900]
+Sanjay: SOS [mc:v1;type=sos;id=AABBCCDDEEFF1234ABCD00000001;node=AABBCCDDEEFF]
 ```
 
 Acknowledgement:
 
 ```text
-Received - help is responding [mc:v1;type=ack;id=11223344556612345678;node=112233445566;ack=AABBCCDDEEFF12345678]
+Dispatcher: Received [mc:v1;type=ack;id=11223344556689ABCDEF00000001;node=112233445566;ack=AABBCCDDEEFF1234ABCD00000001]
 ```
 
 Periodic presence:
 
 ```text
-Available [mc:v1;type=presence;id=AABBCCDDEEFF12345678;node=AABBCCDDEEFF;lat=28.063000;lon=-82.413900]
+Sanjay: Available [mc:v1;type=presence;id=AABBCCDDEEFF1234ABCD00000002;node=AABBCCDDEEFF]
 ```
 
 ## Fields
@@ -41,8 +45,12 @@ MeshCore prepends the encrypted sender name as `sender: message`. Uni-Fi uses th
 ## Retention and duplicates
 
 - Firmware records local receive time in RAM and removes presence after four hours.
-- A later valid envelope with the same node prefix replaces the entry and refreshes local receive time.
-- The app persists `receivedAt` separately from the sender timestamp. Repeated packet copies update `receivedAt` without creating another visible chat row.
+- A later accepted envelope with the same node prefix refreshes local receive
+  time. Exact RF duplicates suppressed by MeshCore do not reach this update;
+  newly serialized copies with the same semantic event ID can refresh it.
+- The inherited Flutter foundation persists `receivedAt`; the current browser
+  keeps its own receipt time in RAM. Structured duplicate events coalesce
+  rather than creating additional visible rows.
 - Presence packets are hidden from chat, notifications, and unread counts.
 - Incidents and their map state expire four hours after the latest locally received packet.
 - Encrypted presence with a valid location can appear on the map before a

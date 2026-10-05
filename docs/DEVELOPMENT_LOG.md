@@ -157,3 +157,28 @@ changes should also appear in the eventual changelog.
   moderation and extra hardware preset controls remain later milestones.
 - Changes are recorded locally on the feature branch; this iteration does not
   push to GitHub or rewrite published history.
+
+## 2026-10-05 — Ground-up technical walkthrough
+
+- Added `docs/TECHNICAL_WALKTHROUGH.md` for a technical reader with no project
+  context: inherited/current root trees, build inheritance, module ownership,
+  feature implementation, startup/state and ten Mermaid diagrams.
+- Documented the three protocol layers separately, including RF header/path,
+  inherited AES-128 ECB and truncated HMAC, exact BLE/USB companion framing,
+  send/receive/status offsets, envelope grammar and retained-command allowlist.
+- Audited structure/history and protocol independently against the current
+  code. Qualified the baseline: the initial import was already customized;
+  the prototype excluded product functionality but deleted no source files.
+- Explained bounded incident/queue state, semantic versus RF duplicates,
+  local receipt-age differences, no automatic SOS retry, shared-key identity
+  limits and the saved name exposed by current BLE advertising.
+- Made Flutter/GPS limitations explicit, including unverified mobile builds,
+  older parser/preset differences and missing product-status integration.
+- Updated README and architecture/protocol/security summaries to link the
+  walkthrough and remove contradictory GPS/privacy/receipt descriptions.
+- Verified all ten Mermaid diagrams parse; checked 51 local document links,
+  contents anchors, fence balance and six concrete protocol examples against
+  the actual web codec and 160-byte budget. Host controls, 4,426 protocol
+  assertions, 20 web tests and all 40 existing native cases pass again.
+  No firmware/app implementation changes,
+  key publication, hardware testing or GitHub push are part of this task.

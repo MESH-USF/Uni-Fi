@@ -25,7 +25,7 @@ The upstream MIT license files and source history documents remain in each sourc
 - Minimal build excludes GPS, environmental sensors, external RTC discovery, Wi-Fi/TCP, raw/image datagrams, remote administration and filesystem rescue CLI
 - Web test client with SOS, medical, pickup, safe, en-route and matching receipt responses
 - Inherited Flutter Emergency/Contacts/Map foundations filter encrypted presence and correlate distress acknowledgements; mobile builds and GPS/map flows remain unverified
-- Direct messages, QR contact import, group channels, node naming, battery status, GPS, and screen timeout remain available
+- Firmware retains direct messages, contacts, group channels, saved names, battery status and screen timeout; QR/maps remain inherited Flutter foundations
 
 ## Provision and build
 
@@ -67,6 +67,10 @@ flutter run
 ```
 
 See [architecture](docs/ARCHITECTURE.md), [security](docs/SECURITY.md), [hardware](docs/HARDWARE.md), [wire format](docs/EMERGENCY_PROTOCOL.md), [decision records](docs/decisions/README.md), and the [development log](docs/DEVELOPMENT_LOG.md).
+
+For a ground-up explanation with original/current directory trees, module
+diagrams, feature implementations and exact RF/companion/event layouts, read
+the [technical walkthrough](docs/TECHNICAL_WALKTHROUGH.md).
 
 The compiled prototype and host tests do not establish physical RF/BLE or
 button/LED performance. Use the [hardware acceptance procedure](docs/PROTOTYPE_VALIDATION.md)

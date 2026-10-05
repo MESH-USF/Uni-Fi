@@ -2,6 +2,9 @@
 
 The radio is the trusted, always-available core. The phone is a replaceable interface and history/cache layer.
 
+See the [technical walkthrough](TECHNICAL_WALKTHROUGH.md) for before/after
+directory trees, module diagrams, byte-level protocols and an SOS sequence.
+
 ```text
 (future GPS) -> Heltec V3 -> MeshCore encrypted RF flood -> other Uni-Fi radios
           |
@@ -18,7 +21,10 @@ The radio is the trusted, always-available core. The phone is a replaceable inte
 - Presence and SOS/ACK can continue while the phone sleeps; GPS is deferred.
 - Local receipt time avoids trusting an unset or incorrect sender clock.
 
-The Heltec therefore owns the network key, locked radio parameters, opaque public advertisement, encrypted username/GPS heartbeat, four-hour RAM presence table, emergency button, offline queue, and LED/OLED feedback.
+The Heltec therefore owns the network key, locked radio parameters, opaque
+public advertisement, encrypted username heartbeat, four-hour RAM presence
+table, emergency button, offline queue and LED/OLED feedback. GPS acquisition
+is future firmware work, not part of this build.
 
 ## Why the phone owns the extended experience
 
@@ -32,7 +38,9 @@ Maps, searchable history, QR scanning, group management, and rich chat consume s
 4. Firmware upserts the node prefix in a 32-entry RAM table using local receive time.
 5. The companion app receives the plaintext channel frame and records its own `receivedAt` time.
 6. Contacts and Map correlate the six-byte prefix with the full advertised public key; unrelated adverts stay hidden.
-7. After four hours without a valid envelope, both layers stop presenting that node as available.
+7. After four hours without an accepted envelope, each layer expires its own
+   record. A browser draining an old queued message starts its own local age;
+   this is not a synchronized roster database.
 
 ## Resource choices
 

@@ -10,7 +10,7 @@ Firmware masks slot 0 on `GET_CHANNEL`, rejects `SET_CHANNEL` for slot 0, and di
 
 - Radios without the group PSK cannot decrypt Uni-Fi username, GPS, presence, or emergency text.
 - Unrelated public MeshCore advertisements do not authorize a user in the main Contacts/Map views.
-- Public adverts from Uni-Fi firmware use an opaque key-derived label and omit GPS.
+- Public LoRa adverts use an opaque public-key-prefix label and omit GPS.
 - Committing the open repository does not publish a deployment key.
 
 ## Limits of a shared key
@@ -18,6 +18,18 @@ Firmware masks slot 0 on `GET_CHANNEL`, rejects `SET_CHANNEL` for slot 0, and di
 A group PSK authenticates membership in the group, not an individual sender. Any member holding the PSK can create a message claiming another username or node prefix. The `node` field is correlation metadata, not a signature. Strong per-device identity requires signing the application envelope with the existing MeshCore device identity and verifying it against the full public key; that is deferred.
 
 The key exists in device flash and can be recovered by an attacker with sufficient physical access. A connected phone receives decrypted content. The firmware masking controls normal companion API access; it is not tamper-resistant hardware.
+
+The inherited group format uses AES-128 ECB block encryption and a two-byte
+truncated HMAC-SHA256 tag, not AES-GCM or newly added per-device authentication.
+See the [technical walkthrough](TECHNICAL_WALKTHROUGH.md) for the exact key,
+packet and forwarding boundaries.
+
+## Bluetooth name privacy
+
+The current BLE adapter advertises `UniFi-<saved node name>`. Nearby BLE
+scanners can learn the name even though the public LoRa advert is opaque.
+The BLE label is initialized at boot and may need a restart after renaming.
+Encrypted RF presence must not be described as anonymous BLE discovery.
 
 ## Removal and bans
 
