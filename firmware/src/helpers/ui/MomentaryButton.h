@@ -1,6 +1,9 @@
 #pragma once
 
 #include <Arduino.h>
+#ifdef UNIFI_MINIMAL
+#include "UniFiButton.h"
+#endif
 
 #define BUTTON_EVENT_NONE        0
 #define BUTTON_EVENT_CLICK       1
@@ -9,6 +12,9 @@
 #define BUTTON_EVENT_TRIPLE_CLICK 4
 
 class MomentaryButton {
+#ifdef UNIFI_MINIMAL
+  unifi::Button unifi_button;
+#endif
   int8_t _pin;
   int8_t prev, cancel;
   bool _reverse, _pull;

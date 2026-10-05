@@ -3,6 +3,9 @@
 #include <MeshCore.h>
 #include <helpers/ui/DisplayDriver.h>
 #include <helpers/ui/UIScreen.h>
+#ifdef PIN_UNIFI_ALERT_LED
+#include <helpers/ui/UniFiLed.h>
+#endif
 #include <helpers/SensorManager.h>
 #include <helpers/MultiSerialInterface.h>
 #include <Arduino.h>
@@ -35,7 +38,7 @@ class UITask : public AbstractUITask {
   NodePrefs* _node_prefs;
   char _alert[80];
   unsigned long _alert_expiry;
-  int _msgcount;
+  int _msgcount = 0;
   unsigned long ui_started_at, next_batt_chck;
   int next_backlight_btn_check = 0;
 #ifdef PIN_STATUS_LED
@@ -44,11 +47,7 @@ class UITask : public AbstractUITask {
   int last_led_increment = 0;
 #endif
 #ifdef PIN_UNIFI_ALERT_LED
-  enum class UniFiLedPattern { none, sent, received };
-  UniFiLedPattern unifi_led_pattern = UniFiLedPattern::none;
-  uint8_t unifi_led_pulses_remaining = 0;
-  bool unifi_led_on = false;
-  unsigned long unifi_led_next_change = 0;
+  unifi::AlertLed unifi_led;
 #endif
 
 #ifdef PIN_USER_BTN_ANA
@@ -61,9 +60,6 @@ class UITask : public AbstractUITask {
   UIScreen* curr;
 
   void userLedHandler();
-#ifdef PIN_UNIFI_ALERT_LED
-  void startUniFiLedPattern(UniFiLedPattern pattern);
-#endif
 
   // Button action handlers
   char checkDisplayOn(char c);

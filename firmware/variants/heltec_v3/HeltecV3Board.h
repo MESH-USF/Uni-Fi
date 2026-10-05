@@ -24,7 +24,12 @@ private:
 public:
   RefCountedDigitalPin periph_power;
 
+#ifdef UNIFI_MINIMAL
+  // Heltec V3 Vext is enabled LOW; allow the OLED timeout to cut its rail.
+  HeltecV3Board() : periph_power(PIN_VEXT_EN, LOW) { }
+#else
   HeltecV3Board() : periph_power(PIN_VEXT_EN) { }
+#endif
 
   void begin() {
     ESP32Board::begin();

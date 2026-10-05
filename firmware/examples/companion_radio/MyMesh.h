@@ -25,6 +25,9 @@
 
 #include "DataStore.h"
 #include "NodePrefs.h"
+#ifdef ENABLE_UNIFI_NETWORK
+#include "UniFiProtocol.h"
+#endif
 
 #include <RTClib.h>
 #include <helpers/ArduinoHelpers.h>
@@ -89,14 +92,7 @@ struct AdvertPath {
 #define UNIFI_PRESENCE_TABLE_SIZE 32
 #endif
 
-struct UniFiPresence {
-  uint8_t node_prefix[6];
-  char name[32];
-  int32_t latitude_e6;
-  int32_t longitude_e6;
-  uint32_t last_seen;
-  bool has_location;
-};
+using UniFiPresence = unifi::Presence;
 #endif
 
 class MyMesh : public BaseChatMesh, public DataStoreHost {
@@ -121,6 +117,13 @@ public:
 
 #ifdef ENABLE_UNIFI_NETWORK
   int getUniFiPresence(UniFiPresence dest[], int max_num);
+  bool acknowledgeEmergency();
+  bool hasPendingEmergency();
+  bool isUniFiProvisioned();
+  bool isOwnEmergencyAcknowledged() const { return unifi_emergency.ownAcknowledged(); }
+  const char* getPendingEmergencyName() const { return unifi_emergency.pendingName(); }
+  const char* getPendingEmergencyId() const { return unifi_emergency.pendingId(); }
+  const char* getOwnEmergencyId() const { return unifi_emergency.ownId(); }
 #endif
 
   int  getRecentlyHeard(AdvertPath dest[], int max_num);
@@ -235,8 +238,10 @@ private:
   bool getUniFiChannel(ChannelDetails& channel, uint8_t* channel_idx = NULL);
   bool isUniFiChannel(const mesh::GroupChannel& channel);
   bool sendUniFiPresence();
-  void updateUniFiPresence(const char* text);
   void expireUniFiPresence();
+  bool sendGroupMessage(uint32_t timestamp, mesh::GroupChannel& channel,
+                        const char* sender_name, const char* text, int text_len);
+  bool sendUniFiEvent(const char* type, const char* label, const char* ack = NULL);
 #endif
 
   DataStore* _store;
@@ -262,11 +267,11 @@ private:
   unsigned long dirty_contacts_expiry;
 
 #ifdef ENABLE_UNIFI_NETWORK
-  struct UniFiPresenceSlot {
-    UniFiPresence presence;
-    unsigned long received_at_millis;
-  };
-  UniFiPresenceSlot unifi_presence[UNIFI_PRESENCE_TABLE_SIZE];
+  unifi::PresenceTable<UNIFI_PRESENCE_TABLE_SIZE> unifi_presence;
+  unifi::EmergencyState unifi_emergency;
+  uint32_t unifi_event_counter;
+  uint32_t unifi_boot_nonce;
+  uint32_t next_unifi_expiry_check;
   unsigned long next_unifi_presence;
 #endif
 
@@ -274,7 +279,9 @@ private:
 
   uint8_t cmd_frame[MAX_FRAME_SIZE + 1];
   uint8_t out_frame[MAX_FRAME_SIZE + 1];
+#ifndef UNIFI_MINIMAL
   CayenneLPP telemetry;
+#endif
 
   struct Frame {
     uint8_t len;

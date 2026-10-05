@@ -15,6 +15,9 @@ MomentaryButton::MomentaryButton(int8_t pin, int long_press_millis, bool reverse
   _last_click_time = 0;
   _multi_click_window = multiclick ? MULTI_CLICK_WINDOW_MS : 0;
   _pending_click = false;
+#ifdef UNIFI_MINIMAL
+  unifi_button.configure(long_press_millis, multiclick);
+#endif
 }
 
 MomentaryButton::MomentaryButton(int8_t pin, int long_press_millis, int analog_threshold) {
@@ -30,6 +33,9 @@ MomentaryButton::MomentaryButton(int8_t pin, int long_press_millis, int analog_t
   _last_click_time = 0;
   _multi_click_window = MULTI_CLICK_WINDOW_MS;
   _pending_click = false;
+#ifdef UNIFI_MINIMAL
+  unifi_button.configure(long_press_millis);
+#endif
 }
 
 void MomentaryButton::begin() {
@@ -44,6 +50,9 @@ bool  MomentaryButton::isPressed() const {
 }
 
 void MomentaryButton::cancelClick() {
+#ifdef UNIFI_MINIMAL
+  unifi_button.cancel();
+#endif
   cancel = 1;
   down_at = 0;
   _click_count = 0;
@@ -64,6 +73,9 @@ bool MomentaryButton::isPressed(int level) const {
 
 int MomentaryButton::check(bool repeat_click) {
   if (_pin < 0) return BUTTON_EVENT_NONE;
+#ifdef UNIFI_MINIMAL
+  return unifi_button.sample(isPressed(), uint32_t(millis()));
+#else
 
   int event = BUTTON_EVENT_NONE;
   int btn = _threshold > 0 ? (analogRead(_pin) < _threshold) : digitalRead(_pin);
@@ -142,4 +154,5 @@ int MomentaryButton::check(bool repeat_click) {
   }
 
   return event;
+#endif
 }

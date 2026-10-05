@@ -126,6 +126,9 @@ static_assert(sizeof(UNIFI_NETWORK_PSK_B64) == 25,
 #ifndef UNIFI_PRESENCE_TTL_MILLIS
 #define UNIFI_PRESENCE_TTL_MILLIS (4UL * 60UL * 60UL * 1000UL)
 #endif
+#ifndef UNIFI_MAX_HOPS
+#define UNIFI_MAX_HOPS 3
+#endif
 
 #ifndef DEFAULT_GPS_ENABLED
   #define DEFAULT_GPS_ENABLED 0
@@ -246,6 +249,21 @@ bool MyMesh::Frame::isChannelMsg() const {
 }
 
 void MyMesh::addToOfflineQueue(const uint8_t frame[], int len) {
+  if (!frame || len <= 0 || size_t(len) > MAX_FRAME_SIZE) return;
+#if defined(UNIFI_MINIMAL) && defined(ENABLE_UNIFI_NETWORK)
+  unifi::QueueInfo entries[OFFLINE_QUEUE_SIZE];
+  for (int i = 0; i < offline_queue_len; ++i)
+    entries[i] = unifi::classifyFrame(offline_queue[i].buf, offline_queue[i].len);
+  const auto incoming = unifi::classifyFrame(frame, len);
+  int slot = unifi::queueSlot(entries, offline_queue_len, OFFLINE_QUEUE_SIZE, incoming);
+  if (slot < 0) return;
+  if (slot < offline_queue_len) {
+    for (int i = slot; i < offline_queue_len - 1; ++i) offline_queue[i] = offline_queue[i + 1];
+    slot = offline_queue_len - 1;
+  } else ++offline_queue_len;
+  offline_queue[slot].len = len;
+  memcpy(offline_queue[slot].buf, frame, len);
+#else
   if (offline_queue_len >= OFFLINE_QUEUE_SIZE) {
     MESH_DEBUG_PRINTLN("WARN: offline_queue is full!");
     int pos = 0;
@@ -267,6 +285,7 @@ void MyMesh::addToOfflineQueue(const uint8_t frame[], int len) {
     memcpy(offline_queue[offline_queue_len].buf, frame, len);
     offline_queue_len++;
   }
+#endif
 }
 
 int MyMesh::getFromOfflineQueue(uint8_t frame[]) {
@@ -313,6 +332,7 @@ uint8_t MyMesh::getExtraAckTransmitCount() const {
 }
 
 void MyMesh::logRxRaw(float snr, float rssi, const uint8_t raw[], int len) {
+#ifndef UNIFI_MINIMAL
   if (_serial->isConnected() && len + 3 <= MAX_FRAME_SIZE) {
     int i = 0;
     out_frame[i++] = PUSH_CODE_LOG_RX_DATA;
@@ -323,6 +343,7 @@ void MyMesh::logRxRaw(float snr, float rssi, const uint8_t raw[], int len) {
 
     _serial->writeFrame(out_frame, i);
   }
+#endif
 }
 
 bool MyMesh::isAutoAddEnabled() const {
@@ -511,8 +532,55 @@ bool MyMesh::filterRecvFloodPacket(mesh::Packet* packet) {
   return false;
 }
 
+#ifdef ENABLE_UNIFI_NETWORK
+static bool unifiSecretIsSet(const mesh::GroupChannel& channel) {
+  for (size_t i = 0; i < sizeof(channel.secret); i++) {
+    if (channel.secret[i] != 0) return true;
+  }
+  return false;
+}
+#endif
+
 bool MyMesh::allowPacketForward(const mesh::Packet* packet) {
+#if defined(UNIFI_MINIMAL) && defined(ENABLE_UNIFI_NETWORK)
+  if (!_prefs.isRepeatEn() || !packet) return false;
+  ChannelDetails channel;
+  const bool provisioned = getUniFiChannel(channel);
+  unifi::ForwardKind kind = unifi::ForwardKind::Other;
+  bool matching_channel = false;
+  switch (packet->getPayloadType()) {
+    case PAYLOAD_TYPE_GRP_TXT:
+      kind = unifi::ForwardKind::GroupText;
+      if (provisioned && packet->payload_len > PATH_HASH_SIZE + CIPHER_MAC_SIZE) {
+        for (uint8_t i = 0; i < MAX_GROUP_CHANNELS; ++i) {
+          ChannelDetails configured;
+          if (getChannel(i, configured) && configured.name[0] && unifiSecretIsSet(configured.channel) &&
+              memcmp(packet->payload, configured.channel.hash, PATH_HASH_SIZE) == 0) {
+            matching_channel = true;
+            break;
+          }
+        }
+      }
+      break;
+    case PAYLOAD_TYPE_ADVERT: {
+      const size_t flags = PUB_KEY_SIZE + 4 + SIGNATURE_SIZE;
+      if (packet->payload_len > flags && (packet->payload[flags] & 0x0f) == ADV_TYPE_CHAT)
+        kind = unifi::ForwardKind::CompanionAdvert;
+      break;
+    }
+    case PAYLOAD_TYPE_TXT_MSG: kind = unifi::ForwardKind::DirectText; break;
+    case PAYLOAD_TYPE_ACK: kind = unifi::ForwardKind::Ack; break;
+    case PAYLOAD_TYPE_PATH: kind = unifi::ForwardKind::Path; break;
+    default: break;
+  }
+  // The short channel hash is a traffic selector, not sender authentication.
+  // MeshCore validates group MAC/decryption at the destination and signatures
+  // before routing adverts. Existing packet-hash deduplication bounds repeats.
+  return unifi::allowForward(kind, provisioned, matching_channel,
+      packet->isRouteFlood(), packet->getPathHashCount(), UNIFI_MAX_HOPS);
+#else
   return _prefs.isRepeatEn();
+#endif
 }
 
 void MyMesh::sendFloodScoped(const TransportKey& scope, mesh::Packet* pkt, uint32_t delay_millis) {
@@ -573,18 +641,28 @@ void MyMesh::onSignedMessageRecv(const ContactInfo &from, mesh::Packet *pkt, uin
 
 void MyMesh::onChannelMessageRecv(const mesh::GroupChannel &channel, mesh::Packet *pkt, uint32_t timestamp,
                                   const char *text) {
+  bool show_on_display = true;
+  bool emergency_notification = false;
 #ifdef ENABLE_UNIFI_NETWORK
   const bool from_unifi = isUniFiChannel(channel);
   if (from_unifi) {
-    updateUniFiPresence(text);
+    const size_t text_len = strnlen(text, MAX_TEXT_LEN + 1);
+    if (text_len > MAX_TEXT_LEN) return;
+    unifi::Envelope event;
+    if (unifi::parse(text, text_len, event)) {
+      const uint32_t now = millis();
+      unifi_presence.update(event, now, getRTCClock()->getCurrentTime());
+      const auto received = unifi_emergency.receive(event, self_id.pub_key, now);
+      emergency_notification = received != unifi::EmergencyState::Receive::None;
+      // Presence still reaches the companion queue for synchronization, but
+      // heartbeats, unrelated ACKs and repeated event IDs must not wake OLED/LED.
+      show_on_display = event.type != unifi::Type::Presence &&
+          ((!unifi::isDistress(event.type) && event.type != unifi::Type::Ack) || emergency_notification);
+      if (received == unifi::EmergencyState::Receive::OwnAcknowledged) show_on_display = false;
 #ifdef DISPLAY_CLASS
-    if (_ui && (strstr(text, ";type=sos;") ||
-                strstr(text, ";type=medical;") ||
-                strstr(text, ";type=pickup;") ||
-                strstr(text, ";type=ack;"))) {
-      _ui->notify(UIEventType::emergencyReceived);
-    }
+      if (_ui && emergency_notification) _ui->notify(UIEventType::emergencyReceived);
 #endif
+    } else if (unifi::containsEnvelope(text, text_len)) return;
   }
 #endif
   int i = 0;
@@ -618,7 +696,7 @@ void MyMesh::onChannelMessageRecv(const mesh::GroupChannel &channel, mesh::Packe
     _serial->writeFrame(frame, 1);
   } else {
 #ifdef DISPLAY_CLASS
-    if (_ui) _ui->notify(UIEventType::channelMessage);
+    if (_ui && show_on_display && !emergency_notification) _ui->notify(UIEventType::channelMessage);
 #endif
   }
 #ifdef DISPLAY_CLASS
@@ -628,12 +706,15 @@ void MyMesh::onChannelMessageRecv(const mesh::GroupChannel &channel, mesh::Packe
   if (getChannel(channel_idx, channel_details)) {
     channel_name = channel_details.name;
   }
-  if (_ui) _ui->newMsg(path_len, channel_name, text, offline_queue_len);
+  if (_ui && show_on_display) _ui->newMsg(path_len, channel_name, text, offline_queue_len);
 #endif
 }
 
 void MyMesh::onChannelDataRecv(const mesh::GroupChannel &channel, mesh::Packet *pkt, uint16_t data_type,
                                const uint8_t *data, size_t data_len) {
+#ifdef UNIFI_MINIMAL
+  return; // Image/opaque datagram delivery is outside the Uni-Fi text prototype.
+#else
   if (data_len > MAX_CHANNEL_DATA_LENGTH) {
     MESH_DEBUG_PRINTLN("onChannelDataRecv: dropping payload_len=%d exceeds frame limit=%d",
                        (uint32_t)data_len, (uint32_t)MAX_CHANNEL_DATA_LENGTH);
@@ -665,11 +746,15 @@ void MyMesh::onChannelDataRecv(const mesh::GroupChannel &channel, mesh::Packet *
     frame[0] = PUSH_CODE_MSG_WAITING; // send push 'tickle'
     _serial->writeFrame(frame, 1);
   }
+#endif // UNIFI_MINIMAL
 }
 
 uint8_t MyMesh::onContactRequest(const ContactInfo &contact, uint32_t sender_timestamp, const uint8_t *data,
                                  uint8_t len, uint8_t *reply) {
-  if (data[0] == REQ_TYPE_GET_TELEMETRY_DATA) {
+#ifdef UNIFI_MINIMAL
+  return 0; // Local battery/stats commands remain; remote telemetry is pruned.
+#else
+  if (len >= 2 && data[0] == REQ_TYPE_GET_TELEMETRY_DATA) {
     uint8_t permissions = 0;
     uint8_t cp = contact.flags >> 1; // LSB used as 'favourite' bit (so only use upper bits)
 
@@ -714,9 +799,12 @@ uint8_t MyMesh::onContactRequest(const ContactInfo &contact, uint32_t sender_tim
     }
   }
   return 0; // unknown
+#endif // UNIFI_MINIMAL
 }
 
 void MyMesh::onContactResponse(const ContactInfo &contact, const uint8_t *data, uint8_t len) {
+#ifndef UNIFI_MINIMAL
+  if (len < 4) return;
   uint32_t tag;
   memcpy(&tag, data, 4);
 
@@ -788,9 +876,11 @@ void MyMesh::onContactResponse(const ContactInfo &contact, const uint8_t *data, 
     i += (len - 4);
     _serial->writeFrame(out_frame, i);
   }
+#endif
 }
 
 bool MyMesh::onContactPathRecv(ContactInfo& contact, uint8_t* in_path, uint8_t in_path_len, uint8_t* out_path, uint8_t out_path_len, uint8_t extra_type, uint8_t* extra, uint8_t extra_len) {
+#ifndef UNIFI_MINIMAL
   if (extra_type == PAYLOAD_TYPE_RESPONSE && extra_len > 4) {
     uint32_t tag;
     memcpy(&tag, extra, 4);
@@ -817,11 +907,13 @@ bool MyMesh::onContactPathRecv(ContactInfo& contact, uint8_t* in_path, uint8_t i
       return false;  // DON'T send reciprocal path!
     }
   }
+#endif
   // let base class handle received path and data
   return BaseChatMesh::onContactPathRecv(contact, in_path, in_path_len, out_path, out_path_len, extra_type, extra, extra_len);
 }
 
 void MyMesh::onControlDataRecv(mesh::Packet *packet) {
+#ifndef UNIFI_MINIMAL
   if (packet->payload_len + 4 > sizeof(out_frame)) {
     MESH_DEBUG_PRINTLN("onControlDataRecv(), payload_len too long: %d", packet->payload_len);
     return;
@@ -839,9 +931,11 @@ void MyMesh::onControlDataRecv(mesh::Packet *packet) {
   } else {
     MESH_DEBUG_PRINTLN("onControlDataRecv(), data received while app offline");
   }
+#endif
 }
 
 void MyMesh::onRawDataRecv(mesh::Packet *packet) {
+#ifndef UNIFI_MINIMAL
   if (packet->payload_len + 4 > sizeof(out_frame)) {
     MESH_DEBUG_PRINTLN("onRawDataRecv(), payload_len too long: %d", packet->payload_len);
     return;
@@ -859,10 +953,12 @@ void MyMesh::onRawDataRecv(mesh::Packet *packet) {
   } else {
     MESH_DEBUG_PRINTLN("onRawDataRecv(), data received while app offline");
   }
+#endif
 }
 
 void MyMesh::onTraceRecv(mesh::Packet *packet, uint32_t tag, uint32_t auth_code, uint8_t flags,
                          const uint8_t *path_snrs, const uint8_t *path_hashes, uint8_t path_len) {
+#ifndef UNIFI_MINIMAL
   uint8_t path_sz = flags & 0x03;  // NEW v1.11+
   if (12 + path_len + (path_len >> path_sz) + 1 > sizeof(out_frame)) {
     MESH_DEBUG_PRINTLN("onTraceRecv(), path_len is too long: %d", (uint32_t)path_len);
@@ -889,6 +985,7 @@ void MyMesh::onTraceRecv(mesh::Packet *packet, uint32_t tag, uint32_t auth_code,
   } else {
     MESH_DEBUG_PRINTLN("onTraceRecv(), data received while app offline");
   }
+#endif
 }
 
 uint32_t MyMesh::calcFloodTimeoutMillisFor(uint32_t pkt_airtime_millis) const {
@@ -905,7 +1002,11 @@ void MyMesh::onSendTimeout() {}
 
 MyMesh::MyMesh(mesh::Radio &radio, mesh::RNG &rng, mesh::RTCClock &rtc, SimpleMeshTables &tables, DataStore& store, AbstractUITask* ui)
     : BaseChatMesh(radio, *new ArduinoMillis(), rng, rtc, *new StaticPoolPacketManager(16), tables),
-      _serial(NULL), telemetry(MAX_PACKET_PAYLOAD - 4), _store(&store), _ui(ui), _iter(0) {
+      _serial(NULL),
+#ifndef UNIFI_MINIMAL
+      telemetry(MAX_PACKET_PAYLOAD - 4),
+#endif
+      _store(&store), _ui(ui), _iter(0) {
   _iter_started = false;
   _cli_rescue = false;
   offline_queue_len = 0;
@@ -915,7 +1016,9 @@ MyMesh::MyMesh(mesh::Radio &radio, mesh::RNG &rng, mesh::RTCClock &rtc, SimpleMe
   sign_data = NULL;
   dirty_contacts_expiry = 0;
 #ifdef ENABLE_UNIFI_NETWORK
-  memset(unifi_presence, 0, sizeof(unifi_presence));
+  unifi_event_counter = 0;
+  unifi_boot_nonce = 0;
+  next_unifi_expiry_check = 0;
   next_unifi_presence = 30000;
 #endif
   memset(advert_paths, 0, sizeof(advert_paths));
@@ -948,6 +1051,11 @@ MyMesh::MyMesh(mesh::Radio &radio, mesh::RNG &rng, mesh::RTCClock &rtc, SimpleMe
 
 void MyMesh::begin(bool has_display) {
   BaseChatMesh::begin();
+#ifdef ENABLE_UNIFI_NETWORK
+  // setup() seeds the RNG from the radio before begin(); avoid RNG use during
+  // static construction, before Arduino and the hardware are initialized.
+  getRNG()->random((uint8_t*)&unifi_boot_nonce, sizeof(unifi_boot_nonce));
+#endif
 
   if (!_store->loadMainIdentity(self_id)) {
     self_id = radio_new_identity(); // create new random identity
@@ -982,6 +1090,12 @@ void MyMesh::begin(bool has_display) {
 
   // load persisted prefs
   _store->loadPrefs(_prefs);
+  _prefs.node_name[sizeof(_prefs.node_name) - 1] = 0;
+#ifdef ENABLE_UNIFI_NETWORK
+  if (!unifi::validName(_prefs.node_name, strlen(_prefs.node_name))) {
+    mesh::Utils::toHex(_prefs.node_name, self_id.pub_key, 6);
+  }
+#endif
   sensors.node_lat = _prefs.node_lat;
   sensors.node_lon = _prefs.node_lon;
 
@@ -1004,6 +1118,19 @@ void MyMesh::begin(bool has_display) {
   _prefs.sf = LORA_SF;
   _prefs.cr = LORA_CR;
   _prefs.setRepeatEn(false);
+#endif
+#ifdef UNIFI_MINIMAL
+  _prefs.setRepeatEn(true); // Every provisioned prototype can relay the retained traffic.
+  memset(_prefs.default_scope_name, 0, sizeof(_prefs.default_scope_name));
+  memset(_prefs.default_scope_key, 0, sizeof(_prefs.default_scope_key));
+  _prefs.advert_loc_policy = ADVERT_LOC_NONE;
+  _prefs.telemetry_mode_base = TELEM_MODE_DENY;
+  _prefs.telemetry_mode_loc = TELEM_MODE_DENY;
+  _prefs.telemetry_mode_env = TELEM_MODE_DENY;
+#if ENV_INCLUDE_GPS != 1
+  _prefs.gps_enabled = 0;
+  sensors.node_lat = sensors.node_lon = 0;
+#endif
 #endif
 
 #ifdef BLE_PIN_CODE // 123456 by default
@@ -1073,53 +1200,15 @@ uint32_t MyMesh::getBLEPin() {
 
 #ifdef ENABLE_EMERGENCY_BUTTON
 bool MyMesh::sendEmergencyMessage() {
-  ChannelDetails channel;
 #ifdef ENABLE_UNIFI_NETWORK
-  if (!getUniFiChannel(channel)) return false;
+  return sendUniFiEvent("sos", "SOS");
 #else
   return false;
 #endif
-
-  uint32_t timestamp = getRTCClock()->getCurrentTime();
-  if (timestamp == 0) timestamp = millis() / 1000;
-  char event_id[21];
-  char node_prefix[13];
-  mesh::Utils::toHex(node_prefix, self_id.pub_key, 6);
-  snprintf(event_id, sizeof(event_id), "%s%08lX", node_prefix,
-           (unsigned long)millis());
-
-  char text[150];
-  double lat = sensors.node_lat;
-  double lon = sensors.node_lon;
-  bool has_location = lat >= -90.0 && lat <= 90.0 && lon >= -180.0 &&
-                      lon <= 180.0 && (lat != 0.0 || lon != 0.0);
-  if (has_location) {
-    snprintf(text, sizeof(text),
-             "SOS - immediate assistance needed [mc:v1;type=sos;id=%s;node=%s;lat=%.6f;lon=%.6f]",
-             event_id, node_prefix, lat, lon);
-  } else {
-    snprintf(text, sizeof(text),
-             "SOS - immediate assistance needed [mc:v1;type=sos;id=%s;node=%s]",
-             event_id, node_prefix);
-  }
-
-  bool sent = sendGroupMessage(timestamp, channel.channel, _prefs.node_name,
-                               text, strlen(text));
-#ifdef DISPLAY_CLASS
-  if (sent && _ui) _ui->notify(UIEventType::emergencySent);
-#endif
-  return sent;
 }
 #endif
 
 #ifdef ENABLE_UNIFI_NETWORK
-static bool unifiSecretIsSet(const mesh::GroupChannel& channel) {
-  for (size_t i = 0; i < sizeof(channel.secret); i++) {
-    if (channel.secret[i] != 0) return true;
-  }
-  return false;
-}
-
 bool MyMesh::getUniFiChannel(ChannelDetails& channel, uint8_t* channel_idx) {
 #ifdef UNIFI_LOCKED_CHANNEL
   if (!getChannel(0, channel) || strcmp(channel.name, UNIFI_CHANNEL_NAME) != 0 ||
@@ -1147,125 +1236,116 @@ bool MyMesh::isUniFiChannel(const mesh::GroupChannel& channel) {
                 sizeof(channel.secret)) == 0;
 }
 
-static int unifiHexNibble(char value) {
-  if (value >= '0' && value <= '9') return value - '0';
-  if (value >= 'a' && value <= 'f') return value - 'a' + 10;
-  if (value >= 'A' && value <= 'F') return value - 'A' + 10;
-  return -1;
-}
-
-static bool unifiParseNodePrefix(const char* text, uint8_t dest[6]) {
-  const char* field = strstr(text, ";node=");
-  if (!field) return false;
-  field += 6;
-  for (int i = 0; i < 6; i++) {
-    int hi = unifiHexNibble(field[i * 2]);
-    int lo = unifiHexNibble(field[i * 2 + 1]);
-    if (hi < 0 || lo < 0) return false;
-    dest[i] = (uint8_t)((hi << 4) | lo);
-  }
-  char tail = field[12];
-  return tail == ';' || tail == ']';
-}
-
-void MyMesh::updateUniFiPresence(const char* text) {
-  const char* marker = strstr(text, "[mc:v1;");
-  if (!marker) return;
-
-  uint8_t node_prefix[6];
-  if (!unifiParseNodePrefix(marker, node_prefix)) return;
-
-  const char* separator = strstr(text, ": ");
-  size_t name_len = separator && separator < marker ? (size_t)(separator - text) : 0;
-  if (name_len == 0 || name_len >= sizeof(unifi_presence[0].presence.name)) return;
-
-  int use_idx = -1;
-  int oldest_idx = 0;
-  for (int i = 0; i < UNIFI_PRESENCE_TABLE_SIZE; i++) {
-    if (unifi_presence[i].received_at_millis == 0 && use_idx < 0) use_idx = i;
-    if (memcmp(unifi_presence[i].presence.node_prefix, node_prefix, 6) == 0) {
-      use_idx = i;
-      break;
-    }
-    if (unifi_presence[i].received_at_millis <
-        unifi_presence[oldest_idx].received_at_millis) {
-      oldest_idx = i;
-    }
-  }
-  if (use_idx < 0) use_idx = oldest_idx;
-
-  UniFiPresenceSlot& slot = unifi_presence[use_idx];
-  memset(&slot.presence, 0, sizeof(slot.presence));
-  memcpy(slot.presence.node_prefix, node_prefix, 6);
-  memcpy(slot.presence.name, text, name_len);
-  slot.presence.name[name_len] = 0;
-  slot.received_at_millis = millis();
-  slot.presence.last_seen = getRTCClock()->getCurrentTime();
-
-  const char* lat_field = strstr(marker, ";lat=");
-  const char* lon_field = strstr(marker, ";lon=");
-  if (lat_field && lon_field) {
-    double lat = strtod(lat_field + 5, NULL);
-    double lon = strtod(lon_field + 5, NULL);
-    if (lat >= -90.0 && lat <= 90.0 && lon >= -180.0 && lon <= 180.0 &&
-        (lat != 0.0 || lon != 0.0)) {
-      slot.presence.latitude_e6 = (int32_t)(lat * 1000000.0);
-      slot.presence.longitude_e6 = (int32_t)(lon * 1000000.0);
-      slot.presence.has_location = true;
-    }
-  }
-}
-
 void MyMesh::expireUniFiPresence() {
-  unsigned long now = millis();
-  for (int i = 0; i < UNIFI_PRESENCE_TABLE_SIZE; i++) {
-    if (unifi_presence[i].received_at_millis != 0 &&
-        (unsigned long)(now - unifi_presence[i].received_at_millis) >
-            UNIFI_PRESENCE_TTL_MILLIS) {
-      memset(&unifi_presence[i], 0, sizeof(unifi_presence[i]));
-    }
+  const uint32_t now = millis();
+  unifi_presence.expire(now);
+  unifi_emergency.expire(now);
+#ifdef UNIFI_MINIMAL
+  // Queue parsing is bounded and performed once per second, not each radio loop.
+  if (static_cast<int32_t>(now - next_unifi_expiry_check) < 0) return;
+  next_unifi_expiry_check = now + 1000;
+  // Old queued heartbeats must not revive expired peers when a phone reconnects.
+  for (int i = 0; i < offline_queue_len;) {
+    const auto entry = unifi::classifyFrame(offline_queue[i].buf, offline_queue[i].len);
+    if (entry.kind == unifi::QueueKind::Presence && !unifi_presence.contains(entry.node, now)) {
+      for (int j = i; j < offline_queue_len - 1; ++j) offline_queue[j] = offline_queue[j + 1];
+      --offline_queue_len;
+    } else ++i;
   }
+#endif
 }
 
 int MyMesh::getUniFiPresence(UniFiPresence dest[], int max_num) {
-  expireUniFiPresence();
-  int count = 0;
-  for (int i = 0; i < UNIFI_PRESENCE_TABLE_SIZE && count < max_num; i++) {
-    if (unifi_presence[i].received_at_millis != 0) {
-      dest[count++] = unifi_presence[i].presence;
-    }
-  }
-  return count;
+  return unifi_presence.copy(dest, max_num, millis());
 }
 
-bool MyMesh::sendUniFiPresence() {
+bool MyMesh::isUniFiProvisioned() {
+  ChannelDetails channel;
+  return getUniFiChannel(channel);
+}
+
+bool MyMesh::hasPendingEmergency() {
+  unifi_emergency.expire(millis());
+  return unifi_emergency.hasPending();
+}
+
+bool MyMesh::acknowledgeEmergency() {
+  if (!hasPendingEmergency()) return false;
+  return sendUniFiEvent("ack", "Received", unifi_emergency.pendingId());
+}
+
+bool MyMesh::sendGroupMessage(uint32_t timestamp, mesh::GroupChannel& channel,
+                             const char* sender_name, const char* text, int text_len) {
+  // BaseChatMesh truncates overlong group messages. That would cut off the
+  // envelope terminator or ACK target while still reporting success.
+  if (!sender_name || !text || text_len <= 0 ||
+      size_t(text_len) > MAX_TEXT_LEN ||
+      strlen(sender_name) + 2 + size_t(text_len) > MAX_TEXT_LEN ||
+      memchr(text, 0, text_len)) return false;
+  unifi::Envelope event;
+  const bool from_unifi = isUniFiChannel(channel);
+#ifdef UNIFI_MINIMAL
+  if (!unifi::canSendGroup(isUniFiProvisioned(), unifiSecretIsSet(channel), strlen(sender_name), text_len)) return false;
+#endif
+  const bool structured = from_unifi && unifi::parse(text, text_len, event, false);
+  if (from_unifi && unifi::containsEnvelope(text, text_len) && !structured) return false;
+  if (structured && memcmp(event.node, self_id.pub_key, 6) != 0) return false;
+  const bool sent = BaseChatMesh::sendGroupMessage(timestamp, channel, sender_name, text, text_len);
+  if (sent && structured) {
+    unifi_emergency.sent(event, millis());
+#ifdef DISPLAY_CLASS
+    if (_ui && unifi::isDistress(event.type)) _ui->notify(UIEventType::emergencySent);
+#endif
+  }
+  return sent;
+}
+
+bool MyMesh::sendUniFiEvent(const char* type, const char* label, const char* ack) {
   ChannelDetails channel;
   if (!getUniFiChannel(channel)) return false;
 
   uint32_t timestamp = getRTCClock()->getCurrentTime();
   if (timestamp == 0) timestamp = millis() / 1000;
   char node_prefix[13];
-  char event_id[21];
+  char event_id[29];
   mesh::Utils::toHex(node_prefix, self_id.pub_key, 6);
-  snprintf(event_id, sizeof(event_id), "%s%08lX", node_prefix,
-           (unsigned long)millis());
+  // A boot-random component prevents replay/duplicate collisions when a device
+  // restarts; the counter distinguishes button actions in the same millisecond.
+  if (!unifi::makeEventId(event_id, sizeof(event_id), self_id.pub_key,
+                         unifi_boot_nonce, ++unifi_event_counter)) return false;
 
-  char text[150];
+  char text[MAX_TEXT_LEN + 1];
+  int length;
+#if ENV_INCLUDE_GPS == 1
   double lat = sensors.node_lat;
   double lon = sensors.node_lon;
   bool has_location = lat >= -90.0 && lat <= 90.0 && lon >= -180.0 &&
-                      lon <= 180.0 && (lat != 0.0 || lon != 0.0);
+                      lon <= 180.0 && (lat != 0.0 || lon != 0.0) && !ack;
   if (has_location) {
-    snprintf(text, sizeof(text),
-             "Available [mc:v1;type=presence;id=%s;node=%s;lat=%.6f;lon=%.6f]",
-             event_id, node_prefix, lat, lon);
+    length = snprintf(text, sizeof(text),
+             "%s [mc:v1;type=%s;id=%s;node=%s;lat=%.6f;lon=%.6f]",
+             label, type, event_id, node_prefix, lat, lon);
+  } else
+#endif
+  if (ack) {
+    length = snprintf(text, sizeof(text),
+             "%s [mc:v1;type=%s;id=%s;node=%s;ack=%s]",
+             label, type, event_id, node_prefix, ack);
   } else {
-    snprintf(text, sizeof(text),
-             "Available [mc:v1;type=presence;id=%s;node=%s]",
-             event_id, node_prefix);
+    length = snprintf(text, sizeof(text),
+             "%s [mc:v1;type=%s;id=%s;node=%s]",
+             label, type, event_id, node_prefix);
   }
-  return sendGroupMessage(timestamp, channel.channel, _prefs.node_name, text,
-                          strlen(text));
+  if (length <= 0 || size_t(length) >= sizeof(text)) return false;
+  return sendGroupMessage(timestamp, channel.channel, _prefs.node_name, text, length);
+}
+
+bool MyMesh::sendUniFiPresence() {
+  const bool sent = sendUniFiEvent("presence", "Available");
+#ifdef UNIFI_MINIMAL
+  if (sent) advert(); // Opaque signed identity supplies the full key for direct messaging.
+#endif
+  return sent;
 }
 #endif
 
@@ -1274,7 +1354,9 @@ struct FreqRange {
 };
 
 static FreqRange repeat_freq_ranges[] = {
-  #ifdef ALLOWED_REPEAT_FREQ_RANGE
+  #ifdef UNIFI_MINIMAL
+  { 910525, 910525 }, // Fixed product waveform; values are kHz in the companion protocol.
+  #elif defined(ALLOWED_REPEAT_FREQ_RANGE)
   ALLOWED_REPEAT_FREQ_RANGE
   #else
   { 433000, 433000 },
@@ -1297,6 +1379,35 @@ void MyMesh::startInterface(BaseSerialInterface &serial) {
 }
 
 void MyMesh::handleCmdFrame(size_t len) {
+  if (len == 0 || len > MAX_FRAME_SIZE) {
+    writeErrFrame(ERR_CODE_ILLEGAL_ARG);
+    return;
+  }
+#ifdef UNIFI_MINIMAL
+  const size_t minimum = unifi::minimumCommandLength(cmd_frame[0], MAX_PATH_SIZE);
+  if (minimum == 0) {
+    writeErrFrame(ERR_CODE_UNSUPPORTED_CMD);
+    return;
+  }
+  if (len < minimum) {
+    writeErrFrame(ERR_CODE_ILLEGAL_ARG);
+    return;
+  }
+#endif
+#if defined(UNIFI_MINIMAL) && defined(ENABLE_UNIFI_NETWORK)
+  if (cmd_frame[0] == 0x70) {
+    expireUniFiPresence();
+#if ENV_INCLUDE_GPS == 1
+    const bool gps = true;
+#else
+    const bool gps = false;
+#endif
+    unifi::encodeStatus(out_frame, isUniFiProvisioned(), unifi_emergency,
+        gps, isUniFiProvisioned() && _prefs.isRepeatEn(), unifi_presence.count(millis()));
+    _serial->writeFrame(out_frame, unifi::kStatusSize);
+    return;
+  }
+#endif
   if (cmd_frame[0] == CMD_DEVICE_QUERY && len >= 2) { // sent when app establishes connection
     app_target_ver = cmd_frame[1];                    // which version of protocol does app understand
 
@@ -1372,6 +1483,16 @@ void MyMesh::handleCmdFrame(size_t len) {
     if (recipient && (txt_type == TXT_TYPE_PLAIN || txt_type == TXT_TYPE_CLI_DATA)) {
       char *text = (char *)&cmd_frame[i];
       int tlen = len - i;
+#ifdef UNIFI_MINIMAL
+      if (txt_type != TXT_TYPE_PLAIN) {
+        writeErrFrame(ERR_CODE_UNSUPPORTED_CMD);
+        return;
+      }
+      if (tlen > MAX_TEXT_LEN || memchr(text, 0, tlen)) {
+        writeErrFrame(ERR_CODE_ILLEGAL_ARG);
+        return;
+      }
+#endif
       uint32_t est_timeout;
       text[tlen] = 0; // ensure null
       int result;
@@ -1406,13 +1527,34 @@ void MyMesh::handleCmdFrame(size_t len) {
                         : ERR_CODE_UNSUPPORTED_CMD); // unknown recipient, or unsupported TXT_TYPE_*
     }
   } else if (cmd_frame[0] == CMD_SEND_CHANNEL_TXT_MSG) { // send GroupChannel text msg
+    if (len < 8) {
+      writeErrFrame(ERR_CODE_ILLEGAL_ARG);
+      return;
+    }
     int i = 1;
     uint8_t txt_type = cmd_frame[i++]; // should be TXT_TYPE_PLAIN
     uint8_t channel_idx = cmd_frame[i++];
+#ifdef UNIFI_MINIMAL
+    if (!isUniFiProvisioned()) {
+      writeErrFrame(ERR_CODE_BAD_STATE);
+      return;
+    }
+#endif
     uint32_t msg_timestamp;
     memcpy(&msg_timestamp, &cmd_frame[i], 4);
     i += 4;
     const char *text = (char *)&cmd_frame[i];
+#ifdef ENABLE_UNIFI_NETWORK
+    const size_t text_len = len - i;
+    unifi::Envelope event;
+    if (strlen(_prefs.node_name) + 2 + text_len > MAX_TEXT_LEN ||
+        memchr(text, 0, text_len) ||
+        (channel_idx == 0 && unifi::containsEnvelope(text, text_len) &&
+         (!unifi::parse(text, text_len, event, false) || memcmp(event.node, self_id.pub_key, 6) != 0))) {
+      writeErrFrame(ERR_CODE_ILLEGAL_ARG);
+      return;
+    }
+#endif
 
     if (txt_type != TXT_TYPE_PLAIN) {
       writeErrFrame(ERR_CODE_UNSUPPORTED_CMD);
@@ -1420,18 +1562,12 @@ void MyMesh::handleCmdFrame(size_t len) {
       ChannelDetails channel;
       bool success = getChannel(channel_idx, channel);
       if (success && sendGroupMessage(msg_timestamp, channel.channel, _prefs.node_name, text, len - i)) {
-#if defined(ENABLE_UNIFI_NETWORK) && defined(DISPLAY_CLASS)
-        if (_ui && isUniFiChannel(channel.channel) &&
-            (strstr(text, ";type=sos;") || strstr(text, ";type=medical;") ||
-             strstr(text, ";type=pickup;"))) {
-          _ui->notify(UIEventType::emergencySent);
-        }
-#endif
         writeOKFrame();
       } else {
-        writeErrFrame(ERR_CODE_NOT_FOUND); // bad channel_idx
+        writeErrFrame(success ? ERR_CODE_TABLE_FULL : ERR_CODE_NOT_FOUND);
       }
     }
+#ifndef UNIFI_MINIMAL
   } else if (cmd_frame[0] == CMD_SEND_CHANNEL_DATA) { // send GroupChannel datagram
     if (len < 4) {
       writeErrFrame(ERR_CODE_ILLEGAL_ARG);
@@ -1472,6 +1608,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_TABLE_FULL);
     }
+#endif
   } else if (cmd_frame[0] == CMD_GET_CONTACTS) { // get Contact list
     if (_iter_started) {
       writeErrFrame(ERR_CODE_BAD_STATE); // iterator is currently busy
@@ -1495,6 +1632,12 @@ void MyMesh::handleCmdFrame(size_t len) {
     }
   } else if (cmd_frame[0] == CMD_SET_ADVERT_NAME && len >= 2) {
     int nlen = len - 1;
+#ifdef ENABLE_UNIFI_NETWORK
+    if (!unifi::validName((const char*)&cmd_frame[1], nlen)) {
+      writeErrFrame(ERR_CODE_ILLEGAL_ARG);
+      return;
+    }
+#endif
     if (nlen > sizeof(_prefs.node_name) - 1) nlen = sizeof(_prefs.node_name) - 1; // max len
     memcpy(_prefs.node_name, &cmd_frame[1], nlen);
     _prefs.node_name[nlen] = 0; // null terminator
@@ -1719,6 +1862,7 @@ void MyMesh::handleCmdFrame(size_t len) {
       radio_driver.setTxPower(_prefs.tx_power_dbm);
       writeOKFrame();
     }
+#ifndef UNIFI_MINIMAL
   } else if (cmd_frame[0] == CMD_SET_TUNING_PARAMS) {
     int i = 1;
     uint32_t rx, af;
@@ -1737,6 +1881,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     memcpy(&out_frame[i], &rx, 4); i += 4;
     memcpy(&out_frame[i], &af, 4); i += 4;
     _serial->writeFrame(out_frame, i);
+#endif
   } else if (cmd_frame[0] == CMD_SET_OTHER_PARAMS) {
     _prefs.manual_add_contacts = cmd_frame[1];
     if (len >= 3) {
@@ -1753,7 +1898,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     }
     savePrefs();
     writeOKFrame();
-  } else if (cmd_frame[0] == CMD_SET_PATH_HASH_MODE && cmd_frame[1] == 0 && len >= 3) {
+  } else if (cmd_frame[0] == CMD_SET_PATH_HASH_MODE && len >= 3 && cmd_frame[1] == 0) {
     if (cmd_frame[2] >= 3) {
       writeErrFrame(ERR_CODE_ILLEGAL_ARG);
     } else {
@@ -1761,7 +1906,7 @@ void MyMesh::handleCmdFrame(size_t len) {
       savePrefs();
       writeOKFrame();
     }
-  } else if (cmd_frame[0] == CMD_REBOOT && memcmp(&cmd_frame[1], "reboot", 6) == 0) {
+  } else if (cmd_frame[0] == CMD_REBOOT && len >= 7 && memcmp(&cmd_frame[1], "reboot", 6) == 0) {
     if (dirty_contacts_expiry) { // is there are pending dirty contacts write needed?
       saveContacts();
     }
@@ -1806,6 +1951,7 @@ void MyMesh::handleCmdFrame(size_t len) {
 #else
     writeDisabledFrame();
 #endif
+#ifndef UNIFI_MINIMAL
   } else if (cmd_frame[0] == CMD_SEND_RAW_DATA && len >= 6) {
     int i = 1;
     int8_t path_len = cmd_frame[i++];
@@ -1997,6 +2143,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     uint8_t *pub_key = &cmd_frame[1];
     stopConnection(pub_key);
     writeOKFrame();
+#endif
   } else if (cmd_frame[0] == CMD_GET_CHANNEL && len >= 2) {
     uint8_t channel_idx = cmd_frame[1];
     ChannelDetails channel;
@@ -2040,6 +2187,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_NOT_FOUND); // bad channel_idx
     }
+#ifndef UNIFI_MINIMAL
   } else if (cmd_frame[0] == CMD_SIGN_START) {
     out_frame[0] = RESP_CODE_SIGN_START;
     out_frame[1] = 0; // reserved
@@ -2098,6 +2246,7 @@ void MyMesh::handleCmdFrame(size_t len) {
         writeErrFrame(ERR_CODE_TABLE_FULL);
       }
     }
+#endif
   } else if (cmd_frame[0] == CMD_SET_DEVICE_PIN && len >= 5) {
 
     // get pin from command frame
@@ -2112,6 +2261,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_ILLEGAL_ARG);
     }
+#ifndef UNIFI_MINIMAL
   } else if (cmd_frame[0] == CMD_GET_CUSTOM_VARS) {
     out_frame[0] = RESP_CODE_CUSTOM_VARS;
     char *dp = (char *)&out_frame[1];
@@ -2173,6 +2323,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_NOT_FOUND);
     }
+#endif
   } else if (cmd_frame[0] == CMD_GET_STATS && len >= 2) {
     uint8_t stats_type = cmd_frame[1];
     if (stats_type == STATS_TYPE_CORE) {
@@ -2224,7 +2375,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_ILLEGAL_ARG); // invalid stats sub-type
     }
-  } else if (cmd_frame[0] == CMD_FACTORY_RESET && memcmp(&cmd_frame[1], "reset", 5) == 0) {
+  } else if (cmd_frame[0] == CMD_FACTORY_RESET && len >= 6 && memcmp(&cmd_frame[1], "reset", 5) == 0) {
     if (_serial) {
       MESH_DEBUG_PRINTLN("Factory reset: disabling serial interface to prevent reconnects (BLE/WiFi)");
       _serial->disable(); // Phone app disconnects before we can send OK frame so it's safe here
@@ -2237,6 +2388,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_FILE_IO_ERROR);
     }
+#ifndef UNIFI_MINIMAL
   } else if (cmd_frame[0] == CMD_SET_FLOOD_SCOPE_KEY && len >= 2 && cmd_frame[1] == 0) {
     if (len >= 2 + 16) {
       memcpy(send_scope.key, &cmd_frame[2], sizeof(send_scope.key));  // set scope override TransportKey
@@ -2282,6 +2434,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_TABLE_FULL);
     }
+#endif
   } else if (cmd_frame[0] == CMD_SET_AUTOADD_CONFIG) {
     _prefs.autoadd_config = cmd_frame[1];
     if (len >= 3) {
@@ -2304,6 +2457,7 @@ void MyMesh::handleCmdFrame(size_t len) {
       memcpy(&out_frame[i], &r->upper_freq, 4); i += 4;
     }
     _serial->writeFrame(out_frame, i);
+#ifndef UNIFI_MINIMAL
   } else if (cmd_frame[0] == CMD_SEND_RAW_PACKET && len >= 4) {
     auto pkt = obtainNewPacket();
     if (pkt) {
@@ -2318,6 +2472,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     } else {
       writeErrFrame(ERR_CODE_TABLE_FULL);
     }
+#endif
   } else {
     writeErrFrame(ERR_CODE_UNSUPPORTED_CMD);
     MESH_DEBUG_PRINTLN("ERROR: unknown command: %02X", cmd_frame[0]);
@@ -2548,11 +2703,15 @@ void MyMesh::loop() {
   }
 #endif
 
+#ifndef UNIFI_MINIMAL
   if (_cli_rescue) {
     checkCLIRescueCmd();
   } else {
     checkSerialInterface();
   }
+#else
+  checkSerialInterface();
+#endif
 
   // is there are pending dirty contacts write needed?
   if (dirty_contacts_expiry && millisHasNowPassed(dirty_contacts_expiry)) {
@@ -2582,7 +2741,11 @@ bool MyMesh::advert() {
   }
 #endif
   if (pkt) {
+#ifdef UNIFI_MINIMAL
+    sendFlood(pkt, uint32_t(0), uint8_t(_prefs.path_hash_mode + 1));
+#else
     sendZeroHop(pkt);
+#endif
     return true;
   } else {
     return false;

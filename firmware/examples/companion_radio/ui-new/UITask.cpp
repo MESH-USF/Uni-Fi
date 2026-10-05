@@ -21,12 +21,6 @@
 #ifndef UNIFI_ALERT_LED_ON
 #define UNIFI_ALERT_LED_ON HIGH
 #endif
-#define UNIFI_SENT_LED_DELAY_MILLIS 1200
-#define UNIFI_SENT_LED_ON_MILLIS     160
-#define UNIFI_SENT_LED_OFF_MILLIS    180
-#define UNIFI_RECEIVED_LED_DELAY_MILLIS 700
-#define UNIFI_RECEIVED_LED_ON_MILLIS    650
-#define UNIFI_RECEIVED_LED_OFF_MILLIS   300
 #endif
 
 #define LONG_PRESS_MILLIS   1200
@@ -64,6 +58,16 @@ public:
   }
 
   int render(DisplayDriver& display) override {
+#ifdef UNIFI_MINIMAL
+    display.setColor(UIColor::primary_txt);
+    display.setTextSize(2);
+    display.drawTextCentered(display.width() / 2, 5, "Uni-Fi");
+    display.setTextSize(1);
+    display.drawTextCentered(display.width() / 2, 24, "by MeshUSF");
+    display.drawTextCentered(display.width() / 2, 40, "Double: SOS");
+    display.drawTextCentered(display.width() / 2, 52, "Hold 2s: respond");
+    return 1000;
+#else
     // meshcore logo
     display.setColor(UIColor::corp_blue);
     int logoWidth = 128;
@@ -87,6 +91,7 @@ public:
     display.drawTextCentered(display.width()/2, 48, FIRMWARE_BUILD_DATE);
 
     return 1000;
+#endif
   }
 
   void poll() override {
@@ -102,7 +107,9 @@ class HomeScreen : public UIScreen {
     RECENT,
     RADIO,
     BLUETOOTH,
+#ifndef UNIFI_MINIMAL
     ADVERT,
+#endif
 #if ENV_INCLUDE_GPS == 1
     GPS,
 #endif
@@ -232,6 +239,22 @@ public:
     }
 
     if (_page == HomePage::FIRST) {
+#ifdef UNIFI_MINIMAL
+      display.setColor(UIColor::primary_txt);
+      display.setTextSize(1);
+      const char* state = !the_mesh.isUniFiProvisioned() ? "No network key" :
+          the_mesh.hasPendingEmergency() ? "Hold 2s: ACK" :
+          the_mesh.isOwnEmergencyAcknowledged() ? "SOS acknowledged" :
+          *the_mesh.getOwnEmergencyId() ? "SOS awaiting ACK" : "Uni-Fi ready";
+      display.drawTextCentered(display.width() / 2, 22, state);
+      display.drawTextCentered(display.width() / 2, 35, "Double-click: SOS");
+      if (_task->hasConnection()) {
+        display.drawTextCentered(display.width() / 2, 48, "App connected");
+      } else {
+        snprintf(tmp, sizeof(tmp), "BLE PIN: %06lu", (unsigned long)the_mesh.getBLEPin());
+        display.drawTextCentered(display.width() / 2, 48, tmp);
+      }
+#else
       display.setColor(UIColor::primary_txt);
       display.setTextSize(2);
       sprintf(tmp, "MSG: %d", _task->getMsgCount());
@@ -254,7 +277,19 @@ public:
         sprintf(tmp, "Pin:%d", the_mesh.getBLEPin());
         display.drawTextCentered(display.width() / 2, 43, tmp);
       }
+#endif
     } else if (_page == HomePage::RECENT) {
+#ifdef UNIFI_MINIMAL
+      UniFiPresence roster[UI_RECENT_LIST_SIZE];
+      int count = the_mesh.getUniFiPresence(roster, UI_RECENT_LIST_SIZE);
+      display.setColor(UIColor::primary_txt);
+      display.setTextSize(1);
+      display.drawTextCentered(display.width() / 2, 20, "Network members");
+      for (int i = 0; i < count && i < 3; ++i) {
+        display.drawTextLeftAlign(0, 32 + i * 10, roster[i].name);
+      }
+      if (!count) display.drawTextCentered(display.width() / 2, 38, "None heard yet");
+#else
       the_mesh.getRecentlyHeard(recent, UI_RECENT_LIST_SIZE);
       display.setColor(UIColor::primary_txt);
       int y = 20;
@@ -279,6 +314,7 @@ public:
         display.setCursor(display.width() - timestamp_width - 1, y);
         display.print(tmp);
       }
+#endif
     } else if (_page == HomePage::RADIO) {
       display.setColor(UIColor::primary_txt);
       display.setTextSize(1);
@@ -306,11 +342,13 @@ public:
       display.setColor(UIColor::secondary_txt);
       display.setTextSize(1);
       display.drawTextCentered(display.width() / 2, 64 - 11, "toggle: " PRESS_LABEL);
+#ifndef UNIFI_MINIMAL
     } else if (_page == HomePage::ADVERT) {
       display.setColor(UIColor::corp_blue);
       display.drawXbm((display.width() - 32) / 2, 18, advert_icon, 32, 32);
       display.setColor(UIColor::secondary_txt);
       display.drawTextCentered(display.width() / 2, 64 - 11, "advert: " PRESS_LABEL);
+#endif
 #if ENV_INCLUDE_GPS == 1
     } else if (_page == HomePage::GPS) {
       LocationProvider* nmea = sensors.getLocationProvider();
@@ -456,7 +494,11 @@ public:
     if (c == KEY_NEXT || c == KEY_RIGHT) {
       _page = (_page + 1) % HomePage::Count;
       if (_page == HomePage::RECENT) {
+#ifdef UNIFI_MINIMAL
+        _task->showAlert("Uni-Fi members", 800);
+#else
         _task->showAlert("Recent adverts", 800);
+#endif
       }
       return true;
     }
@@ -468,6 +510,7 @@ public:
       }
       return true;
     }
+#ifndef UNIFI_MINIMAL
     if (c == KEY_ENTER && _page == HomePage::ADVERT) {
       _task->notify(UIEventType::ack);
       if (the_mesh.advert()) {
@@ -477,6 +520,7 @@ public:
       }
       return true;
     }
+#endif
 #if ENV_INCLUDE_GPS == 1
     if (c == KEY_ENTER && _page == HomePage::GPS) {
       _task->toggleGPS();
@@ -513,7 +557,7 @@ class MsgPreviewScreen : public UIScreen {
   MsgEntry unread[MAX_UNREAD_MSGS];
 
 public:
-  MsgPreviewScreen(UITask* task, mesh::RTCClock* rtc) : _task(task), _rtc(rtc) { num_unread = 0; }
+  MsgPreviewScreen(UITask* task, mesh::RTCClock* rtc) : _task(task), _rtc(rtc) { head = 0; num_unread = 0; }
 
   void addPreview(uint8_t path_len, const char* from_name, const char* msg) {
     head = (head + 1) % MAX_UNREAD_MSGS;
@@ -632,8 +676,9 @@ void UITask::begin(DisplayDriver* display, SensorManager* sensors, NodePrefs* no
 }
 
 void UITask::showAlert(const char* text, int duration_millis) {
-  strcpy(_alert, text);
+  snprintf(_alert, sizeof(_alert), "%s", text);
   _alert_expiry = millis() + duration_millis;
+  _next_refresh = 0;
 }
 
 void UITask::notify(UIEventType t) {
@@ -665,10 +710,13 @@ switch(t){
 
 #ifdef PIN_UNIFI_ALERT_LED
   if (t == UIEventType::emergencyReceived) {
-    startUniFiLedPattern(UniFiLedPattern::received);
-  } else if (t == UIEventType::emergencySent &&
-             unifi_led_pattern != UniFiLedPattern::received) {
-    startUniFiLedPattern(UniFiLedPattern::sent);
+    unifi_led.start(unifi::AlertLed::Received, uint32_t(millis()));
+  } else if (t == UIEventType::emergencySent) {
+    unifi_led.start(unifi::AlertLed::Sent, uint32_t(millis()));
+  }
+  if (t == UIEventType::emergencyReceived || t == UIEventType::emergencySent) {
+    checkDisplayOn(0);
+    gotoHomeScreen();
   }
 #endif
 
@@ -707,33 +755,8 @@ void UITask::newMsg(uint8_t path_len, const char* from_name, const char* text, i
 
 void UITask::userLedHandler() {
 #ifdef PIN_UNIFI_ALERT_LED
-  if (unifi_led_pattern == UniFiLedPattern::none ||
-      (long)(millis() - unifi_led_next_change) < 0) {
-    return;
-  }
-
-  const bool received = unifi_led_pattern == UniFiLedPattern::received;
-  if (!unifi_led_on) {
-    if (unifi_led_pulses_remaining == 0) {
-      unifi_led_pattern = UniFiLedPattern::none;
-      digitalWrite(PIN_UNIFI_ALERT_LED, !UNIFI_ALERT_LED_ON);
-      return;
-    }
-    unifi_led_on = true;
-    digitalWrite(PIN_UNIFI_ALERT_LED, UNIFI_ALERT_LED_ON);
-    unifi_led_next_change = millis() +
-        (received ? UNIFI_RECEIVED_LED_ON_MILLIS : UNIFI_SENT_LED_ON_MILLIS);
-  } else {
-    unifi_led_on = false;
-    digitalWrite(PIN_UNIFI_ALERT_LED, !UNIFI_ALERT_LED_ON);
-    unifi_led_pulses_remaining--;
-    if (unifi_led_pulses_remaining == 0) {
-      unifi_led_pattern = UniFiLedPattern::none;
-    } else {
-      unifi_led_next_change = millis() +
-          (received ? UNIFI_RECEIVED_LED_OFF_MILLIS : UNIFI_SENT_LED_OFF_MILLIS);
-    }
-  }
+  digitalWrite(PIN_UNIFI_ALERT_LED,
+      unifi_led.sample(uint32_t(millis())) ? UNIFI_ALERT_LED_ON : !UNIFI_ALERT_LED_ON);
 #elif defined(PIN_STATUS_LED)
   int cur_time = millis();
   if (cur_time > next_led_change) {
@@ -753,19 +776,6 @@ void UITask::userLedHandler() {
   }
 #endif
 }
-
-#ifdef PIN_UNIFI_ALERT_LED
-void UITask::startUniFiLedPattern(UniFiLedPattern pattern) {
-  unifi_led_pattern = pattern;
-  unifi_led_pulses_remaining = pattern == UniFiLedPattern::received ? 2 : 3;
-  unifi_led_on = false;
-  digitalWrite(PIN_UNIFI_ALERT_LED, !UNIFI_ALERT_LED_ON);
-  unifi_led_next_change = millis() +
-      (pattern == UniFiLedPattern::received
-           ? UNIFI_RECEIVED_LED_DELAY_MILLIS
-           : UNIFI_SENT_LED_DELAY_MILLIS);
-}
-#endif
 
 void UITask::setCurrScreen(UIScreen* c) {
   curr = c;
@@ -968,11 +978,22 @@ char UITask::checkDisplayOn(char c) {
 }
 
 char UITask::handleLongPress(char c) {
+#ifdef UNIFI_MINIMAL
+  checkDisplayOn(0);
+  if (the_mesh.hasPendingEmergency()) {
+    const bool queued = the_mesh.acknowledgeEmergency();
+    gotoHomeScreen();
+    showAlert(queued ? "Response queued" : "Response failed", 2500);
+    return 0;
+  }
+  return c;
+#else
   if (millis() - ui_started_at < 8000) {   // long press in first 8 seconds since startup -> CLI/rescue
     the_mesh.enterCLIRescue();
     c = 0;   // consume event
   }
   return c;
+#endif
 }
 
 char UITask::handleDoubleClick(char c) {
@@ -980,7 +1001,7 @@ char UITask::handleDoubleClick(char c) {
   checkDisplayOn(c);
 #ifdef ENABLE_EMERGENCY_BUTTON
   bool sent = the_mesh.sendEmergencyMessage();
-  showAlert(sent ? "SOS sent" : "SOS failed", 2500);
+  showAlert(sent ? "SOS queued" : "SOS failed", 2500);
   c = 0;
 #endif
   return c;

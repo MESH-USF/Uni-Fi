@@ -10,6 +10,10 @@ class ArduinoSerialInterface : public BaseSerialInterface {
   uint16_t rx_len;
   Stream* _serial;
   uint8_t rx_buf[MAX_FRAME_SIZE];
+#ifdef UNIFI_MINIMAL
+  bool _has_received = false;
+  unsigned long _last_received = 0;
+#endif
 
 public:
   ArduinoSerialInterface() { _isEnabled = false; _state = 0; }

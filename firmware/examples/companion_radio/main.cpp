@@ -252,6 +252,10 @@ void loop() {
   ui_task.loop();
 #endif
   rtc_clock.tick();
+#ifdef UNIFI_MINIMAL
+  // Yield to BLE/serial RTOS tasks without blocking gesture or radio polling.
+  delay(1);
+#endif
 #ifdef HAS_EXTERNAL_WATCHDOG
   external_watchdog.loop();
 #endif

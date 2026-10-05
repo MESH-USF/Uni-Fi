@@ -12,6 +12,10 @@ HeltecV3Board board;
 
 WRAPPER_CLASS radio_driver(radio, board);
 
+#ifdef UNIFI_MINIMAL
+ESP32RTCClock rtc_clock;
+SensorManager sensors;
+#else
 ESP32RTCClock fallback_clock;
 AutoDiscoverRTCClock rtc_clock(fallback_clock);
 
@@ -20,17 +24,27 @@ AutoDiscoverRTCClock rtc_clock(fallback_clock);
   MicroNMEALocationProvider nmea = MicroNMEALocationProvider(Serial1, &rtc_clock);
   EnvironmentSensorManager sensors = EnvironmentSensorManager(nmea);
 #else
-  EnvironmentSensorManager sensors;
+EnvironmentSensorManager sensors;
+#endif
 #endif
 
 #ifdef DISPLAY_CLASS
+#ifdef UNIFI_MINIMAL
+  DISPLAY_CLASS display(&board.periph_power);
+  MomentaryButton user_btn(PIN_USER_BTN, 2000, true, true);
+#else
   DISPLAY_CLASS display;
   MomentaryButton user_btn(PIN_USER_BTN, 1000, true);
 #endif
+#endif
 
 bool radio_init() {
+#ifdef UNIFI_MINIMAL
+  rtc_clock.begin();
+#else
   fallback_clock.begin();
   rtc_clock.begin(Wire);
+#endif
   
 #if defined(P_LORA_SCLK)
   return radio.std_init(&spi);
@@ -43,4 +57,3 @@ mesh::LocalIdentity radio_new_identity() {
   RadioNoiseListener rng(radio);
   return mesh::LocalIdentity(&rng);  // create new random identity
 }
-

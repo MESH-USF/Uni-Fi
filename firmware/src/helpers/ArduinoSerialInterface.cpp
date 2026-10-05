@@ -8,13 +8,22 @@
 void ArduinoSerialInterface::enable() { 
   _isEnabled = true;
   _state = RECV_STATE_IDLE;
+#ifdef UNIFI_MINIMAL
+  _has_received = false;
+#endif
 }
 void ArduinoSerialInterface::disable() {
   _isEnabled = false;
 }
 
 bool ArduinoSerialInterface::isConnected() const { 
+#ifdef UNIFI_MINIMAL
+  // USB UART has no link-state signal. The browser polls every five seconds;
+  // activity expires so an unplugged cable cannot suppress standalone alerts.
+  return _isEnabled && _has_received && (unsigned long)(millis() - _last_received) < 30000;
+#else
   return true;   // no way of knowing, so assume yes
+#endif
 }
 
 bool ArduinoSerialInterface::isWriteBusy() const {
@@ -62,6 +71,14 @@ size_t ArduinoSerialInterface::checkRecvFrame(uint8_t dest[]) {
         }
         rx_len++;
         if (rx_len >= _frame_len) {  // received a complete frame?
+#ifdef UNIFI_MINIMAL
+          if (_frame_len > MAX_FRAME_SIZE) {
+            _state = RECV_STATE_IDLE;
+            return 0;
+          }
+          _has_received = true;
+          _last_received = millis();
+#endif
           if (_frame_len > MAX_FRAME_SIZE) _frame_len = MAX_FRAME_SIZE;    // truncate
           memcpy(dest, rx_buf, _frame_len);
           _state = RECV_STATE_IDLE;  // reset state, for next frame
