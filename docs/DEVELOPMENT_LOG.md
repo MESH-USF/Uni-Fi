@@ -206,3 +206,10 @@ changes should also appear in the eventual changelog.
 - Host controls, 4,426 protocol assertions, 20 browser protocol/session tests
   and all 40 inherited native test cases pass again. No additional physical
   hardware or Flutter validation and no GitHub push are claimed.
+
+## 2026-10-05 — High-level quick guide
+
+- Added `docs/UNIFI_QUICK_GUIDE.md` for readers who need the project idea,
+  phone-independent behavior, MeshCore/Uni-Fi responsibilities, message path,
+  current limits, and next steps without packet offsets or source-tree detail.
+- Added an editable Word export, matching PDF, and a small repeatable exporter.

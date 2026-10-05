@@ -75,6 +75,8 @@ Formatted copies with rendered charts are available as an editable
 [Word document](docs/Uni-Fi-Technical-Walkthrough.docx) and a
 [PDF](docs/Uni-Fi-Technical-Walkthrough.pdf). See the
 [document export guide](docs/DOCUMENT_EXPORT.md) to regenerate them.
+For a shorter introduction, see the [Uni-Fi quick guide](docs/UNIFI_QUICK_GUIDE.md),
+available as [Word](docs/Uni-Fi-Quick-Guide.docx) and [PDF](docs/Uni-Fi-Quick-Guide.pdf).
 
 The compiled prototype and host tests do not establish physical RF/BLE or
 button/LED performance. Use the [hardware acceptance procedure](docs/PROTOTYPE_VALIDATION.md)

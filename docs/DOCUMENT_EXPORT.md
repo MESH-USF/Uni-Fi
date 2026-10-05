@@ -88,3 +88,13 @@ images; modify their Mermaid source and regenerate to change their contents.
 The exports describe the existing GPS-free prototype and its outstanding
 hardware/mobile validation. Creating a document does not establish additional
 firmware functionality, RF reliability or emergency-service certification.
+
+## Quick guide export
+
+The shorter high-level guide can be exported without Mermaid rendering:
+
+```bash
+PYTHONPATH=/tmp/unifi-doc-python python3 scripts/export-unifi-quick-guide.py \
+  docs/UNIFI_QUICK_GUIDE.md docs/Uni-Fi-Quick-Guide.docx
+libreoffice --headless --convert-to pdf --outdir docs docs/Uni-Fi-Quick-Guide.docx
+```
