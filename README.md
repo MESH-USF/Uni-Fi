@@ -71,6 +71,10 @@ See [architecture](docs/ARCHITECTURE.md), [security](docs/SECURITY.md), [hardwar
 For a ground-up explanation with original/current directory trees, module
 diagrams, feature implementations and exact RF/companion/event layouts, read
 the [technical walkthrough](docs/TECHNICAL_WALKTHROUGH.md).
+Formatted copies with rendered charts are available as an editable
+[Word document](docs/Uni-Fi-Technical-Walkthrough.docx) and a
+[PDF](docs/Uni-Fi-Technical-Walkthrough.pdf). See the
+[document export guide](docs/DOCUMENT_EXPORT.md) to regenerate them.
 
 The compiled prototype and host tests do not establish physical RF/BLE or
 button/LED performance. Use the [hardware acceptance procedure](docs/PROTOTYPE_VALIDATION.md)

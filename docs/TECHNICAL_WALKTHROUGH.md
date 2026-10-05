@@ -53,13 +53,13 @@ working location discovery or map in the current browser test client.
 ```mermaid
 flowchart LR
   subgraph A["Node A: Heltec V3"]
-    AU["USER button / OLED / LED"] <--> AF["Uni-Fi firmware\nidentity + key + local state"]
+    AU["USER button / OLED / LED"] <--> AF["Uni-Fi firmware<br/>identity + key + local state"]
     AF <--> AR["SX1262 LoRa radio"]
   end
   AC["Optional browser or phone"] <-->|"BLE or USB companion frames"| AF
-  AR <-->|"MeshCore RF packets\noptional relay nodes"| BR
+  AR <-->|"MeshCore RF packets<br/>optional relay nodes"| BR
   subgraph B["Node B: Heltec V3"]
-    BR["SX1262 LoRa radio"] <--> BF["Uni-Fi firmware\nidentity + key + local state"]
+    BR["SX1262 LoRa radio"] <--> BF["Uni-Fi firmware<br/>identity + key + local state"]
     BF <--> BU["USER button / OLED / LED"]
   end
   BF <-->|"BLE or USB companion frames"| BC["Optional browser or phone"]
@@ -93,16 +93,16 @@ treated as interchangeable:
 
 ```mermaid
 flowchart TB
-  UI["Button or client user action"] --> EVENT["Uni-Fi application text\nSOS / presence / receipt\nmc:v1 envelope"]
+  UI["Button or client user action"] --> EVENT["Uni-Fi application text<br/>SOS / presence / receipt<br/>mc:v1 envelope"]
   EVENT --> CHOICE{"Where did the action originate?"}
-  CHOICE -->|"Browser / Flutter"| CP["Local companion binary command\nfor example command 3: group text"]
+  CHOICE -->|"Browser / Flutter"| CP["Local companion binary command<br/>for example command 3: group text"]
   CP --> LINK["BLE GATT write or USB framed bytes"]
   LINK --> FW["MyMesh on the local radio"]
   CHOICE -->|"Device USER button"| FW
-  FW --> RF["MeshCore RF packet\nheader + path + channel selector + MAC + ciphertext"]
+  FW --> RF["MeshCore RF packet<br/>header + path + channel selector + MAC + ciphertext"]
   RF --> RX["Remote firmware verifies/decrypts"]
   RX --> STATE["Parse envelope; update roster / incident / OLED / LED"]
-  RX --> CPBACK["Plaintext companion receive frame\nqueued for the remote client"]
+  RX --> CPBACK["Plaintext companion receive frame<br/>queued for the remote client"]
 ```
 
 1. **Uni-Fi envelope:** application meaning, such as “this is SOS event X.”
@@ -268,13 +268,13 @@ Open-source source code does not require publishing those files.
 ```mermaid
 flowchart TB
   subgraph BEFORE["Inherited and initial Uni-Fi build"]
-    B0["esp32_base"] --> B1["Heltec_lora32_v3\nincludes sensor_base options"]
-    B1 --> B2["Standard Heltec BLE companion\n350 contacts / 40 groups / 256 offline frames"]
-    B1 --> B3["Initial Uni-Fi target\nGPS / MicroNMEA still included\n128 contacts / 8 groups / 64 offline frames"]
+    B0["esp32_base"] --> B1["Heltec_lora32_v3<br/>includes sensor_base options"]
+    B1 --> B2["Standard Heltec BLE companion<br/>350 contacts / 40 groups / 256 offline frames"]
+    B1 --> B3["Initial Uni-Fi target<br/>GPS / MicroNMEA still included<br/>128 contacts / 8 groups / 64 offline frames"]
   end
   subgraph NOW["Current product build"]
-    N0["esp32_base"] --> N1["Heltec_v3_unifi_companion_ble_us\nexplicit pins + libraries + source filters"]
-    N1 --> N2["SX1262 + OLED + USER + BLE + USB\nno GPS/sensor/RTC discovery\n128 contacts / 8 groups / 64 offline frames"]
+    N0["esp32_base"] --> N1["Heltec_v3_unifi_companion_ble_us<br/>explicit pins + libraries + source filters"]
+    N1 --> N2["SX1262 + OLED + USER + BLE + USB<br/>no GPS/sensor/RTC discovery<br/>128 contacts / 8 groups / 64 offline frames"]
   end
 ```
 
@@ -333,18 +333,18 @@ not know about a particular OLED or button. `MyMesh` also implements the
 
 ```mermaid
 flowchart TB
-  MAIN["main.cpp\nconstruct + setup + loop"] --> TARGET["heltec_v3 target\nboard / radio_driver / clock / display / button"]
-  MAIN --> MM["MyMesh\ncommands + product policy"]
-  MM --> U["UniFiProtocol.h\nEnvelope + PresenceTable + EmergencyState + queue policy"]
-  MM --> BC["BaseChatMesh\ncontacts + direct/group messages"]
-  BC --> MESH["Mesh\nRF types + decrypt/verify + forwarding"]
-  MESH --> DISP["Dispatcher\nradio queues + scheduling"]
+  MAIN["main.cpp<br/>construct + setup + loop"] --> TARGET["heltec_v3 target<br/>board / radio_driver / clock / display / button"]
+  MAIN --> MM["MyMesh<br/>commands + product policy"]
+  MM --> U["UniFiProtocol.h<br/>Envelope + PresenceTable + EmergencyState + queue policy"]
+  MM --> BC["BaseChatMesh<br/>contacts + direct/group messages"]
+  BC --> MESH["Mesh<br/>RF types + decrypt/verify + forwarding"]
+  MESH --> DISP["Dispatcher<br/>radio queues + scheduling"]
   DISP --> RADIO["RadioLib SX1262 wrapper"]
-  DISP --> POOL["StaticPoolPacketManager\n16 packet objects"]
-  MESH --> SEEN["SimpleMeshTables\n160 recent packet hashes"]
-  MM <--> STORE["DataStore / IdentityStore\nSPIFFS persistence"]
-  MM <--> MULTI["MultiSerialInterface\nBLE + USB adapters"]
-  MM <--> UI["UITask\nexisting OLED pages + emergency states"]
+  DISP --> POOL["StaticPoolPacketManager<br/>16 packet objects"]
+  MESH --> SEEN["SimpleMeshTables<br/>160 recent packet hashes"]
+  MM <--> STORE["DataStore / IdentityStore<br/>SPIFFS persistence"]
+  MM <--> MULTI["MultiSerialInterface<br/>BLE + USB adapters"]
+  MM <--> UI["UITask<br/>existing OLED pages + emergency states"]
   UI --> BUTTON["MomentaryButton + UniFiButton"]
   UI --> LED["UniFiLed + GPIO 35"]
 ```
@@ -372,8 +372,8 @@ flowchart TD
   STORE --> ID["Load identity or generate/store one; generate boot event nonce"]
   ID --> PREF["Load name/preferences/contacts; enforce fixed radio and GPS-off policy"]
   PREF --> KEY{"Valid compiled deployment key?"}
-  KEY -->|"yes"| LOCK["Install locked Uni-Fi channel 0\noverrides stored slot 0"]
-  KEY -->|"no"| EMPTY["Clear channel 0\nunprovisioned state"]
+  KEY -->|"yes"| LOCK["Install locked Uni-Fi channel 0<br/>overrides stored slot 0"]
+  KEY -->|"no"| EMPTY["Clear channel 0<br/>unprovisioned state"]
   LOCK --> IF["Register BLE + USB; start UI and main loop"]
   EMPTY --> IF
 ```
@@ -870,14 +870,14 @@ flowchart TD
   RX["LoRa packet received"] --> DUP{"RF packet hash already seen?"}
   DUP -->|"yes"| STOP["Suppress exact RF duplicate"]
   DUP -->|"no"| KEY["Find selector candidates; check MAC; decrypt"]
-  KEY -->|"no successful decryption"| NONE["No local plaintext/state\nrelay policy may still permit forwarding"]
+  KEY -->|"no successful decryption"| NONE["No local plaintext/state<br/>relay policy may still permit forwarding"]
   KEY -->|"valid group plaintext"| TEXT["BaseChatMesh extracts timestamp / name:text"]
   TEXT --> PARSE{"Valid mc:v1 envelope on Uni-Fi?"}
   PARSE -->|"yes"| STATE["Refresh RAM roster; process distress/receipt"]
   PARSE -->|"malformed mc:v1"| DROP["Reject local event/message"]
   PARSE -->|"ordinary text"| QUEUE
-  STATE --> DISPLAY["OLED/LED when appropriate\npresence and duplicate alerts hidden"]
-  STATE --> QUEUE["Build V3/legacy plaintext companion receive frame\nadd to bounded offline queue"]
+  STATE --> DISPLAY["OLED/LED when appropriate<br/>presence and duplicate alerts hidden"]
+  STATE --> QUEUE["Build V3/legacy plaintext companion receive frame<br/>add to bounded offline queue"]
   QUEUE --> PUSH["If client connected, notify 0x83"]
   PUSH --> PULL["Client requests command 10 until queue empty"]
   PULL --> WEB["Web NetworkState updates RAM view and UI"]
@@ -932,12 +932,11 @@ dedicated minimal incident screen.
 stateDiagram-v2
   [*] --> Ready
   Ready --> Waiting: Distress accepted into local queue
-  Waiting --> Acknowledged: Valid remote receipt; ack exactly matches own ID
-  Waiting --> Waiting: Unrelated or self receipt
-  Acknowledged --> Acknowledged: Repeat matching receipt; no repeat LED alert
+  Waiting --> Acknowledged: Valid remote receipt, ack exactly matches own ID
+  Waiting --> Waiting: Ignore unrelated/self receipt, or replace ID on new own distress
+  Acknowledged --> Acknowledged: Repeat matching receipt, no repeat LED alert
   Waiting --> Ready: Four-hour expiry or restart
   Acknowledged --> Ready: Four-hour expiry or restart
-  Waiting --> Waiting: New own distress replaces current own ID
   Acknowledged --> Waiting: New own distress replaces current own ID
 ```
 
@@ -1073,7 +1072,7 @@ a foundation, not a claim of feature parity.
 
 ```mermaid
 flowchart LR
-  GPS["Future UART GPS module"] -.-> FIX["Future firmware provider\nvalid/stale fix rules"]
+  GPS["Future UART GPS module"] -.-> FIX["Future firmware provider<br/>valid/stale fix rules"]
   FIX -.-> ENV["Optional lat/lon in encrypted mc:v1 event"]
   ENV -.-> RF["Existing MeshCore group transport"]
   RF -.-> PARSE["Firmware + Flutter envelope parsing"]

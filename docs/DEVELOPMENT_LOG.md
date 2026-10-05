@@ -182,3 +182,27 @@ changes should also appear in the eventual changelog.
   assertions, 20 web tests and all 40 existing native cases pass again.
   No firmware/app implementation changes,
   key publication, hardware testing or GitHub push are part of this task.
+
+## 2026-10-05 — Word and PDF technical report
+
+- Converted the full walkthrough into editable
+  `docs/Uni-Fi-Technical-Walkthrough.docx` and a matching 38-page PDF, with
+  a cover, linked reading guide, page numbers, tables and ten embedded charts.
+- Added reusable local chart-rendering and Word-export scripts plus
+  `docs/DOCUMENT_EXPORT.md`; dependency installs and intermediate screenshots
+  remain outside committed product dependencies/artifacts.
+- Corrected Mermaid label line breaks and state-transition punctuation;
+  combined duplicate self-loop labels so both behaviors appear in the chart.
+  These are presentation corrections, not firmware behavior changes.
+- Used Playwright to render all charts with no browser console errors or
+  warnings. Visually reviewed module, SOS and build charts and protocol-table
+  PDF pages; portrait charts flow with nearby text and wide charts use
+  landscape pages.
+- Independent content audit found all 50 headings, 50 list items, 97 unchanged
+  prose paragraphs, 478 table cells and 17 code/tree blocks retained. All ten
+  embedded images match the refreshed renders; 50 bookmarks, 19 reading-guide
+  links and 16 repeating table headers are present. Only the introductory
+  Markdown/Mermaid-format sentence is adapted for the rendered document.
+- Host controls, 4,426 protocol assertions, 20 browser protocol/session tests
+  and all 40 inherited native test cases pass again. No additional physical
+  hardware or Flutter validation and no GitHub push are claimed.

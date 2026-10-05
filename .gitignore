@@ -7,3 +7,4 @@ app/android/build/
 output/playwright/
 .playwright-cli/
 .DS_Store
+__pycache__/
