@@ -1,11 +1,12 @@
 # Uni-Fi
 
-**Uni-Fi — mesh network developed by MeshUSF** is an emergency-first, off-grid messaging system built on the open MeshCore protocol. The initial hardware is a Heltec LoRa 32 V3, band-matched whip antenna, and UART GPS. The radio remains useful without a phone; the phone adds the larger map, direct chat, QR contact import, and group-chat interface.
+**Uni-Fi — mesh network developed by MeshUSF** is an emergency-first, off-grid messaging system built on the open MeshCore protocol. The prototype uses a Heltec LoRa 32 V3 and band-matched whip antenna. GPS is deferred. The radio can send SOS and acknowledgement without a phone; Flutter retains the foundations for maps, direct chat, QR import and groups.
 
 ## Repository layout
 
 - `firmware/` — trimmed MeshCore companion firmware and the locked Heltec V3 Uni-Fi target
 - `app/` — Flutter web/mobile client derived from MeshCore Open
+- `web/` — lightweight browser client for real-device BLE/USB prototype testing
 - `docs/` — architecture, provisioning, protocol, hardware, and product boundaries
 
 The upstream MIT license files and source history documents remain in each source tree. Uni-Fi-specific work is also released under the MIT license at the repository root.
@@ -16,13 +17,14 @@ The upstream MIT license files and source history documents remain in each sourc
 - A provisioned, encrypted `Uni-Fi` network channel in locked firmware slot 0
 - Network PSK is compiled into each deployed radio but excluded from source control
 - Device PSK export and replacement are blocked through the companion protocol
-- Public advertisements use an opaque `UniFi-<key prefix>` label and contain no GPS; usernames and GPS presence travel inside the encrypted channel
+- Public advertisements use an opaque `UniFi-<key prefix>` label and contain no GPS; usernames travel inside encrypted presence, with coordinates reserved for later
 - Encrypted presence is flooded every 15 minutes, deduplicated by node prefix, and retained locally for four hours
-- Double-click sends an SOS without a phone
-- One onboard LED is time-shared with radio TX: three short pulses after a sent alert and two long pulses for a received alert or response
-- Emergency-first app with SOS, medical, pickup, safe, en-route, location, and responder acknowledgement
-- Only recently authenticated Uni-Fi users appear in the main Contacts and Map views
-- Distress markers remain on the map for four hours and change from red to green after an acknowledgement
+- Double-click sends SOS; a two-second hold acknowledges pending distress without a phone
+- GPIO 35 LED is dedicated to alerts: three short pulses for local acceptance and two long pulses for received distress or a matching response
+- Fleet forwarding with a three-hop flood cap and the original MeshCore duplicate suppression
+- Minimal build excludes GPS, environmental sensors, external RTC discovery, Wi-Fi/TCP, raw/image datagrams, remote administration and filesystem rescue CLI
+- Web test client with SOS, medical, pickup, safe, en-route and matching receipt responses
+- Inherited Flutter Emergency/Contacts/Map foundations filter encrypted presence and correlate distress acknowledgements; mobile builds and GPS/map flows remain unverified
 - Direct messages, QR contact import, group channels, node naming, battery status, GPS, and screen timeout remain available
 
 ## Provision and build
@@ -30,17 +32,32 @@ The upstream MIT license files and source history documents remain in each sourc
 The repository intentionally contains no deployable network secret.
 
 ```bash
-cp firmware/examples/companion_radio/UniFiProvisioning.example.h \
-   firmware/examples/companion_radio/UniFiProvisioning.h
-openssl rand -base64 16
-# Put that output in UNIFI_NETWORK_PSK_B64 in UniFiProvisioning.h.
-# Use the same generated key only for devices in the same deployment.
+python3 scripts/provision-unifi.py
+# The ignored header and compiled binaries contain a private deployment key.
+# Flash the same build to devices belonging to this deployment.
 
 cd firmware
+pio run -e Heltec_v3_unifi_companion_ble_us -t clean
 pio run -e Heltec_v3_unifi_companion_ble_us
+pio run -e Heltec_v3_unifi_companion_ble_us -t mergebin
 ```
 
-Client:
+Hardware-test web client (Chrome/Edge desktop):
+
+```bash
+python3 -m http.server 8765 --bind 127.0.0.1 --directory web
+# Open http://localhost:8765
+```
+
+Automated firmware-control and browser-protocol tests:
+
+```bash
+bash scripts/test-unifi.sh
+cd firmware
+pio test -e native
+```
+
+Flutter client (SDK required; mobile builds remain a separate validation task):
 
 ```bash
 cd app
@@ -50,6 +67,10 @@ flutter run
 ```
 
 See [architecture](docs/ARCHITECTURE.md), [security](docs/SECURITY.md), [hardware](docs/HARDWARE.md), [wire format](docs/EMERGENCY_PROTOCOL.md), [decision records](docs/decisions/README.md), and the [development log](docs/DEVELOPMENT_LOG.md).
+
+The compiled prototype and host tests do not establish physical RF/BLE or
+button/LED performance. Use the [hardware acceptance procedure](docs/PROTOTYPE_VALIDATION.md)
+before claiming those behaviors work on a device.
 
 ## Git history
 

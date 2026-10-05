@@ -4,6 +4,16 @@
 
 Common mesh actions should be understandable without teaching users radio terminology. A deployed radio must retain the minimum emergency workflow when its phone is absent, discharged, or intentionally off.
 
+## Current prototype boundary (2026-10-05)
+
+The deliverable is a GPS-free Heltec V3 companion firmware and a small BLE/USB
+hardware-test web client. Firmware retains text, contacts, group channels,
+saved names, battery/OLED/BLE and core routing, and provides one-button SOS
+and acknowledgement. GPS, location sharing and Flutter map verification are
+TODO; existing optional protocol fields and Flutter map foundations remain.
+The workflow below describes the eventual mobile experience, not a claim that
+GPS or all inherited Flutter features have been verified in this prototype.
+
 ## Primary workflow
 
 1. Connect to a provisioned radio over Bluetooth.
@@ -17,11 +27,13 @@ Common mesh actions should be understandable without teaching users radio termin
 ## Radio responsibilities
 
 - Own identity, RF configuration, network group key, encryption, and packet forwarding
-- Read GPS and send a 15-minute encrypted presence heartbeat
+- Send a 15-minute encrypted presence heartbeat; GPS integration is deferred
 - Maintain a 32-entry, four-hour presence table in RAM; a duplicate node prefix refreshes local receipt time
 - Send an SOS through a double-click without a phone
+- Acknowledge the newest received distress with a two-second hold
 - Display send/failure state on OLED and play deterministic single-LED alert patterns
 - Queue received messages while the app is disconnected
+- Forward essential fleet traffic with a three-hop flood cap and deduplication
 
 ## Phone responsibilities
 
@@ -56,6 +68,7 @@ Large inherited modules such as image codecs, local translation, repeater admini
 
 ## Deferred
 
+- GPS hardware integration and location/map acceptance testing
 - Per-device signatures for group messages
 - Enforceable channel bans and moderator roles
 - Network-key rotation UI

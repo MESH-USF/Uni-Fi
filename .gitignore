@@ -4,4 +4,6 @@ app/.dart_tool/
 app/build/
 app/android/build/
 .git-data/
+output/playwright/
+.playwright-cli/
 .DS_Store

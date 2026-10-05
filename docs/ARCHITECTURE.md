@@ -3,7 +3,7 @@
 The radio is the trusted, always-available core. The phone is a replaceable interface and history/cache layer.
 
 ```text
-GPS -> Heltec V3 -> MeshCore encrypted RF flood -> other Uni-Fi radios
+(future GPS) -> Heltec V3 -> MeshCore encrypted RF flood -> other Uni-Fi radios
           |
           +-- button, OLED, LED, 4-hour RAM roster
           |
@@ -15,7 +15,7 @@ GPS -> Heltec V3 -> MeshCore encrypted RF flood -> other Uni-Fi radios
 - It already owns MeshCore identity, encryption, routing, and RF timing.
 - A hardware SOS must work without BLE or a running phone app.
 - A compiled network key does not need to be exported to the phone.
-- GPS presence can continue at low duty cycle while the phone sleeps.
+- Presence and SOS/ACK can continue while the phone sleeps; GPS is deferred.
 - Local receipt time avoids trusting an unset or incorrect sender clock.
 
 The Heltec therefore owns the network key, locked radio parameters, opaque public advertisement, encrypted username/GPS heartbeat, four-hour RAM presence table, emergency button, offline queue, and LED/OLED feedback.
@@ -39,7 +39,14 @@ Maps, searchable history, QR scanning, group management, and rich chat consume s
 - Presence interval: 15 minutes, giving up to 16 refresh opportunities during the four-hour window
 - Firmware roster: 32 entries in RAM, no flash wear and no stale roster after power loss
 - Offline queue: 64 frames, enough for several presence cycles plus emergency traffic without the previous 256-frame RAM cost
-- GPS poll: 60 seconds; presence packets use the latest valid fix
+- GPS: compiled out of the prototype; optional envelope fields remain reserved
+- Fleet routing: three-hop flood cap; essential direct/ACK/PATH traffic retained
+- LED: one owner; ordinary TX indication disabled for deterministic alert patterns
+
+The prototype's web client reads a product status frame to observe a physical
+button SOS and its matching response. It mirrors received presence in browser
+RAM. It is a hardware test interface; the existing Flutter client remains the
+base for mobile maps, QR contact import and extended chat.
 
 ## Protocol compatibility
 

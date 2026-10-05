@@ -75,3 +75,85 @@ changes should also appear in the eventual changelog.
 - Physical Heltec V3 testing remains mandatory for GPS pinout, double-click
   timing, OLED messages, LED polarity/patterns, RF interoperability, power
   consumption, range, and acknowledgement behavior.
+
+## 2026-10-05 — GPS-free Heltec V3 prototype and hardware-test client
+
+### Decisions and implementation
+
+- Started `feat/heltec-v3-prototype` from the organization's integrated main
+  history. Recorded the one-button, minimal-runtime decisions in ADR 0007.
+- Corrected the control assumption: RESET is not an application input. USER
+  single-click wakes/pages, double-click queues SOS, and a two-second hold
+  acknowledges the newest pending received distress. Holding through boot
+  does not generate an emergency action.
+- Added shared, host-testable debounce/gesture and nonblocking LED controllers.
+  GPIO 35 now has one writer: three short pulses for queued distress, two long
+  pulses for received distress or a matching remote receipt. OLED state
+  distinguishes these outcomes; queued is not proof of radio delivery.
+- Used active-low Vext power control for the OLED timeout and wake/reinit.
+  Fixed alert-copy bounds and uninitialized preview/message counters.
+- Isolated the product build from inherited GPS, environmental sensors,
+  external RTC probing, Wi-Fi/TCP, private-key transfer, image/raw datagrams,
+  remote administration, signing workflows and rescue filesystem CLI. Upstream
+  source and licenses remain; these features are excluded from this target.
+- Kept BLE/USB companion transport, stored device names, direct text, contacts,
+  configured group channels, storage, battery reporting and essential routing.
+  Locked the requested 910.525 MHz profile and enabled provisioned fleet
+  forwarding with a three-hop flood cap and existing duplicate suppression.
+- Replaced substring envelope checks with strict bounded parsing, compact
+  messages and explicit UTF-8 length rejection instead of silent truncation.
+  Added boot-random/sequence event IDs after radio RNG initialization.
+- Added matching standalone receipt state, replay/duplicate suppression,
+  wrap-safe four-hour local expiry and a 32-member RAM roster. Prioritized the
+  64-frame offline queue over coalesced presence heartbeats. State and queues
+  are bounded and do not promise lossless delivery under overload.
+- Added read-only companion status command 0x70 so a connected client can
+  verify provisioning and track physical-button incidents. USB activity
+  expires after 30 seconds; the new client polls every five seconds.
+- Added a private provisioning-header generator that refuses overwrite and
+  never prints the key. The deployment header and provisioned images remain
+  ignored and must not be published. Shared-key membership does not prove
+  individual identity; short routing hashes are not authentication.
+- Developed the dependency-free web client in parallel: real BLE/USB paths,
+  device-name readback, presets/text, exact-event receipt responses, retained
+  presence/incidents, serialized commands, offline draining and diagnostics.
+  Its RAM roster is reconstructed from received messages, not a firmware dump.
+- Deferred GPS hardware/driver wiring and maps; preserved optional coordinate
+  envelopes and existing Flutter sources for the later mobile milestone.
+
+### Verification
+
+- PlatformIO toolchain downloads now work. Both isolated unprovisioned and
+  private provisioned Heltec builds succeed; the latter produces a merged
+  ESP32-S3 flash image at offset 0x0.
+- Provisioned image uses 94,668 bytes static RAM (28.9%) and 1,189,513 bytes
+  application flash (35.6% of its partition). These are build-size figures,
+  not measured free heap, latency, battery life or savings against a baseline.
+- Private merged-image SHA-256:
+  `3edf3cc6340deba33f4c3518107a17e3333e762d15d87867a299cd131d145426`.
+- Host controls tests pass; seven protocol test groups pass 4,426 assertions;
+  all 20 Node web tests and all 40 existing MeshCore native tests pass.
+  C++ host tests compile with strict warnings. Sanitizers could not run because
+  the installed runtime library links are broken; this is not sanitizer coverage.
+- Inspected the final ELF: no WiFiClass, MicroNMEA, AutoDiscoverRTCClock,
+  rescue CLI handler or group-datagram sender symbols remain.
+- Playwright checked the actual served browser UI at desktop and 390 x 844:
+  no console errors/warnings or horizontal overflow; transmit controls remain
+  disabled without a real initialized connection. Fixed the missing favicon.
+  Screenshots stay ignored under `output/playwright/`.
+- Added CI for controls/web, native routing tests and both provisioning build
+  paths in separate build directories to avoid provisioning-cache reuse; CI
+  intentionally does not upload deployment-key-bearing images. Binary checks
+  confirm the private image contains this deployment key and the isolated
+  unprovisioned image does not.
+
+### Remaining acceptance work
+
+- No physical serial device is attached here. RF, BLE pairing/MTU, OLED/Vext,
+  button/LED electrical behavior, battery current and two-/three-node delivery
+  tests remain **not run**; see `docs/PROTOTYPE_VALIDATION.md` for the checklist.
+- Flutter/Dart SDKs are absent. This iteration does not claim a verified mobile
+  build or working physical GPS/map flow. GPS, key rotation, enforceable
+  moderation and extra hardware preset controls remain later milestones.
+- Changes are recorded locally on the feature branch; this iteration does not
+  push to GitHub or rewrite published history.
