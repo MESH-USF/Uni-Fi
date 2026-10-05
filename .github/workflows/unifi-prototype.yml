@@ -1,0 +1,32 @@
+name: Uni-Fi prototype
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  controls-and-web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: bash scripts/test-unifi.sh
+
+  firmware:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install platformio==6.2.0
+      - run: pio test -d firmware -e native
+      # No deployment keys or provisioned binaries are published by CI.
+      - run: pio run -d firmware -e Heltec_v3_unifi_companion_ble_us
+      - run: python3 scripts/provision-unifi.py
+      - run: pio run -d firmware -e Heltec_v3_unifi_companion_ble_us -t mergebin
