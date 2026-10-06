@@ -213,3 +213,32 @@ changes should also appear in the eventual changelog.
   phone-independent behavior, MeshCore/Uni-Fi responsibilities, message path,
   current limits, and next steps without packet offsets or source-tree detail.
 - Added an editable Word export, matching PDF, and a small repeatable exporter.
+
+## 2026-10-05 — Pre-flash software checks rerun
+
+- Checked source snapshot `a12ada3` on `feat/heltec-v3-prototype`; the working
+  tree was clean before verification. No firmware implementation changes.
+- `bash scripts/test-unifi.sh` passed the button/LED controls checks, seven
+  protocol groups with 4,426 assertions, and all 20 Node browser tests.
+- PlatformIO native tests passed all 40 executed cases across five suites.
+  The collected companion-node-prefs suite was skipped by the native target;
+  its skip is not counted as a passing case.
+- Cleaned only the generated Heltec target build with PlatformIO, then ran
+  `mergebin`. The provisioned ESP32-S3 build succeeded in approximately
+  144 seconds, using 94,668 bytes static RAM and 1,189,513 bytes application
+  flash. These figures do not measure runtime free heap or battery life.
+- esptool 4.5.1 confirmed valid application and bootloader checksums and
+  validation hashes; both identify ESP32-S3 with 8 MB flash. The merge tool
+  retained the existing DIO header because its hash protects header changes;
+  its flash-mode warning did not prevent successful image generation.
+- Verified the merged image contains the application bytes at offset
+  `0x10000`; the complete image is intended for flashing at `0x0`.
+  Size: 1,255,472 bytes. SHA-256:
+  `df3e96b8320b52909abd61e1c9352f42a51d481415d76a44e3b9ccc9c7a64ca3`.
+- Confirmed the private provisioning header defines a valid 128-bit key and
+  its compiled Base64 constant is present in both images. An initial inspection
+  incorrectly searched for decoded key bytes; the corrected check follows the
+  firmware's startup Base64 decode. The key was never printed. Header and
+  generated images remain ignored by Git.
+- No upload was performed. Physical RF/BLE, button/LED/OLED, battery and
+  two-/three-node acceptance remain not run; Flutter/GPS remain deferred.
