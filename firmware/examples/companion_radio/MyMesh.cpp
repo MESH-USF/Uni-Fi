@@ -3,7 +3,11 @@
 #include <Arduino.h> // needed for PlatformIO
 #include <Mesh.h>
 
-#if __has_include("UniFiProvisioning.h")
+#if defined(UNIFI_STOCK_COMPAT) && defined(ENABLE_UNIFI_NETWORK)
+#error "Stock-app prototype must not enable the private Uni-Fi network module"
+#endif
+
+#if defined(ENABLE_UNIFI_NETWORK) && __has_include("UniFiProvisioning.h")
 #include "UniFiProvisioning.h"
 #endif
 
@@ -1120,7 +1124,11 @@ void MyMesh::begin(bool has_display) {
   _prefs.setRepeatEn(false);
 #endif
 #ifdef UNIFI_MINIMAL
+#ifdef UNIFI_STOCK_COMPAT
+  _prefs.setRepeatEn(false); // Stock companion role: dedicated repeaters relay floods.
+#else
   _prefs.setRepeatEn(true); // Every provisioned prototype can relay the retained traffic.
+#endif
   memset(_prefs.default_scope_name, 0, sizeof(_prefs.default_scope_name));
   memset(_prefs.default_scope_key, 0, sizeof(_prefs.default_scope_key));
   _prefs.advert_loc_policy = ADVERT_LOC_NONE;
@@ -1384,6 +1392,22 @@ void MyMesh::handleCmdFrame(size_t len) {
     return;
   }
 #ifdef UNIFI_MINIMAL
+#ifdef UNIFI_STOCK_COMPAT
+  if (cmd_frame[0] == CMD_GET_CUSTOM_VARS) {
+    out_frame[0] = RESP_CODE_CUSTOM_VARS; // No optional sensor settings in this build.
+    _serial->writeFrame(out_frame, 1);
+    return;
+  }
+  if (cmd_frame[0] == CMD_GET_TUNING_PARAMS) {
+    out_frame[0] = RESP_CODE_TUNING_PARAMS;
+    const uint32_t rx = _prefs.rx_delay_base * 1000;
+    const uint32_t af = _prefs.airtime_factor * 1000;
+    memcpy(&out_frame[1], &rx, 4);
+    memcpy(&out_frame[5], &af, 4);
+    _serial->writeFrame(out_frame, 9);
+    return;
+  }
+#endif
   const size_t minimum = unifi::minimumCommandLength(cmd_frame[0], MAX_PATH_SIZE);
   if (minimum == 0) {
     writeErrFrame(ERR_CODE_UNSUPPORTED_CMD);
@@ -1534,7 +1558,7 @@ void MyMesh::handleCmdFrame(size_t len) {
     int i = 1;
     uint8_t txt_type = cmd_frame[i++]; // should be TXT_TYPE_PLAIN
     uint8_t channel_idx = cmd_frame[i++];
-#ifdef UNIFI_MINIMAL
+#if defined(UNIFI_MINIMAL) && defined(ENABLE_UNIFI_NETWORK)
     if (!isUniFiProvisioned()) {
       writeErrFrame(ERR_CODE_BAD_STATE);
       return;
@@ -2751,6 +2775,17 @@ bool MyMesh::advert() {
     return false;
   }
 }
+
+#ifdef UNIFI_STOCK_COMPAT
+bool MyMesh::sendSimulatedLocationAdvert() {
+  // Test coordinates, not a GPS fix. Use the standard signed, public advert
+  // so stock MeshCore contacts/maps can decode it without a custom module.
+  mesh::Packet* pkt = createSelfAdvert(_prefs.node_name, 28.0587, -82.4139);
+  if (!pkt) return false;
+  sendFlood(pkt, uint32_t(0), uint8_t(_prefs.path_hash_mode + 1));
+  return true; // Queued locally; this is not a delivery acknowledgement.
+}
+#endif
 
 // To check if there is pending work
 bool MyMesh::hasPendingWork() const {

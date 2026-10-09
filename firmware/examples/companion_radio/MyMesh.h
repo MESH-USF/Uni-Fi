@@ -25,7 +25,7 @@
 
 #include "DataStore.h"
 #include "NodePrefs.h"
-#ifdef ENABLE_UNIFI_NETWORK
+#if defined(ENABLE_UNIFI_NETWORK) || defined(UNIFI_MINIMAL)
 #include "UniFiProtocol.h"
 #endif
 
@@ -109,6 +109,9 @@ public:
   void loop();
   void handleCmdFrame(size_t len);
   bool advert();
+#ifdef UNIFI_STOCK_COMPAT
+  bool sendSimulatedLocationAdvert();
+#endif
   void enterCLIRescue();
 
 #ifdef ENABLE_EMERGENCY_BUTTON

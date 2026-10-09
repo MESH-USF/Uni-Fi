@@ -26,6 +26,7 @@ jobs:
           python-version: '3.11'
       - run: pip install platformio==6.2.0
       - run: pio test -d firmware -e native
+      - run: pio run -d firmware -e Heltec_v3_unifi_stock_ble_us -t mergebin
       # No deployment keys or provisioned binaries are published by CI.
       - run: pio run -d firmware -e Heltec_v3_unifi_companion_ble_us
         env:

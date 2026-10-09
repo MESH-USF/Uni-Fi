@@ -64,8 +64,13 @@ public:
     display.drawTextCentered(display.width() / 2, 5, "Uni-Fi");
     display.setTextSize(1);
     display.drawTextCentered(display.width() / 2, 24, "by MeshUSF");
+#ifdef UNIFI_STOCK_COMPAT
+    display.drawTextCentered(display.width() / 2, 40, "Triple: location");
+    display.drawTextCentered(display.width() / 2, 52, "SIMULATED GPS");
+#else
     display.drawTextCentered(display.width() / 2, 40, "Double: SOS");
     display.drawTextCentered(display.width() / 2, 52, "Hold 2s: respond");
+#endif
     return 1000;
 #else
     // meshcore logo
@@ -242,12 +247,18 @@ public:
 #ifdef UNIFI_MINIMAL
       display.setColor(UIColor::primary_txt);
       display.setTextSize(1);
+#ifdef UNIFI_STOCK_COMPAT
+      display.drawTextCentered(display.width() / 2, 20, "Uni-Fi / stock app");
+      display.drawTextCentered(display.width() / 2, 30, "SIM GPS / public");
+      display.drawTextCentered(display.width() / 2, 40, "Triple: location");
+#else
       const char* state = !the_mesh.isUniFiProvisioned() ? "No network key" :
           the_mesh.hasPendingEmergency() ? "Hold 2s: ACK" :
           the_mesh.isOwnEmergencyAcknowledged() ? "SOS acknowledged" :
           *the_mesh.getOwnEmergencyId() ? "SOS awaiting ACK" : "Uni-Fi ready";
       display.drawTextCentered(display.width() / 2, 22, state);
       display.drawTextCentered(display.width() / 2, 35, "Double-click: SOS");
+#endif
       if (_task->hasConnection()) {
         display.drawTextCentered(display.width() / 2, 48, "App connected");
       } else {
@@ -279,7 +290,7 @@ public:
       }
 #endif
     } else if (_page == HomePage::RECENT) {
-#ifdef UNIFI_MINIMAL
+#if defined(UNIFI_MINIMAL) && !defined(UNIFI_STOCK_COMPAT)
       UniFiPresence roster[UI_RECENT_LIST_SIZE];
       int count = the_mesh.getUniFiPresence(roster, UI_RECENT_LIST_SIZE);
       display.setColor(UIColor::primary_txt);
@@ -494,7 +505,7 @@ public:
     if (c == KEY_NEXT || c == KEY_RIGHT) {
       _page = (_page + 1) % HomePage::Count;
       if (_page == HomePage::RECENT) {
-#ifdef UNIFI_MINIMAL
+#if defined(UNIFI_MINIMAL) && !defined(UNIFI_STOCK_COMPAT)
         _task->showAlert("Uni-Fi members", 800);
 #else
         _task->showAlert("Recent adverts", 800);
@@ -978,7 +989,7 @@ char UITask::checkDisplayOn(char c) {
 }
 
 char UITask::handleLongPress(char c) {
-#ifdef UNIFI_MINIMAL
+#if defined(UNIFI_MINIMAL) && !defined(UNIFI_STOCK_COMPAT)
   checkDisplayOn(0);
   if (the_mesh.hasPendingEmergency()) {
     const bool queued = the_mesh.acknowledgeEmergency();
@@ -987,19 +998,21 @@ char UITask::handleLongPress(char c) {
     return 0;
   }
   return c;
-#else
+#elif !defined(UNIFI_MINIMAL)
   if (millis() - ui_started_at < 8000) {   // long press in first 8 seconds since startup -> CLI/rescue
     the_mesh.enterCLIRescue();
     c = 0;   // consume event
   }
   return c;
+#else
+  return checkDisplayOn(c);
 #endif
 }
 
 char UITask::handleDoubleClick(char c) {
   MESH_DEBUG_PRINTLN("UITask: double-click triggered");
-  checkDisplayOn(c);
-#ifdef ENABLE_EMERGENCY_BUTTON
+  c = checkDisplayOn(c);
+#if defined(ENABLE_EMERGENCY_BUTTON) && !defined(UNIFI_STOCK_COMPAT)
   bool sent = the_mesh.sendEmergencyMessage();
   showAlert(sent ? "SOS queued" : "SOS failed", 2500);
   c = 0;
@@ -1010,7 +1023,13 @@ char UITask::handleDoubleClick(char c) {
 char UITask::handleTripleClick(char c) {
   MESH_DEBUG_PRINTLN("UITask: triple click triggered");
   checkDisplayOn(c);
+#ifdef UNIFI_STOCK_COMPAT
+  const bool queued = the_mesh.sendSimulatedLocationAdvert();
+  gotoHomeScreen();
+  showAlert(queued ? "SIM location queued" : "SIM location failed", 2500);
+#else
   toggleBuzzer();
+#endif
   c = 0;
   return c;
 }

@@ -48,6 +48,18 @@ int main() {
   release(b, 11300);
   assert(b.sample(false, 12000) == Button::None);
 
+  // Three short presses produce exactly one triple, never an intermediate
+  // double click (which is SOS in the legacy private-network profile).
+  press(b, 13000);
+  release(b, 13100);
+  press(b, 13200);
+  release(b, 13300);
+  press(b, 13400);
+  release(b, 13500);
+  assert(b.sample(false, 13809) == Button::None);
+  assert(b.sample(false, 13810) == Button::TripleClick);
+  assert(b.sample(false, 14000) == Button::None);
+
   Button held_at_boot;
   held_at_boot.sample(true, 0);
   assert(held_at_boot.sample(true, 5000) == Button::None);
