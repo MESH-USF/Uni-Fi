@@ -65,8 +65,8 @@ public:
     display.setTextSize(1);
     display.drawTextCentered(display.width() / 2, 24, "by MeshUSF");
 #ifdef UNIFI_STOCK_COMPAT
-    display.drawTextCentered(display.width() / 2, 40, "Triple: location");
-    display.drawTextCentered(display.width() / 2, 52, "SIMULATED GPS");
+    display.drawTextCentered(display.width() / 2, 40, "Triple: Public msg");
+    display.drawTextCentered(display.width() / 2, 52, "Next: location page");
 #else
     display.drawTextCentered(display.width() / 2, 40, "Double: SOS");
     display.drawTextCentered(display.width() / 2, 52, "Hold 2s: respond");
@@ -109,6 +109,9 @@ public:
 class HomeScreen : public UIScreen {
   enum HomePage {
     FIRST,
+#ifdef UNIFI_STOCK_COMPAT
+    LOCATION,
+#endif
     RECENT,
     RADIO,
     BLUETOOTH,
@@ -248,9 +251,9 @@ public:
       display.setColor(UIColor::primary_txt);
       display.setTextSize(1);
 #ifdef UNIFI_STOCK_COMPAT
-      display.drawTextCentered(display.width() / 2, 20, "Uni-Fi / stock app");
-      display.drawTextCentered(display.width() / 2, 30, "SIM GPS / public");
-      display.drawTextCentered(display.width() / 2, 40, "Triple: location");
+      display.drawTextCentered(display.width() / 2, 20, "Uni-Fi / Public");
+      display.drawTextCentered(display.width() / 2, 30, "TEST check-in + SIM");
+      display.drawTextCentered(display.width() / 2, 40, "Triple: send msg");
 #else
       const char* state = !the_mesh.isUniFiProvisioned() ? "No network key" :
           the_mesh.hasPendingEmergency() ? "Hold 2s: ACK" :
@@ -288,6 +291,15 @@ public:
         sprintf(tmp, "Pin:%d", the_mesh.getBLEPin());
         display.drawTextCentered(display.width() / 2, 43, tmp);
       }
+#endif
+#ifdef UNIFI_STOCK_COMPAT
+    } else if (_page == HomePage::LOCATION) {
+      display.setColor(UIColor::primary_txt);
+      display.setTextSize(1);
+      display.drawTextCentered(display.width() / 2, 20, "Location broadcast");
+      display.drawTextCentered(display.width() / 2, 30, "SIMULATED GPS");
+      display.drawTextCentered(display.width() / 2, 40, "28.0587 -82.4139");
+      display.drawTextCentered(display.width() / 2, 52, "Triple: advert");
 #endif
     } else if (_page == HomePage::RECENT) {
 #if defined(UNIFI_MINIMAL) && !defined(UNIFI_STOCK_COMPAT)
@@ -498,6 +510,21 @@ public:
   }
 
   bool handleInput(char c) override {
+#ifdef UNIFI_STOCK_COMPAT
+    if (c == KEY_SELECT) { // Triple press is scoped to the selected action page.
+      if (_page == HomePage::FIRST) {
+        const bool queued = the_mesh.sendPublicPresetMessage();
+        _task->showAlert(queued ? "Public msg queued" : "Public send failed", 2500);
+        return true;
+      }
+      if (_page == HomePage::LOCATION) {
+        const bool queued = the_mesh.sendSimulatedLocationAdvert();
+        _task->showAlert(queued ? "SIM advert queued" : "SIM advert failed", 2500);
+        return true;
+      }
+      return false; // Never broadcast from radio/BLE/shutdown/recent pages.
+    }
+#endif
     if (c == KEY_LEFT || c == KEY_PREV) {
       _page = (_page + HomePage::Count - 1) % HomePage::Count;
       return true;
@@ -1024,9 +1051,8 @@ char UITask::handleTripleClick(char c) {
   MESH_DEBUG_PRINTLN("UITask: triple click triggered");
   checkDisplayOn(c);
 #ifdef UNIFI_STOCK_COMPAT
-  const bool queued = the_mesh.sendSimulatedLocationAdvert();
-  gotoHomeScreen();
-  showAlert(queued ? "SIM location queued" : "SIM location failed", 2500);
+  // Wake without changing the selected page, then let that page own the action.
+  return curr == home ? KEY_SELECT : 0;
 #else
   toggleBuzzer();
 #endif

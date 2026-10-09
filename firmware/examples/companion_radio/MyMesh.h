@@ -110,6 +110,7 @@ public:
   void handleCmdFrame(size_t len);
   bool advert();
 #ifdef UNIFI_STOCK_COMPAT
+  bool sendPublicPresetMessage();
   bool sendSimulatedLocationAdvert();
 #endif
   void enterCLIRescue();

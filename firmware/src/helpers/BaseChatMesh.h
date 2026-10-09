@@ -180,6 +180,7 @@ public:
   bool getChannel(int idx, ChannelDetails& dest);
   bool setChannel(int idx, const ChannelDetails& src);
   int findChannelIdx(const mesh::GroupChannel& ch);
+  int findChannelByPSK(const char* psk_base64);
 
   void loop();
 };

@@ -60,6 +60,20 @@ int main() {
   assert(b.sample(false, 13810) == Button::TripleClick);
   assert(b.sample(false, 14000) == Button::None);
 
+  // Page navigation is a completed single click, followed by a separate
+  // triple gesture. It must not merge into a double/triple with navigation.
+  press(b, 15000);
+  release(b, 15100);
+  assert(b.sample(false, 15410) == Button::Click);
+  press(b, 15600);
+  release(b, 15700);
+  press(b, 15800);
+  release(b, 15900);
+  press(b, 16000);
+  release(b, 16100);
+  assert(b.sample(false, 16410) == Button::TripleClick);
+  assert(b.sample(false, 17000) == Button::None);
+
   Button held_at_boot;
   held_at_boot.sample(true, 0);
   assert(held_at_boot.sample(true, 5000) == Button::None);

@@ -2777,6 +2777,19 @@ bool MyMesh::advert() {
 }
 
 #ifdef UNIFI_STOCK_COMPAT
+bool MyMesh::sendPublicPresetMessage() {
+  ChannelDetails channel;
+  // Saved channels can move/replace slot zero. Match the standard Public key,
+  // not a name or slot, and never silently overwrite the user's channels.
+  if (!getChannel(findChannelByPSK(PUBLIC_GROUP_PSK), channel) || !channel.name[0]) return false;
+  static const char message[] =
+      "TEST: Uni-Fi check-in. SIM GPS: 28.0587, -82.4139.";
+  static_assert(sizeof(message) + sizeof(_prefs.node_name) <= MAX_TEXT_LEN,
+                "Preset plus saved-name prefix must fit the group text budget");
+  return BaseChatMesh::sendGroupMessage(getRTCClock()->getCurrentTimeUnique(),
+      channel.channel, _prefs.node_name, message, sizeof(message) - 1);
+}
+
 bool MyMesh::sendSimulatedLocationAdvert() {
   // Test coordinates, not a GPS fix. Use the standard signed, public advert
   // so stock MeshCore contacts/maps can decode it without a custom module.

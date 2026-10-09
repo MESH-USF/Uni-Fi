@@ -892,6 +892,16 @@ ChannelDetails* BaseChatMesh::addChannel(const char* name, const char* psk_base6
   }
   return NULL;
 }
+int BaseChatMesh::findChannelByPSK(const char* psk_base64) {
+  if (!psk_base64) return -1;
+  const auto encoded = reinterpret_cast<const unsigned char*>(psk_base64);
+  const size_t length = strlen(psk_base64);
+  const unsigned int decoded_length = decode_base64_length(encoded, length);
+  if (decoded_length != 16 && decoded_length != 32) return -1;
+  mesh::GroupChannel channel = {};
+  decode_base64(encoded, length, channel.secret);
+  return findChannelIdx(channel);
+}
 bool BaseChatMesh::getChannel(int idx, ChannelDetails& dest) {
   if (idx >= 0 && idx < MAX_GROUP_CHANNELS) {
     dest = channels[idx];
@@ -920,6 +930,9 @@ int BaseChatMesh::findChannelIdx(const mesh::GroupChannel& ch) {
   return -1;  // not found
 }
 #else
+int BaseChatMesh::findChannelByPSK(const char* psk_base64) {
+  return -1;
+}
 ChannelDetails* BaseChatMesh::addChannel(const char* name, const char* psk_base64) {
   return NULL;  // not supported
 }
