@@ -282,3 +282,38 @@ changes should also appear in the eventual changelog.
   deployment key from stock binaries without printing the key. Initial image
   checks ran during a rebuild and found files not yet generated; rerunning
   after both builds completed passed. Generated binaries remain ignored.
+
+## 2026-10-08 — Page-scoped Public preset (0.3.1)
+
+- User reports a queued advertisement was not visible in the app. No hardware
+  diagnosis is claimed: receiver settings, RF delivery and checking the sender's
+  own app remain possible explanations. Implemented the requested chat path.
+- Home-page triple press now sends `<name>: TEST: Uni-Fi check-in. SIM GPS:
+  28.0587, -82.4139.` through the existing Public-channel group sender. The saved
+  name prefix and a unique RTC timestamp are supplied; a compile-time assertion
+  keeps the full fixed preset inside the text budget.
+- Added a location page immediately after home. Its triple press retains the
+  standard signed simulated-location advert. Other settings/message-preview
+  pages do not transmit. Display wake preserves the selected page; single and
+  double clicks navigate. No persistent mode state or automatic beacon added.
+- Added a small read-only PSK lookup beside the existing BaseChatMesh channel
+  helpers. It reuses the existing decoder and exact-key lookup, so renamed or
+  relocated Public channels work without confusing a private channel in slot
+  zero. Missing Public or allocation failure is shown as a failed send. Stored
+  channels are never silently replaced.
+- The initial build exposed multiple definitions from including the Base64
+  library implementation header in two compilation units. Moved lookup into
+  the existing decoder's compilation unit; stock and private builds then pass.
+- Added a host gesture case for completed single-page navigation followed by a
+  separate triple. Host controls, 4,426 protocol assertions, 20 browser tests,
+  and all 44 executed native cases pass (companion-node-prefs remains skipped).
+  Native tests do not execute the hardware-dependent UI or group-send backend;
+  actual page actions and radio reception remain physical acceptance tests.
+- Stock static RAM remains 91,716 bytes; application flash is 1,184,005 bytes.
+  esptool validates checksum/hash. Verified version 0.3.1, the preset text,
+  correct app offset in merged image, and private-key absence without exposing
+  the key. Merged size 1,249,952 bytes; SHA-256:
+  `4890a991c5c6c2cd2828930de9e2227769a37c285d4f3b00d01cc52ca07eea84`.
+- Updated README/current guide and decision 0009. Reception must be checked on
+  a second node's Public chat; sender-originated messages are not mirrored as
+  synthetic received messages to its own app. No upload or RF test performed.

@@ -1,13 +1,14 @@
 # Uni-Fi
 
-**Uni-Fi — mesh network developed by MeshUSF** is an off-grid messaging prototype built on MeshCore for Heltec LoRa 32 V3. The current prototype targets the original MeshCore app: triple-press the USER button to flood a public advertisement containing the saved name and a simulated location. Real GPS is deferred.
+**Uni-Fi — mesh network developed by MeshUSF** is an off-grid messaging prototype built on MeshCore for Heltec LoRa 32 V3. The current prototype targets the original MeshCore app: triple-press on the home page sends a preset Public-channel chat message; a separate location page sends a simulated-location advertisement. Real GPS is deferred.
 
 ## Current stock-app prototype
 
-- Build target: `Heltec_v3_unifi_stock_ble_us` (Uni-Fi 0.3.0).
+- Build target: `Heltec_v3_unifi_stock_ble_us` (Uni-Fi 0.3.1).
 - Uni-Fi / MeshUSF OLED branding, BLE pairing PIN, message preview and screen timeout.
-- Three short USER/BOOT presses broadcast the saved node name and test coordinates **28.0587, -82.4139**. No phone or GPS module is needed.
-- Standard signed, unencrypted MeshCore advertisement; no private Uni-Fi provisioning key or custom mobile decoder.
+- Home page: triple USER/BOOT press sends `<name>: TEST: Uni-Fi check-in. SIM GPS: 28.0587, -82.4139.` to the standard Public channel.
+- One page forward: location-broadcast page; triple press sends a standard signed, unencrypted advert with the saved name and those simulated coordinates. Other pages do not send on triple press.
+- Both actions work without a phone or GPS. No private Uni-Fi provisioning key or custom mobile decoder is needed.
 - Standard contacts, direct/group text, Public channel, BLE and USB companion interfaces remain; advanced pruned commands are not promised.
 - Radio remains locked to 910.525 MHz / 62.5 kHz / SF7 / CR4/5; peers must match. This companion does not relay other nodes' traffic; repeaters provide additional hops.
 - Double press navigates backward, hold selects. The old SOS/receipt/presence module is **not enabled** in this target.
@@ -20,7 +21,7 @@ pio run -e Heltec_v3_unifi_stock_ble_us -t mergebin
 pio run -e Heltec_v3_unifi_stock_ble_us -t upload
 ```
 
-No provisioning step is required. Stock-app pairing and RF reception still need physical hardware verification. The custom `web/` client and exported walkthroughs below describe the earlier private-network prototype, not this stock-app target.
+No provisioning step is required. Check Public-channel reception in the app connected to a **second node**; hardware-originated sends are not mirrored to the sender's own app. Stock-app pairing and RF reception still need physical hardware verification. The custom `web/` client and exported walkthroughs below describe the earlier private-network prototype, not this stock-app target.
 
 ## Repository layout
 

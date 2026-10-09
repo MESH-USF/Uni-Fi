@@ -14,3 +14,4 @@ changes, add a new record that supersedes the old one and link the two.
 | [0006](0006-prune-at-product-boundaries.md) | Prune at product boundaries while retaining protocol compatibility | Accepted |
 | [0007](0007-one-button-prototype.md) | One-button, GPS-free Heltec prototype and bounded fleet routing | Accepted; updates 0005 and 0006 |
 | [0008](0008-stock-app-simulated-advert.md) | Original MeshCore app and triple-press public simulated location | Current prototype; older private target retained |
+| [0009](0009-page-scoped-public-preset.md) | Home-page Public preset and separate location-advert page | Current button behavior; updates 0008 |
