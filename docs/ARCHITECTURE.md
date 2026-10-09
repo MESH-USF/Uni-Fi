@@ -1,5 +1,8 @@
 # Architecture and load distribution
 
+> This describes the retained private-network target. For the current original
+> MeshCore app / public simulated-location target, see [stock-app prototype](STOCK_APP_PROTOTYPE.md).
+
 The radio is the trusted, always-available core. The phone is a replaceable interface and history/cache layer.
 
 See the [technical walkthrough](TECHNICAL_WALKTHROUGH.md) for before/after

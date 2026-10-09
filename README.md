@@ -1,6 +1,26 @@
 # Uni-Fi
 
-**Uni-Fi — mesh network developed by MeshUSF** is an emergency-first, off-grid messaging system built on the open MeshCore protocol. The prototype uses a Heltec LoRa 32 V3 and band-matched whip antenna. GPS is deferred. The radio can send SOS and acknowledgement without a phone; Flutter retains the foundations for maps, direct chat, QR import and groups.
+**Uni-Fi — mesh network developed by MeshUSF** is an off-grid messaging prototype built on MeshCore for Heltec LoRa 32 V3. The current prototype targets the original MeshCore app: triple-press the USER button to flood a public advertisement containing the saved name and a simulated location. Real GPS is deferred.
+
+## Current stock-app prototype
+
+- Build target: `Heltec_v3_unifi_stock_ble_us` (Uni-Fi 0.3.0).
+- Uni-Fi / MeshUSF OLED branding, BLE pairing PIN, message preview and screen timeout.
+- Three short USER/BOOT presses broadcast the saved node name and test coordinates **28.0587, -82.4139**. No phone or GPS module is needed.
+- Standard signed, unencrypted MeshCore advertisement; no private Uni-Fi provisioning key or custom mobile decoder.
+- Standard contacts, direct/group text, Public channel, BLE and USB companion interfaces remain; advanced pruned commands are not promised.
+- Radio remains locked to 910.525 MHz / 62.5 kHz / SF7 / CR4/5; peers must match. This companion does not relay other nodes' traffic; repeaters provide additional hops.
+- Double press navigates backward, hold selects. The old SOS/receipt/presence module is **not enabled** in this target.
+
+Normal MeshCore messaging still uses its built-in cryptography. Removing that would break stock protocol compatibility. Simulated coordinates are marked on the OLED, **not tagged as fake in the standard packet**; never treat them as a person's real location. See [setup, packet flow and hardware checks](docs/STOCK_APP_PROTOTYPE.md).
+
+```bash
+cd firmware
+pio run -e Heltec_v3_unifi_stock_ble_us -t mergebin
+pio run -e Heltec_v3_unifi_stock_ble_us -t upload
+```
+
+No provisioning step is required. Stock-app pairing and RF reception still need physical hardware verification. The custom `web/` client and exported walkthroughs below describe the earlier private-network prototype, not this stock-app target.
 
 ## Repository layout
 
@@ -11,7 +31,7 @@
 
 The upstream MIT license files and source history documents remain in each source tree. Uni-Fi-specific work is also released under the MIT license at the repository root.
 
-## Implemented product slice
+## Earlier private-network product slice (retained separately)
 
 - Fixed radio profile: 910.525 MHz, BW 62.5 kHz, SF7, CR 4/5
 - A provisioned, encrypted `Uni-Fi` network channel in locked firmware slot 0
@@ -27,7 +47,7 @@ The upstream MIT license files and source history documents remain in each sourc
 - Inherited Flutter Emergency/Contacts/Map foundations filter encrypted presence and correlate distress acknowledgements; mobile builds and GPS/map flows remain unverified
 - Firmware retains direct messages, contacts, group channels, saved names, battery status and screen timeout; QR/maps remain inherited Flutter foundations
 
-## Provision and build
+## Provision and build the earlier private-network target
 
 The repository intentionally contains no deployable network secret.
 

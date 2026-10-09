@@ -242,3 +242,43 @@ changes should also appear in the eventual changelog.
   generated images remain ignored by Git.
 - No upload was performed. Physical RF/BLE, button/LED/OLED, battery and
   two-/three-node acceptance remain not run; Flutter/GPS remain deferred.
+
+## 2026-10-08 — Stock-app prototype and Uni-Fi OLED
+
+- Added `Heltec_v3_unifi_stock_ble_us` (0.3.0), inheriting the trimmed Heltec
+  build without enabling private provisioning, channel locking, encrypted
+  Uni-Fi presence, or SOS/receipt handling. The previous private target remains.
+- Triple USER/BOOT press now queues a standard signed public MeshCore flood
+  advert with the saved name and fixed simulated coordinates 28.0587,
+  -82.4139. No phone, GPS module, private key, or custom mobile decoder needed.
+- Branded the OLED Uni-Fi / MeshUSF, retained PIN/messages/timeout, added
+  simulation guidance and queued/failed feedback. Double press navigates;
+  hold selects. The original mobile app is not forked or rebranded.
+- Retained standard MeshCore chat cryptography and the locked requested RF
+  waveform. Disabled companion forwarding; dedicated repeaters can relay its
+  floods. Added stock read-only tuning/empty optional-settings responses.
+- Guarded private-header inclusion and added a compile-time incompatible-mode
+  check. No deployment secret or generated binary is tracked.
+- Added decision 0008, the current stock-app guide, README build instructions,
+  and explicit historical/private-target notices on earlier documentation.
+  Added the stock target to CI. No GPS framework or new packet schema added.
+- Host button tests now assert one triple event with no intermediate double.
+  All host controls, 4,426 private protocol assertions and 20 browser tests
+  pass. All 44 native cases in six suites pass, including four new standard
+  advert encoding/UTF-8 tests. Companion-node-prefs remains skipped by native.
+- Real BLE pairing, RF reception, button timing, stock-app map display and
+  battery measurements require physical hardware; no upload was performed.
+- Both stock and previous private ESP32-S3 targets build and merge successfully.
+  Stock static RAM: 91,716 bytes; application flash: 1,183,381 bytes. This is
+  2,952 bytes less static RAM and 6,132 bytes less application flash than the
+  private target; runtime speed/heap/battery improvements are not measured.
+- esptool validates the stock application checksum/hash. Its merged image
+  contains the app at offset 0x10000 and flashes as a complete image at 0x0;
+  1,249,328 bytes, SHA-256
+  `51dba192778e3ba6b8e88c69ca6f9be260225b27a2f69e0186ed69c7000f3924`.
+  The existing protected bootloader header keeps its flash mode during merge.
+- Confirmed version 0.3.0, the new broadcast method in the linked image, absence
+  of private SOS/presence/provisioning methods, and absence of the local
+  deployment key from stock binaries without printing the key. Initial image
+  checks ran during a rebuild and found files not yet generated; rerunning
+  after both builds completed passed. Generated binaries remain ignored.

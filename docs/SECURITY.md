@@ -1,5 +1,9 @@
 # Security model
 
+> The private provisioning model below applies only to the older private target.
+> The current [stock-app prototype](STOCK_APP_PROTOTYPE.md) publicly broadcasts
+> name and simulated coordinates; it does not restrict discovery to our fleet.
+
 ## Provisioned group membership
 
 Each deployment receives a random 128-bit MeshCore group PSK. The same key is compiled into every authorized radio and installed as locked channel slot 0. The open repository includes only a template; production secrets must be supplied by the provisioning process.

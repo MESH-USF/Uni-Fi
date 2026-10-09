@@ -1,5 +1,9 @@
 # Uni-Fi: a short guide to the radio mesh
 
+> Historical private-network guide. The current stock-app prototype uses a
+> triple-press public simulated-location advertisement instead of this SOS /
+> encrypted-presence flow. See [the current guide](STOCK_APP_PROTOTYPE.md).
+
 **Uni-Fi** is MeshUSF’s emergency-first messaging prototype for Heltec V3
 LoRa radios. Its purpose is to let nearby radios exchange short messages
 directly, including a distress signal and a human acknowledgement, without
